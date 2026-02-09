@@ -1,5 +1,7 @@
 node_modules
 dist
+dist-electron
+release
 deploy
 coverage
 auto-imports.d.ts

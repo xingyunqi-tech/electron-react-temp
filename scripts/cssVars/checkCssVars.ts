@@ -6,6 +6,7 @@ import { glob } from 'glob';
 const ignorePatterns: (string | RegExp)[] = [
   'node_modules/**',
   'dist/**',
+  'dist-electron/**',
   'build/**',
   'public/**',
   'deploy/**',

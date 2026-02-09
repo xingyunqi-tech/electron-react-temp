@@ -12,7 +12,7 @@ export default defineConfig({
     // 测试文件匹配模式
     include: ['tests/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     // 排除文件
-    exclude: ['node_modules', 'dist', '.idea', '.git', '.cache'],
+    exclude: ['node_modules', 'dist', 'dist-electron', '.idea', '.git', '.cache'],
     // 测试设置文件
     setupFiles: ['./tests/setup.ts'],
     // 服务器配置
@@ -31,6 +31,7 @@ export default defineConfig({
         'node_modules/',
         'tests/',
         'dist/',
+        'dist-electron/',
         '**/*.d.ts',
         '**/*.config.*',
         '**/coverage/**',
