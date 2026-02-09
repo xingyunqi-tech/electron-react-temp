@@ -1,0 +1,7 @@
+@use '../styles/index';
+
+// 自定义主题覆盖element
+@use '../styles/element';
+
+// 重置样式
+@import 'normalize.css';

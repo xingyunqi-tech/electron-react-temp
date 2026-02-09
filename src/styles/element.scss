@@ -1,0 +1,43 @@
+// 自定义主题覆盖element
+:root {
+  --el-color-primary: #3dd7e3;
+}
+
+/**
+ * Element Plus 组件样式覆盖
+ *
+ * 覆盖 el-skeleton-item 的默认背景色
+ * Element Plus 默认颜色 #f2f2f2 在浅色背景下太淡
+ * 使用更明显的灰色，透明度 0.08
+ */
+.el-skeleton__item {
+  background: rgb(0 0 0 / 0.08) !important;
+}
+
+/**
+ * 骨架屏过渡动画
+ *
+ * 使用淡入淡出效果，提供更流畅的用户体验
+ * 适用于 Suspense fallback 和手动控制的骨架屏
+ */
+.skeleton-fade-enter-active,
+.skeleton-fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.skeleton-fade-enter-from,
+.skeleton-fade-leave-to {
+  opacity: 0;
+}
+
+/**
+ * 骨架屏内容淡入动画
+ * 当真实内容加载完成后，使用淡入效果
+ */
+.content-fade-enter-active {
+  transition: opacity 0.4s ease;
+}
+
+.content-fade-enter-from {
+  opacity: 0;
+}

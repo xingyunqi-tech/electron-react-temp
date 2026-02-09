@@ -1,0 +1,83 @@
+{
+  "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
+  "version": "0.2",
+  "language": "en",
+  "minWordLength": 3,
+  "files": ["src/**/*.{js,ts,jsx,tsx,vue}"],
+  "dictionaries": [
+    "typescript",
+    "node",
+    "npm",
+    "html",
+    "css",
+    "fonts",
+    "softwareTerms"
+  ],
+  "words": [
+    "element",
+    "pinia",
+    "vite",
+    "vitest",
+    "unocss",
+    "uno",
+    "unref",
+    "shallowref",
+    "composables",
+    "persistedstate",
+    "dayjs",
+    "axios",
+    "orval",
+    "vconsole",
+    "eruda",
+    "webvitals",
+    "browserslist",
+    "aliyun",
+    "wechat",
+    "unionpay",
+    "qrcode",
+    "cascader",
+    "nprogress",
+    "scrollbar",
+    "noopener",
+    "noreferrer",
+    "Songti",
+    "Segoe",
+    "dedup",
+    "deduplicator",
+    "DBAPI",
+    "indexeddb",
+    "swipeable",
+    "TTFB",
+    "CLS",
+    "FCP",
+    "INP",
+    "LCP",
+    "fmt",
+    "IDB",
+    "hsl",
+    "sfc",
+    "tofl",
+    "erow",
+    "zhihuishu",
+    "dsn",
+    "pii",
+    "dto",
+    "dpr"
+  ],
+  "patterns": [
+    {
+      "name": "jwt-token",
+      "pattern": "/eyJ[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+/g"
+    },
+    {
+      "name": "css-var",
+      "pattern": "/--[a-zA-Z][a-zA-Z0-9-]*/g"
+    },
+    {
+      "name": "import-path",
+      "pattern": "/@\\/[a-zA-Z0-9/-]+/g"
+    }
+  ],
+  "ignoreRegExpList": ["jwt-token", "css-var", "import-path"],
+  "ignorePaths": ["src/api/generated/**", "src/api/openapi.json"]
+}

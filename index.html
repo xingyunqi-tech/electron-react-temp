@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+  <!-- favicon -->
+  <link rel="icon" href="/favicon.ico" />
+  <!-- css主题变量 -->
+  <link rel="stylesheet" href="/theme.css" />
+  <!-- loading样式 -->
+  <link rel="stylesheet" href="/loading.css" />
+  <title>Electron + Vite + Vue</title>
+</head>
+
+<body>
+  <!--[if IE]>
+      <script>
+        alert('您正在使用的浏览器版本过低，为了您的最佳体验，请先升级浏览器。');
+        window.location.href =
+          'http://support.dmeng.net/upgrade-your-browser.html?referrer=' + encodeURIComponent(window.location.href);
+      </script>
+    <![endif]-->
+  <div id="app">
+    <div class="loading-wrap">
+      <div class="loading-spinner">
+        <div class="spinner-ring"></div>
+        <div class="spinner-ring"></div>
+        <div class="spinner-ring"></div>
+      </div>
+      <div class="loading-text">加载中...</div>
+    </div>
+  </div>
+  <script type="module" src="/src/index.ts"></script>
+</body>
+
+</html>
