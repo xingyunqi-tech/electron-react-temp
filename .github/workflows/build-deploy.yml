@@ -1,0 +1,236 @@
+# ------------------------------------------------------------
+# GitHub Actions - 构建、打包与部署
+#
+# 执行顺序：
+# 1. build: 构建前端资源，生成 dist/ 和构建信息
+# 2. package: 打包 Docker 镜像和部署包
+# 3. deploy: 上传部署包并在服务器上执行部署（手动触发）
+#
+# 触发条件：
+# - push 到 main / master / release/** 分支
+# - 推送 tag
+#
+# 前置条件（在 Settings > Secrets 中配置）：
+# - DEPLOY_SERVER_HOST: 部署服务器地址
+# - DEPLOY_SERVER_USER: 部署用户名
+# - DEPLOY_SERVER_PATH: 部署路径
+# - DEPLOY_SSH_PRIVATE_KEY: SSH 私钥
+# ------------------------------------------------------------
+
+name: Build & Deploy
+
+on:
+  push:
+    branches: [main, master, 'release/**']
+    tags: ['v*']
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  BASE_IMAGE: 'nginx:alpine'
+  REGISTRY_LOCAL: 'docker-local'
+  REPO_PREFIX: 'vue-admin-template/web'
+  IMAGE_PREFIX: 'vue-admin-web'
+  PACKAGE_PREFIX: 'vue-admin-web'
+  DEFAULT_LANGUAGE: 'zh-CN'
+
+jobs:
+  # ============================
+  # Build - 构建前端资源
+  # ============================
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate build info
+        id: info
+        run: |
+          GIT_HASH=$(git rev-parse --short HEAD)
+          GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+          BUILD_TIME=$(date "+%Y-%m-%d_%H-%M-%S")
+          WEBSITE_IMAGE_NAME="${{ env.REGISTRY_LOCAL }}/${{ env.REPO_PREFIX }}:${GIT_HASH}"
+
+          cat > node_build_info.sh << EOF
+          hash=${GIT_HASH}
+          build_at=${BUILD_TIME}
+          branch=${GIT_BRANCH}
+          website_docker_name=${WEBSITE_IMAGE_NAME}
+          EOF
+
+          cp node_build_info.sh version.html
+          perl -p -i -e 's/\n/<br>/g' version.html
+
+          echo "git_hash=${GIT_HASH}" >> "$GITHUB_OUTPUT"
+          echo "build_time=${BUILD_TIME}" >> "$GITHUB_OUTPUT"
+
+      - name: Build
+        run: pnpm run build
+        env:
+          defaultLanguage: ${{ env.DEFAULT_LANGUAGE }}
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: |
+            dist/
+            version.html
+            node_build_info.sh
+          retention-days: 7
+
+  # ============================
+  # Package - 打包 Docker 镜像和部署包
+  # ============================
+  package:
+    name: Package
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+
+      - name: Build Docker image & create deploy package
+        run: |
+          source node_build_info.sh
+          IMAGE_TAG_NAME="${{ env.IMAGE_PREFIX }}:${hash}"
+          PACKAGE_NAME="${{ env.PACKAGE_PREFIX }}_${hash}_$(date '+%Y-%m-%d_%H-%M-%S').tar.gz"
+
+          # 创建静态资源包（热更新用）
+          tar -czf "static_assets_${hash}.tar.gz" dist version.html
+
+          # 构建 Docker 镜像
+          docker build -f Dockerfile -t "${website_docker_name}" --build-arg BASE_IMAGE="${{ env.BASE_IMAGE }}" .
+
+          # 准备部署文件
+          mkdir -p vue_admin_web
+          cp -r deploy/* vue_admin_web/
+
+          # 保存 Docker 镜像
+          docker tag "${website_docker_name}" "${IMAGE_TAG_NAME}"
+          docker save "${IMAGE_TAG_NAME}" -o "vue_admin_web/${IMAGE_TAG_NAME//:/\_}.tar"
+
+          # 更新构建信息（添加 MD5）
+          echo "web_docker_md5=$(md5sum vue_admin_web/${IMAGE_TAG_NAME//:/\_}.tar | awk '{print $1}')" >> node_build_info.sh
+          cp node_build_info.sh vue_admin_web/
+
+          # 创建最终部署包
+          tar -czf "${PACKAGE_NAME}" vue_admin_web
+          echo "Package created - ${PACKAGE_NAME}"
+
+      - name: Upload deploy package
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy-package
+          path: |
+            *.tar.gz
+            node_build_info.sh
+          retention-days: 30
+
+  # ============================
+  # Deploy - 部署到服务器（手动触发）
+  # ============================
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: package
+    environment:
+      name: production
+      url: http://${{ secrets.DEPLOY_SERVER_HOST }}:31180
+    steps:
+      - name: Download deploy package
+        uses: actions/download-artifact@v4
+        with:
+          name: deploy-package
+
+      - name: Deploy to server
+        env:
+          DEPLOY_SERVER_HOST: ${{ secrets.DEPLOY_SERVER_HOST }}
+          DEPLOY_SERVER_USER: ${{ secrets.DEPLOY_SERVER_USER }}
+          DEPLOY_SERVER_PATH: ${{ secrets.DEPLOY_SERVER_PATH }}
+          DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+        run: |
+          # 配置 SSH
+          mkdir -p ~/.ssh
+          echo "${DEPLOY_SSH_PRIVATE_KEY}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H "${DEPLOY_SERVER_HOST}" >> ~/.ssh/known_hosts
+
+          source node_build_info.sh
+          PACKAGE_FILE=$(ls ${{ env.PACKAGE_PREFIX }}_${hash}_*.tar.gz | head -1)
+
+          echo "=========================================="
+          echo "部署信息:"
+          echo "  分支/标签: ${GITHUB_REF_NAME}"
+          echo "  服务器: ${DEPLOY_SERVER_USER}@${DEPLOY_SERVER_HOST}"
+          echo "  路径: ${DEPLOY_SERVER_PATH}"
+          echo "  部署包: ${PACKAGE_FILE}"
+          echo "  Git Hash: ${hash}"
+          echo "  构建时间: ${build_at}"
+          echo "=========================================="
+
+          # 上传部署包到服务器
+          scp -o StrictHostKeyChecking=no "${PACKAGE_FILE}" "${DEPLOY_SERVER_USER}@${DEPLOY_SERVER_HOST}:${DEPLOY_SERVER_PATH}/"
+
+          # 在服务器上执行部署
+          ssh -o StrictHostKeyChecking=no "${DEPLOY_SERVER_USER}@${DEPLOY_SERVER_HOST}" << EOF
+            set -e
+            cd ${DEPLOY_SERVER_PATH}
+
+            # 解压部署包
+            echo "解压部署包..."
+            tar -xzf $(basename ${PACKAGE_FILE})
+
+            # 进入部署目录
+            cd vue_admin_web
+
+            # 加载 Docker 镜像
+            echo "加载 Docker 镜像..."
+            docker load -i vue-admin-web_*.tar
+
+            # 停止旧容器
+            echo "停止旧容器..."
+            ./manage.sh stop || true
+            ./manage.sh remove || true
+
+            # 启动新容器
+            echo "启动新容器..."
+            ./manage.sh start
+
+            # 显示状态
+            echo "部署完成！"
+            ./manage.sh status
+
+            # 清理旧部署包（保留最近3个）
+            cd ${DEPLOY_SERVER_PATH}
+            ls -t ${{ env.PACKAGE_PREFIX }}_*.tar.gz | tail -n +4 | xargs -r rm -f
+
+            echo "=========================================="
+            echo "部署成功！"
+            echo "访问地址: http://${DEPLOY_SERVER_HOST}:31180"
+            echo "版本信息: http://${DEPLOY_SERVER_HOST}:31180/web/version"
+            echo "=========================================="
+          EOF

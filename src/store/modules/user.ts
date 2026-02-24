@@ -58,20 +58,19 @@ export const getInfoAction = createAsyncThunk('user/getInfo', async () => {
   return userData;
 });
 
+/** 退出登录 */
+export const logoutAction = createAsyncThunk('user/logout', async () => {
+  storage('localStorage').remove('token');
+  storage('localStorage').remove('refreshToken');
+  await appStorage.removeItem(NAMESPACE);
+});
+
 // ==================== Slice ====================
 
 const userSlice = createSlice({
   name: NAMESPACE,
   initialState,
-  reducers: {
-    /** 退出登录 */
-    logoutAction(state) {
-      storage('localStorage').remove('token');
-      storage('localStorage').remove('refreshToken');
-      Object.assign(state, initialState);
-      appStorage.removeItem(NAMESPACE);
-    },
-  },
+  reducers: {},
   extraReducers: builder => {
     builder
       .addCase(loginAction.fulfilled, (state, action) => {
@@ -83,6 +82,7 @@ const userSlice = createSlice({
         state.phone = user.phone ?? '';
         state.role = user.role?.name ?? '';
       })
+      .addCase(logoutAction.fulfilled, () => initialState)
       .addCase(getInfoAction.fulfilled, (state, action) => {
         const user = action.payload;
         state.id = user.id ?? state.id;
@@ -94,10 +94,6 @@ const userSlice = createSlice({
       });
   },
 });
-
-// ==================== Actions ====================
-
-export const { logoutAction } = userSlice.actions;
 
 // ==================== Selectors ====================
 

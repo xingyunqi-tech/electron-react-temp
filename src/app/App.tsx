@@ -5,7 +5,7 @@ import { StyleProvider, legacyLogicalPropertiesTransformer } from '@ant-design/c
 import { useAppSelector, useAppDispatch } from '@/store';
 import { stopAllLoopsAction } from '@/store/framework';
 import { currentLocaleSelector, currentThemeSelector } from '@/store/modules/global';
-import { loadLocaleMessages, getAntdLocales } from '@/plugins/locale';
+import i18n, { getAntdLocales, loadLocaleMessages } from '@/plugins/locale';
 import { getAntdTheme } from '@/plugins/theme';
 import { os } from '@/utils/os';
 import dayjs, { dayjsLocaleMap } from '@/plugins/dayjs';
@@ -29,13 +29,16 @@ export default function App() {
     };
   }, [dispatch]);
 
-  // 监听语言变化
+  // 监听语言变化：先加载语言包，再切换语言
   useEffect(() => {
     // 设置网站语言
     document.documentElement.setAttribute('lang', currentLocale);
-    // 动态加载语音包
-    loadLocaleMessages(currentLocale);
+    // 设置dayjs语言
     dayjs.locale(dayjsLocaleMap[currentLocale]);
+    // 动态加载语音包
+    loadLocaleMessages(currentLocale).then(() => {
+      i18n.changeLanguage(currentLocale);
+    });
   }, [currentLocale]);
 
   // 监听主题变化

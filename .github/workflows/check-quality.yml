@@ -1,0 +1,154 @@
+# ------------------------------------------------------------
+# GitHub Actions - CI 质量门禁
+#
+# 执行顺序：
+# 1. install: 安装依赖 + 缓存
+# 2. lint / type-check / test: 并行执行质量检查
+#
+# 触发条件：
+# - PR 提交到 main / master / release/** 分支
+# - 直接 push 到 main / master / release/** 分支
+# ------------------------------------------------------------
+
+name: Check Quality
+
+on:
+  pull_request:
+    branches: [main, master, 'release/**']
+  push:
+    branches: [main, master, 'release/**']
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ============================
+  # Install - 安装依赖（首先执行）
+  # ============================
+  install:
+    name: Install
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Cache dependencies
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            node_modules
+          key: deps-${{ github.sha }}
+
+  # ============================
+  # Lint - 代码规范检查
+  # ============================
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    needs: install
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Restore dependencies
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            node_modules
+          key: deps-${{ github.sha }}
+          fail-on-cache-miss: true
+
+      - name: Lint
+        run: pnpm run lint
+
+  # ============================
+  # Type Check - TypeScript 类型检查
+  # ============================
+  type-check:
+    name: Type Check
+    runs-on: ubuntu-latest
+    needs: install
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Restore dependencies
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            node_modules
+          key: deps-${{ github.sha }}
+          fail-on-cache-miss: true
+
+      - name: TypeScript type check
+        run: pnpm run type-check
+
+  # ============================
+  # Test - 单元测试
+  # ============================
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    needs: install
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Restore dependencies
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            node_modules
+          key: deps-${{ github.sha }}
+          fail-on-cache-miss: true
+
+      - name: Run tests
+        run: pnpm run test
+
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/
+          retention-days: 30

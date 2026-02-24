@@ -1,0 +1,49 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 10
+    groups:
+      react:
+        patterns:
+          - 'react'
+          - 'react-dom'
+          - '@types/react'
+          - '@types/react-dom'
+          - 'react-router-dom'
+          - 'react-redux'
+          - 'react-i18next'
+      electron:
+        patterns:
+          - 'electron'
+          - 'electron-builder'
+          - 'vite-plugin-electron*'
+      antd:
+        patterns:
+          - 'antd'
+          - '@ant-design/*'
+      eslint:
+        patterns:
+          - 'eslint*'
+          - '@eslint/*'
+          - 'typescript-eslint'
+      vite:
+        patterns:
+          - 'vite'
+          - '@vitejs/*'
+          - 'vite-plugin-*'
+      vitest:
+        patterns:
+          - 'vitest'
+          - '@vitest/*'
+          - '@testing-library/*'
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5

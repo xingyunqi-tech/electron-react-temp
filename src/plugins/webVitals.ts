@@ -65,24 +65,15 @@ export const reportWebVitals = (onPerfEntry: ReportHandler) => {
     return;
   }
 
-  // 注册所有性能指标监听器
-  // 注意：这些函数返回 void，allSettled 用于确保所有注册完成
-  // allSettled 永远不会 reject，需要在 then 中检查每个结果
-  Promise.allSettled([
-    Promise.resolve(onCLS(onPerfEntry)),
-    Promise.resolve(onFCP(onPerfEntry)),
-    Promise.resolve(onINP(onPerfEntry)),
-    Promise.resolve(onLCP(onPerfEntry)),
-    Promise.resolve(onTTFB(onPerfEntry)),
-    Promise.resolve(onMEMORY(onPerfEntry)),
-  ]).then(results => {
-    const failedResults = results.filter(result => result.status === 'rejected');
-    if (failedResults.length > 0) {
-      failedResults.forEach((result, index) => {
-        if (result.status === 'rejected') {
-          console.error(`Web vital ${index} registration failed:`, result.reason);
-        }
-      });
-    }
-  });
+  // 注册所有性能指标监听器（这些函数是同步注册回调，不返回 Promise）
+  try {
+    onCLS(onPerfEntry);
+    onFCP(onPerfEntry);
+    onINP(onPerfEntry);
+    onLCP(onPerfEntry);
+    onTTFB(onPerfEntry);
+    onMEMORY(onPerfEntry);
+  } catch (error) {
+    console.error('Web vitals registration failed:', error);
+  }
 };

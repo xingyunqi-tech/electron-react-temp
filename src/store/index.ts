@@ -6,6 +6,7 @@ import {
   appStorage,
   createReduxFramework,
   createPersistPlugin,
+  persistIgnoredActions,
   createLoopPlugin,
   createInjectStoreWrapper,
   defineModule as frameworkDefineModule,
@@ -28,6 +29,12 @@ const { store, reducerManager, pluginManager } = createReduxFramework({
     permission: permissionReducer,
   },
   devTools: import.meta.env.DEV,
+  middlewareCallback: getDefaultMiddleware =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [...persistIgnoredActions],
+      },
+    }),
   plugins: [
     createPersistPlugin({
       key: 'root',

@@ -1,1 +1,11 @@
-{}
+{
+  "layout": {
+    "systemTitle": "管理系统",
+    "settings": "系统设置",
+    "logout": "退出登录",
+    "admin": "管理员",
+    "logoutConfirm": "确定要退出登录吗？",
+    "logoutSuccess": "退出登录成功",
+    "tip": "提示"
+  }
+}

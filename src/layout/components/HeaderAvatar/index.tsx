@@ -19,10 +19,8 @@ export default function HeaderAvatar() {
     modal.confirm({
       title: t('layout.tip'),
       content: t('layout.logoutConfirm'),
-      okText: t('common.confirm'),
-      cancelText: t('common.cancel'),
       onOk: async () => {
-        dispatch(logoutAction());
+        await dispatch(logoutAction()).unwrap();
         dispatch(resetPermissionAction());
         message.success(t('layout.logoutSuccess'));
         navigate('/login');

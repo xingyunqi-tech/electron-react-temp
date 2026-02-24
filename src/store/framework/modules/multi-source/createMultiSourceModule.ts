@@ -43,7 +43,7 @@ interface IState {
  * @returns 多来源模块实例
  */
 export const createMultiSourceModule = <T>(ctx: IMultiSourceModuleContext<T>) => {
-  let prevIndexes: Record<string, number> = {};
+  const prevIndexesRef = { current: {} as Record<string, number> };
   const rootSelector: (state: any) => IState = ctx.rootSelector || DefaultRootSelectorFactory(ctx.name);
 
   const memoizedSourceIds = memoizeOne(ctx.sourceIds);
@@ -166,11 +166,11 @@ export const createMultiSourceModule = <T>(ctx: IMultiSourceModuleContext<T>) =>
 
       while (head.length + finished.length === sourceIdsArray.length) {
         head.sort((a, b) => -ctx.comparator(a[1], b[1]));
-        const kvp = head.pop();
-        if (!kvp) {
+        const entry = head.pop();
+        if (!entry) {
           break;
         }
-        const [sourceId, item] = kvp;
+        const [sourceId, item] = entry;
         results.push(item);
 
         const keys = x.getKeysInBucket(sourceId);
@@ -191,8 +191,9 @@ export const createMultiSourceModule = <T>(ctx: IMultiSourceModuleContext<T>) =>
           }
         }
       }
-      prevIndexes = indexes;
-      head.forEach(item => prevIndexes[item[0]]!--);
+      const finalIndexes = { ...indexes };
+      head.forEach(item => finalIndexes[item[0]]!--);
+      prevIndexesRef.current = finalIndexes;
 
       return results;
     },
@@ -241,11 +242,11 @@ export const createMultiSourceModule = <T>(ctx: IMultiSourceModuleContext<T>) =>
    * 处理更新数据的逻辑
    */
   function* processSourceData(sourceItems: SourceData<T>[]): Generator<Effect, void, any> {
-    const kvs: Array<[string, T]> = [];
+    const entries: Array<[string, T]> = [];
     sourceItems.forEach(({ items }) => {
-      items.forEach(item => kvs.push([ctx.getItemKey(item), item]));
+      items.forEach(item => entries.push([ctx.getItemKey(item), item]));
     });
-    yield put(kvItemsModule.actions.updateAction(kvs));
+    yield put(kvItemsModule.actions.updateAction(entries));
 
     const getBucketByKey = yield select(kvBucketsModule.selectors.getByKey);
     const getItemByKey = yield select(kvItemsModule.selectors.getByKey);
@@ -316,7 +317,7 @@ export const createMultiSourceModule = <T>(ctx: IMultiSourceModuleContext<T>) =>
     return Object.entries(lastBuckets)
       .map(([bucketKey, bucketValue]) => {
         const typedBucketValue = bucketValue as string[];
-        let selfLeft = typedBucketValue.length - (prevIndexes[bucketKey] || 0);
+        let selfLeft = typedBucketValue.length - (prevIndexesRef.current[bucketKey] || 0);
         if (selfLeft < 0) {
           selfLeft = 0;
         }

@@ -11,7 +11,7 @@ log_error() { echo -e "\033[0;31m[ERROR]\033[0m $*" >&2; }
 # 清理函数
 cleanup() {
     log_info "Cleaning up temporary files..."
-    rm -rf vue_admin_web version.html node_build_info.sh
+    rm -rf react_admin_web version.html node_build_info.sh
 }
 
 # 错误处理
@@ -76,18 +76,18 @@ build_docker_image() {
 # 准备部署文件
 prepare_deployment_files() {
     log_info "Preparing deployment files..."
-    mkdir -p vue_admin_web
-    cp -r deploy/* vue_admin_web/
+    mkdir -p react_admin_web
+    cp -r deploy/* react_admin_web/
 
     # 打标签并保存镜像
     local saved_image_name="${imageTagName}.tar"
     docker tag "${websitImageName}" "${imageTagName}"
-    docker save "${imageTagName}" -o "vue_admin_web/${saved_image_name}"
+    docker save "${imageTagName}" -o "react_admin_web/${saved_image_name}"
 
     # 计算 MD5 并更新构建信息
-    local md5=$(md5sum "vue_admin_web/${saved_image_name}" | awk '{ print $1 }')
+    local md5=$(md5sum "react_admin_web/${saved_image_name}" | awk '{ print $1 }')
     echo "web_docker_md5=${md5}" >> node_build_info.sh
-    cp node_build_info.sh vue_admin_web/
+    cp node_build_info.sh react_admin_web/
 }
 
 # 主函数
@@ -142,7 +142,7 @@ main() {
 
     # 创建部署包
     log_info "Creating deployment package..."
-    tar -czf "${packageName}" vue_admin_web
+    tar -czf "${packageName}" react_admin_web
 
     local end_time=$(date +%s)
     local duration=$((end_time - start_time))

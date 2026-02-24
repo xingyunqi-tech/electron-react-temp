@@ -78,5 +78,5 @@
     }
   ],
   "ignoreRegExpList": ["jwt-token", "css-var", "import-path"],
-  "ignorePaths": ["src/api/generated/**", "src/api/openapi.json"]
+  "ignorePaths": ["src/api/generated/**", "src/api/index.ts", "src/api/openapi.json"]
 }

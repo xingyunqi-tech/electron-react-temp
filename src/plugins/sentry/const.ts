@@ -8,7 +8,7 @@
  * Sentry 配置常量
  */
 export const SENTRY_CONFIG = {
-  DSN: 'https://857344c2ec1086fd0f81e65297f369a5@o4506822939508736.ingest.us.sentry.io/4510032619962368',
+  DSN: 'https://6914505451e51547265bf2ffdf603f57@o4506822939508736.ingest.us.sentry.io/4510939975122944',
   ENVIRONMENT: import.meta.env.MODE || 'development',
   RELEASE: '1.0.0',
 

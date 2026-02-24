@@ -44,9 +44,7 @@ export function createReduxFramework(options: ReduxFrameworkOptions): ReduxFrame
     reducer: rootReducer as any,
     devTools,
     middleware: getDefaultMiddleware => {
-      const base = middlewareCallback
-        ? middlewareCallback(getDefaultMiddleware)
-        : getDefaultMiddleware({ serializableCheck: false });
+      const base = middlewareCallback ? middlewareCallback(getDefaultMiddleware) : getDefaultMiddleware();
       return base.concat(pluginMiddleware);
     },
     enhancers: getDefaultEnhancers => {

@@ -69,8 +69,8 @@ class LocalStorageAPI {
       if (new Date(dataObj.time).getTime() - new Date().getTime() > 0) {
         return dataObj.value;
       }
-    } catch (error) {
-      return error;
+    } catch {
+      return '';
     }
     return '';
   }

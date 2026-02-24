@@ -1,10 +1,10 @@
 {
   "recommendations": [
-    "Vue.volar",
-    "sdras.vue-vscode-snippets",
     "dbaeumer.vscode-eslint",
     "stylelint.vscode-stylelint",
     "esbenp.prettier-vscode",
+    "clinyong.vscode-css-modules",
+    "dsznajder.es7-react-js-snippets",
     "streetsidesoftware.code-spell-checker",
     "lokalise.i18n-ally",
     "vunguyentuan.vscode-css-variables",

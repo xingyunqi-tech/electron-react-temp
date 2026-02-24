@@ -1,37 +1,11 @@
 {
-  "login": {
-    "title": "Sign In",
-    "phonePlaceholder": "Please enter phone number",
-    "phoneInvalid": "Please enter a valid phone number",
-    "passwordPlaceholder": "Please enter password",
-    "loginBtn": "Sign In",
-    "loginSuccess": "Login successful",
-    "loginFailed": "Login failed, please check your phone number and password"
-  },
   "layout": {
     "systemTitle": "Management System",
-    "profile": "Profile",
     "settings": "Settings",
     "logout": "Logout",
     "admin": "Administrator",
-    "profileDeveloping": "Profile feature is under development...",
-    "settingsDeveloping": "Settings feature is under development...",
     "logoutConfirm": "Are you sure you want to logout?",
     "logoutSuccess": "Logout successful",
-    "tip": "Tip",
-    "themeSwitch": "Switch Theme"
-  },
-  "common": {
-    "setting": "Settings",
-    "cancel": "Cancel",
-    "confirm": "Confirm",
-    "save": "Save",
-    "reset": "Reset",
-    "delete": "Delete",
-    "edit": "Edit",
-    "view": "View",
-    "add": "Add",
-    "search": "Search",
-    "refresh": "Refresh"
+    "tip": "Tip"
   }
 }

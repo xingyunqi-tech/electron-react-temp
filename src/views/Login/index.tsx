@@ -3,14 +3,12 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Form, Input, Button } from 'antd';
 import { message } from '@/components/StaticFunction';
 import { MobileOutlined, LockOutlined } from '@ant-design/icons';
-import { useTranslation } from 'react-i18next';
 import logoImg from '@/assets/images/common/logo.png';
 import { useAppDispatch } from '@/store';
 import { loginAction } from '@/store/modules/user';
 import styles from './index.module.scss';
 
 export default function LoginPage() {
-  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const dispatch = useAppDispatch();
@@ -29,48 +27,56 @@ export default function LoginPage() {
         }),
       ).unwrap();
 
-      message.success(t('login.loginSuccess'));
+      message.success('登录成功');
       const redirect = searchParams.get('redirect');
-      // 校验 redirect 参数：必须是相对路径，防止 open redirect
-      const redirectUrl = redirect && redirect.startsWith('/') && !redirect.startsWith('//') ? redirect : '/home';
+      // 校验 redirect 参数：必须是同源相对路径，防止 open redirect
+      const redirectUrl = (() => {
+        if (!redirect) return '/home';
+        try {
+          const url = new URL(redirect, window.location.origin);
+          return url.origin === window.location.origin ? redirect : '/home';
+        } catch {
+          return '/home';
+        }
+      })();
       navigate(redirectUrl);
     } catch (error) {
       console.error('登录失败:', error);
-      message.error(t('login.loginFailed'));
+      message.error('登录失败，请检查手机号和密码');
     } finally {
       setLoading(false);
     }
-  }, [form, dispatch, navigate, searchParams, t]);
+  }, [form, dispatch, navigate, searchParams]);
 
   return (
     <div className={styles.loginContainer}>
       <div className={styles.logoHeader}>
         <img src={logoImg} alt="Logo" className={styles.logoImage} />
-        <h1 className={styles.logoTextTitle}>{t('layout.systemTitle')}</h1>
+        <h1 className={styles.logoTextTitle}>管理系统</h1>
       </div>
 
       <div className={styles.mainContent}>
         <div className={styles.formSection}>
-          <h2 className={styles.formTitle}>{t('login.title')}</h2>
+          <h2 className={styles.formTitle}>登录账号</h2>
 
           <Form form={form} onFinish={handleLogin} size="large">
             <Form.Item
               name="phone"
               rules={[
-                { required: true, message: t('login.phonePlaceholder') },
-                { pattern: /^1[3-9]\d{9}$/, message: t('login.phoneInvalid') },
+                { required: true, message: '请输入手机号' },
+                { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号' },
               ]}
             >
-              <Input prefix={<MobileOutlined />} placeholder={t('login.phonePlaceholder')} maxLength={11} />
+              <Input prefix={<MobileOutlined />} placeholder="请输入手机号" maxLength={11} />
             </Form.Item>
 
-            <Form.Item name="password" rules={[{ required: true, message: t('login.passwordPlaceholder') }]}>
-              <Input.Password prefix={<LockOutlined />} placeholder={t('login.passwordPlaceholder')} />
+            <Form.Item name="password" rules={[{ required: true, message: '请输入密码' }]}>
+              <Input.Password prefix={<LockOutlined />} placeholder="请输入密码" />
             </Form.Item>
 
             <Form.Item>
               <Button type="primary" htmlType="submit" loading={loading} block className={styles.loginBtn}>
-                {t('login.loginBtn')}
+                立即登录
               </Button>
             </Form.Item>
           </Form>

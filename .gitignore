@@ -18,6 +18,10 @@ release
 # env
 *.local
 
+# auto-generated files
+auto-imports.d.ts
+components.d.ts
+
 # Playwright
 playwright-report/
 test-results/
