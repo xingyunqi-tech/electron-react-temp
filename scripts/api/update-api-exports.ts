@@ -130,10 +130,7 @@ function scanCustomModules(): string[] {
  * @param customModules 自定义模块列表
  * @returns 完整的 index.ts 内容
  */
-function generateIndexContent(
-  modules: Array<{ name: string; functions: string[] }>,
-  customModules: string[]
-): string {
+function generateIndexContent(modules: Array<{ name: string; functions: string[] }>, customModules: string[]): string {
   // 生成 generated 模块导出语句
   const exportStatements = modules
     .map(({ name, functions }) => {

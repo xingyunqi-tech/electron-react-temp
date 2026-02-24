@@ -264,7 +264,7 @@ pnpm i18n:exportLocale
 {
   path: '/home',
   name: 'Home',
-  component: () => import('@/views/home/index.vue'),
+  component: () => import('@/views/Home/index.vue'),
   meta: {
     title: '首页',
     skeleton: {

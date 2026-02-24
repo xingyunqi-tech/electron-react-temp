@@ -205,7 +205,7 @@ export class HttpClient {
           },
           errorInterceptor
             ? async (error: AxiosError) => {
-                await cleanupErrorInterceptor(error);
+                cleanupAbortController(error.config ?? {});
                 return errorInterceptor(error);
               }
             : cleanupErrorInterceptor,

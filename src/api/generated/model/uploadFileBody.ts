@@ -9,6 +9,5 @@
  */
 
 export type UploadFileBody = {
-  /** 上传的文件 */
-  file: Blob;
+  file?: Blob;
 };

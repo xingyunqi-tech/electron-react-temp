@@ -64,7 +64,7 @@ export function responseSuccessInterceptor(response: AxiosResponse<ApiResponse<a
   const error = new Error(message || '请求失败') as Error & { code: number };
   error.code = code;
 
-  // 使用全局错误处理器，自动显示错误提示（ElMessage.error）
+  // 使用全局错误处理器，自动显示错误提示（message.error）
   // ErrorType.BUSINESS 表示这是业务逻辑错误，不是网络错误
   handleError(error, {
     type: ErrorType.BUSINESS,
@@ -86,7 +86,7 @@ export function responseSuccessInterceptor(response: AxiosResponse<ApiResponse<a
  * 处理逻辑：
  * 1. 使用全局错误处理器 handleError
  * 2. 自动识别错误类型（网络错误、HTTP 错误、超时等）
- * 3. 自动显示错误提示（ElMessage.error）
+ * 3. 自动显示错误提示（message.error）
  * 4. 特殊处理：401 自动跳转登录页、403 跳转无权限页
  *
  * 常见错误类型：

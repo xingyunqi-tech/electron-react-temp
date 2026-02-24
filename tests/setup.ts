@@ -1,33 +1,25 @@
 /**
  * Vitest 测试环境设置文件
- * @description 配置测试环境的全局设置和Mock
+ * @description 配置 React 测试环境的全局设置和 Mock
  */
 
 import { vi, afterEach } from 'vitest';
-import { config } from '@vue/test-utils';
+import { cleanup } from '@testing-library/react';
 
-// 配置Vue Test Utils全局设置
-config.global.stubs = {
-  // 全局组件存根
-  'el-icon': true,
-  'el-button': true,
-  'el-input': true,
-  'el-form': true,
-  'el-form-item': true,
-  'el-row': true,
-  'el-col': true,
-  'el-config-provider': true,
-};
+// 每个测试后自动清理 React Testing Library 渲染
+afterEach(() => {
+  cleanup();
+});
 
-// Mock全局对象
+// Mock 全局对象
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: vi.fn().mockImplementation(query => ({
     matches: false,
     media: query,
     onchange: null,
-    addListener: vi.fn(), // deprecated
-    removeListener: vi.fn(), // deprecated
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
     addEventListener: vi.fn(),
     removeEventListener: vi.fn(),
     dispatchEvent: vi.fn(),
@@ -48,7 +40,7 @@ global.IntersectionObserver = vi.fn().mockImplementation(() => ({
   disconnect: vi.fn(),
 }));
 
-// Mock CSS变量
+// Mock CSS 变量
 Object.defineProperty(document.documentElement, 'style', {
   value: {
     setProperty: vi.fn(),
@@ -111,22 +103,15 @@ globalThis.mockFetch = fetch as unknown as typeof vi.fn;
 globalThis.mockLocalStorage = localStorageMock;
 
 /**
- * ==================== 全局错误处理 ====================
- * 处理测试中预期的unhandled rejection
+ * 全局错误处理
  */
-
-// 存储原始的unhandledrejection处理器
 const originalUnhandledRejection = process.listeners('unhandledRejection')[0];
 
-// 添加自定义处理器来过滤预期的401错误
 process.on('unhandledRejection', (reason: unknown) => {
-  // 检查是否是预期的 401 错误（测试中故意触发的）
   if (reason && typeof reason === 'object' && 'status' in reason && reason.status === 401) {
-    // 忽略预期的401错误 - 这些是测试中故意触发的
     return;
   }
 
-  // 对于其他错误，使用原始处理器或默认行为
   if (originalUnhandledRejection) {
     (originalUnhandledRejection as any)(reason);
   } else {
@@ -136,6 +121,5 @@ process.on('unhandledRejection', (reason: unknown) => {
 
 // 每个测试后清理 localStorage
 afterEach(() => {
-  // 清理 localStorage
   localStorageMock.clear();
 });

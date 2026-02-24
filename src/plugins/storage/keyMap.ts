@@ -26,6 +26,7 @@ export const localStorageKey = [
   'locale', // 语言
   'theme', // 主题
   'token', // 登录态
+  'refreshToken', // 登录态
   'competition_form_draft', // 竞赛表单草稿
 ] as const;
 

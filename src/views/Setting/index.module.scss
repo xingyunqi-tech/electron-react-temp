@@ -1,0 +1,19 @@
+.container {
+  display: grid;
+  grid-template-areas: 'nav main';
+  grid-template-columns: min-content 1fr;
+  height: 100%;
+}
+
+.leftNav {
+  grid-area: nav;
+}
+
+.leftNavMenu {
+  height: 100%;
+}
+
+.rightMain {
+  grid-area: main;
+  overflow-y: auto;
+}

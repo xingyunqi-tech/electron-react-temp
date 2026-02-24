@@ -4,7 +4,7 @@
  * 统一处理应用中的各类错误，提供用户友好的错误提示
  */
 
-import { ElMessage, ElNotification } from 'element-plus';
+import { message, notification } from '@/components/StaticFunction';
 import type { AxiosError } from 'axios';
 
 /**
@@ -123,25 +123,19 @@ function getErrorMessage(error: any): string {
 /**
  * 显示错误消息
  */
-function showError(message: string, type: ErrorType, useNotification = false) {
-  const config = {
-    message,
-    duration: 3000,
-  };
-
+function showError(msg: string, type: ErrorType, useNotification = false) {
   if (useNotification) {
-    ElNotification({
-      title: '错误',
-      message,
-      type: 'error',
-      duration: 5000,
+    notification.error({
+      message: '错误',
+      description: msg,
+      duration: 5,
     });
   } else {
-    ElMessage.error(config);
+    message.error({ content: msg, duration: 3 });
   }
 
   // 记录错误日志
-  console.error(`[ErrorHandler] ${type}:`, message);
+  console.error(`[ErrorHandler] ${type}:`, msg);
 }
 
 /**
@@ -182,13 +176,29 @@ export function handleError(error: any, config: ErrorConfig = {}): ErrorType {
 }
 
 /**
+ * 认证错误处理回调（可通过 setAuthErrorHandler 自定义）
+ */
+let authErrorCallback: (() => void) | null = null;
+
+/**
+ * 设置自定义认证错误处理器
+ * 用于在应用初始化时注入 store.dispatch(logout()) 等逻辑
+ */
+export function setAuthErrorHandler(handler: () => void) {
+  authErrorCallback = handler;
+}
+
+/**
  * 处理认证错误
  */
 function handleAuthError() {
-  // 清除本地存储
-  localStorage.removeItem('token');
+  if (authErrorCallback) {
+    authErrorCallback();
+    return;
+  }
 
-  // 延迟跳转到登录页（给用户看到错误提示的时间）
+  // 回退：直接清除 token 并跳转登录页
+  localStorage.removeItem('token');
   setTimeout(() => {
     window.location.href = '/login';
   }, 1500);
@@ -205,15 +215,18 @@ export function handleErrorSilently(error: any): ErrorType {
  * 创建错误处理装饰器
  * 用于包装函数，自动处理错误
  */
-export function withErrorHandler<T extends (...args: any[]) => any>(fn: T, config?: ErrorConfig): T {
-  return (async (...args: Parameters<T>) => {
+export function withErrorHandler<T extends (...args: any[]) => any>(
+  fn: T,
+  config?: ErrorConfig,
+): (...args: Parameters<T>) => Promise<ReturnType<T>> {
+  return async (...args: Parameters<T>) => {
     try {
       return await fn(...args);
     } catch (error) {
       handleError(error, config);
       throw error;
     }
-  }) as T;
+  };
 }
 
 /**

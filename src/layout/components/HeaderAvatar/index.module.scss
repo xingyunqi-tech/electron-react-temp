@@ -1,0 +1,16 @@
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.userDetails {
+  display: flex;
+  align-items: center;
+}
+
+.username {
+  font-size: 14px;
+  font-weight: 500;
+}

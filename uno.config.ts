@@ -5,10 +5,8 @@ export default defineConfig({
   presets: [presetWind3(), presetAttributify()],
   transformers: [transformerDirectives()],
   content: {
-    filesystem: ['./src/**/*.{vue,ts,tsx}', './index.html'],
+    filesystem: ['./src/**/*.{ts,tsx,jsx}', './index.html'],
   },
-  theme: {
-    colors: {},
-  },
+  theme: {},
   safelist: [],
 });

@@ -1,9 +1,5 @@
 const config = {
-  extends: [
-    'stylelint-config-standard-scss', // SCSS 标准配置
-    'stylelint-config-property-sort-order-smacss', // 属性排序规则
-    'stylelint-config-recommended-vue', // Vue 推荐配置
-  ],
+  extends: ['stylelint-config-standard-scss', 'stylelint-config-property-sort-order-smacss'],
   plugins: ['stylelint-scss', 'stylelint-order'],
   rules: {
     'max-nesting-depth': 10, // 限制嵌套深度
@@ -20,11 +16,11 @@ const config = {
     'scss/percent-placeholder-pattern': '^[a-zA-Z-0-9]+$', // percent-placeholder匹配模式
     'no-descending-specificity': null, // 禁止特异性较低的选择器在特异性较高的选择器之后重写
     'media-feature-name-no-vendor-prefix': null, // 不允许媒体功能名称使用供应商前缀
-    'selector-pseudo-element-no-unknown': [true, { ignorePseudoElements: ['v-deep'] }], // 禁止未知的伪类选择器
+    'selector-pseudo-element-no-unknown': true, // 禁止未知的伪元素选择器
     'function-no-unknown': [
       true,
       {
-        ignoreFunctions: ['constant', 'env', 'fade-out', '-', 'nth', 'v-bind'],
+        ignoreFunctions: ['constant', 'env', 'fade-out', '-', 'nth'],
       },
     ], // 禁用未知的函数
     'font-family-no-missing-generic-family-keyword': [
@@ -93,7 +89,7 @@ const config = {
     'selector-pseudo-class-no-unknown': [
       true,
       {
-        ignorePseudoClasses: ['global', 'deep'],
+        ignorePseudoClasses: ['global'],
       },
     ], // 不允许未知的伪类选择器
     'no-empty-source': null, // 允许空源
@@ -103,10 +99,6 @@ const config = {
   ignoreFiles: ['node_modules/**/*', 'dist/**/*', 'dist-electron/**/*', 'release/**/*', 'coverage/**/*', '*.css'],
 
   overrides: [
-    {
-      files: ['**/*.vue'],
-      customSyntax: 'postcss-html',
-    },
     {
       files: ['**/*.scss'],
       customSyntax: 'postcss-scss',

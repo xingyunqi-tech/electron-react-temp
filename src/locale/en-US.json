@@ -1,4 +1,13 @@
 {
+  "login": {
+    "title": "Sign In",
+    "phonePlaceholder": "Please enter phone number",
+    "phoneInvalid": "Please enter a valid phone number",
+    "passwordPlaceholder": "Please enter password",
+    "loginBtn": "Sign In",
+    "loginSuccess": "Login successful",
+    "loginFailed": "Login failed, please check your phone number and password"
+  },
   "layout": {
     "systemTitle": "Management System",
     "profile": "Profile",

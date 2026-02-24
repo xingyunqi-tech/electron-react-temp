@@ -1,34 +1,55 @@
-import { createI18n } from 'vue-i18n';
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
 import { DEFAULT_LOCALE } from '@/constants/system';
 import type { LocaleKey } from '@/interface/system';
+import antdZhCN from 'antd/locale/zh_CN';
+import antdEnUS from 'antd/locale/en_US';
+import type { Locale } from 'antd/es/locale';
 
-// 导入语言包
 import zhCN from '@/locale/zh-CN.json';
 import enUS from '@/locale/en-US.json';
 
 /**
- * vue-i18n 语言包配置
+ * antd 语言包配置
  */
-const messages = {
-  'zh-CN': zhCN,
-  'en-US': enUS,
+const antdLocales: Record<string, Locale> = {
+  'zh-CN': antdZhCN,
+  'en-US': antdEnUS,
 };
 
 /**
- * 创建 i18n 实例
+ * 根据语言代码获取对应的 Ant Design 语言包
  */
-export const i18n = createI18n({
-  legacy: false, // 使用Composition API模式
-  locale: DEFAULT_LOCALE, // 默认语言
-  fallbackLocale: 'zh-CN', // 回退语言
-  messages,
-  globalInjection: true, // 全局注入$t函数
-});
+export const getAntdLocales = (locale: LocaleKey): Locale => {
+  return antdLocales[locale] || antdLocales[DEFAULT_LOCALE];
+};
 
 /**
- * 导出一个便捷函数
+ * i18next 语言包配置
  */
-export const t = i18n.global.t;
+const resources = {
+  'zh-CN': { translation: zhCN },
+  'en-US': { translation: enUS },
+};
+
+/**
+ * 初始化 i18next
+ */
+i18n.use(initReactI18next).init({
+  resources,
+  lng: DEFAULT_LOCALE,
+  fallbackLng: DEFAULT_LOCALE,
+  interpolation: {
+    escapeValue: false,
+  },
+});
+
+export default i18n;
+
+/**
+ * 便捷翻译函数
+ */
+export const t = i18n.t.bind(i18n);
 
 /**
  * 动态加载语言包
@@ -45,11 +66,8 @@ export const loadLocaleMessages = async (locale: LocaleKey) => {
 
     const messages = await response.json();
 
-    // 设置语言包到 vue-i18n
-    i18n.global.setLocaleMessage(locale, messages);
-
-    // 确保当前语言也更新
-    i18n.global.locale.value = locale;
+    i18n.addResourceBundle(locale, 'translation', messages, true, true);
+    i18n.changeLanguage(locale);
 
     return true;
   } catch (error) {

@@ -1,6 +1,15 @@
 {
+  "login": {
+    "title": "登录账号",
+    "phonePlaceholder": "请输入手机号",
+    "phoneInvalid": "请输入正确的手机号",
+    "passwordPlaceholder": "请输入密码",
+    "loginBtn": "立即登录",
+    "loginSuccess": "登录成功",
+    "loginFailed": "登录失败，请检查手机号和密码"
+  },
   "layout": {
-    "systemTitle": "生命科学学院\n实验教学示范中心管理平台",
+    "systemTitle": "管理系统",
     "profile": "个人中心",
     "settings": "系统设置",
     "logout": "退出登录",

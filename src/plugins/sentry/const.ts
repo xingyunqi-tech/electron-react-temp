@@ -8,7 +8,6 @@
  * Sentry 配置常量
  */
 export const SENTRY_CONFIG = {
-  // 基础配置（通过环境变量 VITE_ENABLE_SENTRY 控制启用）
   DSN: 'https://857344c2ec1086fd0f81e65297f369a5@o4506822939508736.ingest.us.sentry.io/4510032619962368',
   ENVIRONMENT: import.meta.env.MODE || 'development',
   RELEASE: '1.0.0',
@@ -69,10 +68,6 @@ export const SENTRY_SECURITY_CONFIG = {
     'Script error',
     'UnhandledPromiseRejectionWarning',
   ] as (string | RegExp)[],
-  allowUrls: [
-    // 只允许来自当前域名的错误
-    window.location.origin,
-  ] as (string | RegExp)[],
   denyUrls: [
     // 阻止来自浏览器扩展的错误
     /extensions\//i,
@@ -132,6 +127,7 @@ export const getDefaultSentryConfig = (): Required<SentryConfig> => ({
   ...(import.meta.env.PROD ? SENTRY_CONFIG.PRODUCTION : SENTRY_CONFIG.DEVELOPMENT),
   ...SENTRY_FEATURE_CONFIG,
   ...SENTRY_SECURITY_CONFIG,
+  allowUrls: [window.location.origin],
 });
 
 /**

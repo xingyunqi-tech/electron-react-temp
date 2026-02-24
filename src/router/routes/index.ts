@@ -1,3 +1,3 @@
 export { baseRoutes } from './base';
 export { commonRoutes } from './common';
-export { asyncRoutes } from './async';
+export { asyncRoutes, asyncRouteMetas } from './async';

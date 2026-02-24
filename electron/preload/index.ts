@@ -1,26 +1,48 @@
 import { ipcRenderer, contextBridge } from 'electron';
 
-// --------- Expose some API to the Renderer process ---------
-contextBridge.exposeInMainWorld('ipcRenderer', {
-  on(...args: Parameters<typeof ipcRenderer.on>) {
-    const [channel, listener] = args;
-    return ipcRenderer.on(channel, (event, ...args) => listener(event, ...args));
-  },
-  off(...args: Parameters<typeof ipcRenderer.off>) {
-    const [channel, ...omit] = args;
-    return ipcRenderer.off(channel, ...omit);
-  },
-  send(...args: Parameters<typeof ipcRenderer.send>) {
-    const [channel, ...omit] = args;
-    return ipcRenderer.send(channel, ...omit);
-  },
-  invoke(...args: Parameters<typeof ipcRenderer.invoke>) {
-    const [channel, ...omit] = args;
-    return ipcRenderer.invoke(channel, ...omit);
-  },
+// --------- IPC Channel Whitelist ---------
+// 仅允许白名单内的 channel 通信，防止渲染进程任意调用主进程 API
+// 新增 channel 时请在此处注册
+const ALLOWED_SEND_CHANNELS: string[] = [];
+const ALLOWED_INVOKE_CHANNELS: string[] = [];
+const ALLOWED_ON_CHANNELS: string[] = [];
 
-  // You can expose other APTs you need here.
-  // ...
+// --------- Expose safe API to the Renderer process ---------
+// 保存包装后的 listener 引用，确保 on/off 使用同一函数引用
+const listenerMap = new WeakMap<(...args: any[]) => void, (...args: any[]) => void>();
+
+contextBridge.exposeInMainWorld('ipcRenderer', {
+  on(channel: string, listener: (...args: any[]) => void) {
+    if (!ALLOWED_ON_CHANNELS.includes(channel)) {
+      console.warn(`[preload] Blocked ipcRenderer.on for channel: ${channel}`);
+      return;
+    }
+    const wrapped = (_event: Electron.IpcRendererEvent, ...args: any[]) => listener(...args);
+    listenerMap.set(listener, wrapped);
+    ipcRenderer.on(channel, wrapped);
+  },
+  off(channel: string, listener: (...args: any[]) => void) {
+    if (!ALLOWED_ON_CHANNELS.includes(channel)) return;
+    const wrapped = listenerMap.get(listener);
+    if (wrapped) {
+      ipcRenderer.off(channel, wrapped);
+      listenerMap.delete(listener);
+    }
+  },
+  send(channel: string, ...args: unknown[]) {
+    if (!ALLOWED_SEND_CHANNELS.includes(channel)) {
+      console.warn(`[preload] Blocked ipcRenderer.send for channel: ${channel}`);
+      return;
+    }
+    ipcRenderer.send(channel, ...args);
+  },
+  invoke(channel: string, ...args: unknown[]) {
+    if (!ALLOWED_INVOKE_CHANNELS.includes(channel)) {
+      console.warn(`[preload] Blocked ipcRenderer.invoke for channel: ${channel}`);
+      return Promise.reject(new Error(`IPC channel "${channel}" is not allowed`));
+    }
+    return ipcRenderer.invoke(channel, ...args);
+  },
 });
 
 // --------- Preload scripts loading ---------
@@ -57,7 +79,7 @@ const safeDOM = {
  * https://projects.lukehaas.me/css-loaders
  * https://matejkustec.github.io/SpinThatShit
  */
-function useLoading() {
+function createLoading() {
   const className = `loaders-css__square-spin`;
   const styleContent = `
 @keyframes square-spin {
@@ -108,12 +130,13 @@ function useLoading() {
 
 // ----------------------------------------------------------------------
 
-const { appendLoading, removeLoading } = useLoading();
+const { appendLoading, removeLoading } = createLoading();
 domReady().then(appendLoading);
 
-window.onmessage = ev => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-  ev.data.payload === 'removeLoading' && removeLoading();
-};
+window.addEventListener('message', ev => {
+  if (ev.source === window && ev.data?.payload === 'removeLoading') {
+    removeLoading();
+  }
+});
 
 setTimeout(removeLoading, 4999);

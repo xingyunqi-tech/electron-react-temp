@@ -1,0 +1,12 @@
+.cardSkeleton {
+  display: grid;
+  gap: 20px;
+  padding: 20px;
+}
+
+.cardSkeletonItem {
+  padding: 20px;
+  border: 1px solid var(--colorBorderSecondary);
+  border-radius: 8px;
+  background: var(--colorBgContainer);
+}

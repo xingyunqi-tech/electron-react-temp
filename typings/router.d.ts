@@ -1,6 +1,5 @@
-import 'vue-router';
 import type { SkeletonConfig } from '@/interface/skeleton';
-import type { LayoutVisible, HeaderVisible, LogoConfig, MenuItem } from '@/layout/useLayoutContext';
+import type { LayoutVisible, HeaderVisible, LogoConfig, MenuItem } from '@/layout/LayoutContext';
 
 /**
  * Layout 配置类型
@@ -17,26 +16,17 @@ export interface LayoutConfig {
 }
 
 /**
- * 扩展 Vue Router 的 RouteMeta
- *
- * 为路由元信息添加类型定义，支持：
- * - 页面标题、角色权限、认证要求
- * - 骨架屏配置（类型定义在 @/interface/skeleton 中）
- * - Layout 配置（控制布局、头部、Logo 等）
+ * 路由元信息
  */
-declare module 'vue-router' {
-  interface RouteMeta {
-    /** 页面标题 */
-    title?: string;
-    /** 角色权限 */
-    roles?: string[];
-    /** 是否需要认证 */
-    requiresAuth?: boolean;
-    /** 骨架屏配置 */
-    skeleton?: SkeletonConfig;
-    /** Layout 配置 */
-    layout?: LayoutConfig;
-  }
+export interface RouteMeta {
+  /** 页面标题 */
+  title?: string;
+  /** 角色权限 */
+  roles?: string[];
+  /** 是否需要认证 */
+  requiresAuth?: boolean;
+  /** 骨架屏配置 */
+  skeleton?: SkeletonConfig;
+  /** Layout 配置 */
+  layout?: LayoutConfig;
 }
-
-export {};

@@ -7,7 +7,7 @@
 ## 🛠️ 测试技术栈
 
 - **测试框架**: [Vitest](https://vitest.dev/) - 快速的 Vite 原生测试框架
-- **Vue测试工具**: [@vue/test-utils](https://test-utils.vuejs.org/) - Vue 3 官方测试工具
+- **React 测试工具**: [@testing-library/react](https://testing-library.com/docs/react-testing-library/intro/) - React 组件测试工具
 - **测试环境**: [jsdom](https://github.com/jsdom/jsdom) - 浏览器环境模拟
 - **覆盖率工具**: [@vitest/coverage-v8](https://vitest.dev/guide/coverage.html) - V8 覆盖率报告
 - **UI界面**: [@vitest/ui](https://vitest.dev/guide/ui.html) - 可视化测试界面
@@ -92,36 +92,40 @@ describe('HttpClient', () => {
 ```
 
 ### 2. Store 状态管理测试
-测试 Pinia Store 的状态变化、异步操作和持久化。
+测试 Redux Toolkit Store 的状态变化、异步操作和持久化。
 
 ```typescript
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { setActivePinia, createPinia } from 'pinia';
-import { useUserStore } from '@/store/modules/user';
+import { configureStore } from '@reduxjs/toolkit';
+import userReducer, { teacherLoginAction } from '@/store/modules/user';
 
-describe('useUserStore', () => {
+describe('userSlice', () => {
+  let store: ReturnType<typeof configureStore>;
+
   beforeEach(() => {
-    setActivePinia(createPinia());
+    store = configureStore({ reducer: { user: userReducer } });
     vi.clearAllMocks();
   });
 
   it('应该能够成功登录', async () => {
-    const store = useUserStore();
     const mockToken = 'mock-token-123';
 
-    vi.mocked(LoginService.login).mockResolvedValue({
-      code: 0,
-      message: 'success',
-      result: { token: mockToken },
+    vi.mocked(teacherLogin).mockResolvedValue({
+      token: mockToken,
+      userId: 1,
+      username: 'testuser',
+      realName: 'Test',
+      role: 'USER',
     });
 
-    const result = await store.loginAction({
+    await store.dispatch(teacherLoginAction({
       username: 'testuser',
       password: 'password123',
-    });
+    }));
 
-    expect(store.token).toBe(mockToken);
-    expect(result).toBe(mockToken);
+    const state = store.getState().user;
+    expect(state.username).toBe('testuser');
+    expect(state.userType).toBe('teacher');
   });
 });
 ```
@@ -131,21 +135,37 @@ describe('useUserStore', () => {
 
 ```typescript
 import { describe, it, expect } from 'vitest';
-import { formatDate } from '@/utils/datetime';
+import { os } from '@/utils/os';
 
-describe('formatDate', () => {
-  it('应该正确格式化完整日期时间', () => {
-    const date = new Date('2024-01-15 13:45:30');
-    const result = formatDate(date, 'yyyy-MM-dd hh:mm:ss');
-    expect(result).toBe('2024-01-15 13:45:30');
-  });
+const UA = {
+  chrome89: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36',
+  chrome88: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36',
+  chrome120: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+  androidMobile: 'Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36',
+  iPhone: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
+  iPad: 'Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
+  safari: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15',
+  firefox: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:120.0) Gecko/20100101 Firefox/120.0',
+};
 
-  it('应该支持单字符月份格式', () => {
-    const date = new Date('2024-01-05');
-    const result = formatDate(date, 'yyyy-M-d');
-    expect(result).toMatch(/2024-1-5/);
+describe('isHighChrome', () => {
+    it('Chrome 89 应返回 true', () => {
+      expect(os(UA.chrome89).isHighChrome).toBe(true);
+    });
+
+    it('Chrome 120 应返回 true', () => {
+      expect(os(UA.chrome120).isHighChrome).toBe(true);
+    });
+
+    it('Chrome 88 应返回 false', () => {
+      expect(os(UA.chrome88).isHighChrome).toBe(false);
+    });
+
+    it('非 Chrome 浏览器应返回 false', () => {
+      expect(os(UA.safari).isHighChrome).toBe(false);
+      expect(os(UA.firefox).isHighChrome).toBe(false);
+    });
   });
-});
 ```
 
 ## 📊 覆盖率配置
@@ -234,27 +254,23 @@ beforeEach(async () => {
 ### 2. 异步测试
 ```typescript
 it('应该处理异步操作', async () => {
-  const store = useUserStore();
+  const store = configureStore({ reducer: { user: userReducer } });
 
   // 触发异步操作
-  await store.loginAction({ username: 'test', password: '123' });
+  await store.dispatch(teacherLoginAction({ username: 'test', password: '123' }));
 
   // 验证结果
-  expect(store.token).toBeDefined();
+  const state = store.getState().user;
+  expect(state.username).toBe('test');
 });
 ```
 
-### 3. Pinia Store 测试
+### 3. Redux Store 测试
 ```typescript
-// Setup Syntax Store 不支持 $reset
-// 使用手动重置
+// 每个测试用例使用独立的 store 实例
 beforeEach(() => {
-  setActivePinia(createPinia());
-  const store = useUserStore();
-
-  // 手动重置状态
-  store.setTokenValue('');
-  store.setId('');
+  store = configureStore({ reducer: { user: userReducer } });
+  vi.clearAllMocks();
 });
 ```
 
@@ -302,8 +318,8 @@ pnpm add -D @playwright/test
 ## 📚 参考资源
 
 - [Vitest 官方文档](https://vitest.dev/)
-- [Vue Test Utils 文档](https://test-utils.vuejs.org/)
-- [Vue 3 测试指南](https://vuejs.org/guide/scaling-up/testing.html)
+- [React Testing Library 文档](https://testing-library.com/docs/react-testing-library/intro/)
+- [Redux Toolkit 测试指南](https://redux.js.org/usage/writing-tests)
 - [测试最佳实践](https://github.com/goldbergyoni/javascript-testing-best-practices)
 
 ---

@@ -1,10 +1,10 @@
 /**
  * 骨架屏相关类型定义
  *
- * 基于 Element Plus el-skeleton 组件的骨架屏配置
+ * 基于 Ant Design Skeleton 组件的骨架屏配置
  */
 
-import type { Component } from 'vue';
+import type { ComponentType } from 'react';
 
 /**
  * 页面级骨架屏类型
@@ -85,4 +85,4 @@ export interface TableSkeletonProps {
 export type SkeletonConfig =
   | { type: 'card'; props?: CardSkeletonProps }
   | { type: 'table'; props?: TableSkeletonProps }
-  | { component: Component; props?: Record<string, any> };
+  | { component: ComponentType<any>; props?: Record<string, any> };

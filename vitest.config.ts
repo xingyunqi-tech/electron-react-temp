@@ -1,9 +1,9 @@
 import { defineConfig } from 'vitest/config';
-import vue from '@vitejs/plugin-vue';
+import react from '@vitejs/plugin-react';
 import { fileURLToPath } from 'node:url';
 
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [react()],
   test: {
     // 测试环境配置
     environment: 'jsdom',
@@ -19,7 +19,7 @@ export default defineConfig({
     server: {
       deps: {
         // 内联以避免CSS导入问题
-        inline: ['element-plus'],
+        inline: ['antd'],
       },
     },
     // 测试覆盖率配置

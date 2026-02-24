@@ -1,0 +1,72 @@
+.loginContainer {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background: url('@/assets/images/login/background.png') no-repeat center;
+  background-size: cover;
+}
+
+.logoHeader {
+  display: flex;
+  position: absolute;
+  z-index: 10;
+  top: 20px;
+  left: 20px;
+  align-items: center;
+  gap: 12px;
+}
+
+.logoImage {
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+}
+
+.logoTextTitle {
+  margin: 0;
+  color: var(--colorTextHeading);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.32;
+}
+
+.mainContent {
+  display: flex;
+  position: absolute;
+  z-index: 10;
+  top: 50%;
+  right: 100px;
+  transform: translateY(-50%);
+  border-radius: 20px;
+  background: rgb(255 255 255 / 0.8);
+  box-shadow: 0 20px 40px rgb(0 0 0 / 0.1);
+  backdrop-filter: blur(16.2px);
+}
+
+.formSection {
+  display: flex;
+  flex-direction: column;
+  min-width: 440px;
+  padding: 50px 60px;
+}
+
+.formTitle {
+  margin: 0 0 36px;
+  color: var(--colorTextHeading);
+  font-size: 40px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.loginBtn {
+  height: 46px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--colorPrimary), var(--colorPrimaryHover));
+  font-size: 16px;
+  font-weight: 600;
+
+  &:hover {
+    background: linear-gradient(135deg, var(--colorPrimaryHover), var(--colorPrimary));
+  }
+}

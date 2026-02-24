@@ -131,28 +131,30 @@ pnpm api:watch
 
 ### 2. 基础使用
 
-```vue
-<script setup lang="ts">
+```tsx
 import { postAuthLogin, getAuthUserInfo } from '@/api';
 import type { LoginRequest } from '@/api';
 
-// ✅ 类型安全的登录
-const handleLogin = async () => {
-  const loginData: LoginRequest = {
-    username: 'admin',
-    password: '123456',
+const LoginPage: React.FC = () => {
+  // ✅ 类型安全的登录
+  const handleLogin = async () => {
+    const loginData: LoginRequest = {
+      username: 'admin',
+      password: '123456',
+    };
+
+    const response = await postAuthLogin(loginData);
+    console.log('Token:', response.token); // ✅ 自动类型推导
   };
 
-  const response = await postAuthLogin(loginData);
-  console.log('Token:', response.token); // ✅ 自动类型推导
-};
+  // ✅ 获取用户信息
+  const getUserInfo = async () => {
+    const userInfo = await getAuthUserInfo();
+    console.log('User:', userInfo); // ✅ UserInfo 类型
+  };
 
-// ✅ 获取用户信息
-const getUserInfo = async () => {
-  const userInfo = await getAuthUserInfo();
-  console.log('User:', userInfo); // ✅ UserInfo 类型
+  return <button onClick={handleLogin}>登录</button>;
 };
-</script>
 ```
 
 ---
@@ -343,7 +345,7 @@ export type InstanceType = keyof typeof instances;
 - ⚫ **服务器错误**（SERVER）：500+ 服务器内部错误
 
 **自动处理：**
-- ✅ 自动显示错误提示（Element Plus Message/Notification）
+- ✅ 自动显示错误提示（Ant Design message/notification）
 - ✅ 认证错误自动清除 Token 并跳转登录页
 - ✅ 服务器错误使用通知而非消息（更醒目）
 - ✅ 记录详细错误日志到控制台
@@ -450,10 +452,10 @@ await customMutator({
 ```typescript
 import { clearPendingRequests } from '@/api/core/mutator';
 
-// 路由切换时清理所有待处理的请求
-router.beforeEach(() => {
+// 路由切换时清理所有待处理的请求（在路由守卫或 useEffect 中调用）
+useEffect(() => {
   clearPendingRequests();
-});
+}, [location.pathname]);
 ```
 
 ### 4. 请求取消 (Request Cancellation)
@@ -516,74 +518,81 @@ const response = await defaultHttp.get('/api/data', {
 
 ---
 
-## 🎨 Pinia Store 状态管理
+## 🎨 Redux Toolkit 状态管理
 
-本项目使用 **Pinia** 进行状态管理，配合 Orval 自动生成的 API 函数。
+本项目使用 **Redux Toolkit** 进行状态管理，配合 Orval 自动生成的 API 函数。
 
 ### 使用 Store 管理状态
 
-```vue
-<script setup lang="ts">
-import { useUserStore } from '@/store/modules/user';
-import { computed } from 'vue';
+```tsx
+import { useAppSelector, useAppDispatch } from '@/store';
+import { teacherLoginAction } from '@/store/modules/user';
 
-const userStore = useUserStore();
+const LoginPage: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const { username, realName } = useAppSelector((state) => state.user);
 
-// 获取状态
-const userInfo = computed(() => userStore.userInfo);
-const isLoading = computed(() => userStore.loading);
+  // 调用 async thunk
+  const handleLogin = async () => {
+    try {
+      await dispatch(teacherLoginAction({
+        username: 'admin',
+        password: '123456',
+      })).unwrap();
+      console.log('登录成功');
+    } catch (error) {
+      console.error('登录失败', error);
+    }
+  };
 
-// 调用 action
-const handleLogin = async () => {
-  try {
-    await userStore.login({
-      username: 'admin',
-      password: '123456',
-    });
-    console.log('登录成功');
-  } catch (error) {
-    console.error('登录失败', error);
-  }
+  return (
+    <div>
+      <div>{realName || username}</div>
+      <button onClick={handleLogin}>登录</button>
+    </div>
+  );
 };
-</script>
-
-<template>
-  <div v-if="isLoading">加载中...</div>
-  <div v-else>{{ userInfo?.username }}</div>
-</template>
 ```
 
 ### Store 设计模式
 
 ```typescript
 // src/store/modules/user.ts
-import { defineStore } from 'pinia';
-import { postAuthLogin, getAuthUserInfo } from '@/api';
-import type { LoginRequest, UserInfo } from '@/api';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { teacherLogin } from '@/api';
+import type { LoginRequest } from '@/api';
 
-export const useUserStore = defineStore('user', () => {
-  const userInfo = ref<UserInfo | null>(null);
-  const loading = ref(false);
+export const teacherLoginAction = createAsyncThunk(
+  'user/teacherLogin',
+  async (credentials: LoginRequest) => {
+    const loginData = await teacherLogin({
+      username: credentials.username.trim(),
+      password: credentials.password,
+    });
+    if (!loginData?.token) throw new Error('登录失败：未获取到token');
+    storage('localStorage').set('token', loginData.token);
+    return loginData;
+  }
+);
 
-  const login = async (data: LoginRequest) => {
-    loading.value = true;
-    try {
-      const response = await postAuthLogin(data);
-      // 处理登录逻辑
-      return response;
-    } finally {
-      loading.value = false;
-    }
-  };
-
-  return { userInfo, loading, login };
+const userSlice = createSlice({
+  name: 'user',
+  initialState,
+  reducers: { /* ... */ },
+  extraReducers: (builder) => {
+    builder.addCase(teacherLoginAction.fulfilled, (state, action) => {
+      state.username = action.payload.username ?? '';
+      state.realName = action.payload.realName ?? '';
+      state.userType = 'teacher';
+    });
+  },
 });
 ```
 
 **优势：**
 - ✅ 完整的 TypeScript 支持
-- ✅ Composition API 风格，易于理解
-- ✅ 响应式状态管理
+- ✅ createAsyncThunk 处理异步逻辑
+- ✅ Immer 驱动的不可变状态更新
 - ✅ 完全类型安全（从 Orval 生成的类型）
 
 ---
@@ -701,15 +710,16 @@ try {
 }
 ```
 
-### 5. 使用 Pinia Store 管理状态
+### 5. 使用 Redux Store 管理状态
 
 ```typescript
-// ✅ 推荐：使用 Pinia Store 管理状态
-import { useUserStore } from '@/store/modules/user';
+// ✅ 推荐：使用 Redux Store 管理状态
+import { useAppSelector, useAppDispatch } from '@/store';
+import { getInfoAction } from '@/store/modules/user';
 
-const userStore = useUserStore();
-await userStore.fetchUserInfo();
-const userInfo = userStore.userInfo;
+const dispatch = useAppDispatch();
+await dispatch(getInfoAction()).unwrap();
+const { realName, email } = useAppSelector((state) => state.user);
 
 // ⚠️ 可选：直接调用 API 函数（简单场景）
 import { getAuthUserInfo } from '@/api';
@@ -773,7 +783,7 @@ pnpm build
 5. ✅ **请求取消** - 支持主动取消
 6. ✅ **自动重试** - 网络错误自动重试
 7. ✅ **灵活定制** - 覆盖或新增任意接口
-8. ✅ **Pinia Store 集成** - 响应式状态管理
+8. ✅ **Redux Toolkit 集成** - 集中式状态管理
 9. ✅ **统一错误处理** - 自动显示提示、跳转登录
 10. ✅ **团队协作** - 统一规范，减少沟通成本
 

@@ -30,117 +30,109 @@
 export * from './generated/model';
 
 // 2. 自动生成的 API 函数 (只导出函数,不导出类型)
-export { teacherLogin, studentLogin } from './generated/auth/auth';
+export {
+  createAddress,
+  getAddresses,
+  getDefaultAddress,
+  getAddress,
+  updateAddress,
+  deleteAddress,
+  setDefaultAddress,
+} from './generated/addresses/addresses';
 
 export {
-  getAwardRecordById,
-  updateAwardRecord,
-  deleteAwardRecord,
-  queryAwardRecords,
-  createAwardRecord,
-  uploadCertificate,
-  importAwards,
-  parseExcel,
-  confirmImport,
-  exportAwardRecords,
-  uploadCertificates,
-  matchCertificates,
-  downloadCertificates,
-  confirmCertificateUpload,
-  batchDeleteAwardRecords,
-  getAwardRecordStatistics,
-  downloadImportTemplate,
-} from './generated/award-records/award-records';
+  alipayControllerCreateMobilePaymentV1,
+  alipayControllerCreateWebPaymentV1,
+  alipayControllerQueryOrderV1,
+  alipayControllerRefundV1,
+  alipayControllerCloseOrderV1,
+  alipayControllerNotifyV1,
+} from './generated/alipay/alipay';
+
+export { simpleHealthCheck } from './generated/api/api';
 
 export {
-  getAwardById,
-  updateAward,
-  deleteAward,
-  createAward,
-  listAwardsByCompetition,
-} from './generated/awards/awards';
+  loginWithEmail,
+  registerWithEmail,
+  confirmEmail,
+  confirmNewEmail,
+  forgotPassword,
+  resetPassword,
+  getCurrentUser,
+  updateCurrentUser,
+  deleteCurrentUser,
+  refreshToken,
+  logout,
+  sendSmsCode,
+  loginWithPhone,
+  loginWithSms,
+  registerWithPhone,
+  resetPasswordByPhone,
+  changePassword,
+  loginWithWechat,
+} from './generated/auth/auth';
+
+export { getAppInfo } from './generated/default/default';
 
 export {
-  uploadAttachment1,
-  downloadAttachment1,
-  listCompetitionAttachmentsByCompetition,
-} from './generated/competition-attachments/competition-attachments';
+  createFavorite,
+  getFavorites,
+  checkFavorite,
+  toggleFavorite,
+  deleteFavorite,
+} from './generated/favorites/favorites';
 
-export {
-  getNewsById,
-  updateNews,
-  deleteNews,
-  createNews,
-  pageNews,
-  listCompetitionNewsByCompetition,
-} from './generated/competition-news/competition-news';
-
-export {
-  getCompetitionById,
-  updateCompetition,
-  deleteCompetition,
-  publishCompetition,
-  queryCompetitions,
-  createCompetition,
-  getPublishedCompetitions,
-  batchDeleteCompetitions,
-} from './generated/competitions/competitions';
+export { createFeedback, getFeedbacks, getFeedback } from './generated/feedbacks/feedbacks';
 
 export { uploadFile } from './generated/files/files';
 
-export {
-  uploadAttachment,
-  downloadAttachment,
-  listRegistrationAttachmentsByRegistration,
-} from './generated/registration-attachments/registration-attachments';
+export { healthCheck, livenessProbe, readinessProbe } from './generated/health/health';
+
+export { prometheusControllerIndex } from './generated/metrics/metrics';
 
 export {
-  reviewRegistration,
-  batchReviewRegistrations,
-  exportRegistrations,
-  downloadAttachments,
-  queryRegistrations,
-  getAuditLogs,
-  getRegistrationById,
-  getRegistrationNavigation,
-  getRegistrationHistory,
-} from './generated/registrations/registrations';
+  getNotifications,
+  getUnreadCount,
+  getNotificationSettings,
+  updateNotificationSettings,
+  getNotification,
+  deleteNotification,
+  markAllNotificationsAsRead,
+  markNotificationAsRead,
+} from './generated/notifications/notifications';
+
+export { createOrder, getOrders, getOrder, cancelOrder } from './generated/orders/orders';
 
 export {
-  getStudentSubmissionById,
-  updateStudentSubmission,
-  deleteStudentSubmission,
-  getRegistrationDetail,
-  updateRegistration,
-  cancelRegistration,
-  queryStudentSubmissions,
-  createStudentSubmission,
-  getMyRegistrations,
-  createRegistration,
-  getStudentSubmissionByRegistration,
-  listCompetitions,
-  getCompetitionDetail,
-} from './generated/student/student';
+  getProvinces,
+  getCities,
+  getDistricts,
+  getRegionByCode,
+  getRegionTree,
+  queryRegions,
+} from './generated/regions/regions';
 
 export {
-  getStudentById,
-  updateStudent,
-  deleteStudent,
-  queryStudents,
-  createStudent,
-  batchDeleteStudents,
-} from './generated/students/students';
+  createShare,
+  getShares,
+  getShareByCode,
+  getShareById,
+  deleteShare,
+  getShareStats,
+  trackShare,
+  getWeChatConfig,
+  getAlipayConfig,
+} from './generated/shares/shares';
+
+export { createUser, getUsers, getUser, updateUser, deleteUser } from './generated/users/users';
 
 export {
-  getTeacherById,
-  updateTeacher,
-  deleteTeacher,
-  queryTeachers,
-  createTeacher,
-  batchDeleteTeachers,
-} from './generated/teachers/teachers';
-
-export { validateStudent } from './generated/validations/validations';
+  wechatPayControllerCreateJsapiPaymentV1,
+  wechatPayControllerCreateAppPaymentV1,
+  wechatPayControllerQueryOrderV1,
+  wechatPayControllerRefundV1,
+  wechatPayControllerNotifyV1,
+} from './generated/wechat/wechat';
 
 // 3. 自定义工具函数 (自动扫描 custom 目录)
 export * from './custom/external';

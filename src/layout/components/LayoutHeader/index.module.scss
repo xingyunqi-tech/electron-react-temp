@@ -1,0 +1,40 @@
+.layoutHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  padding: 0 20px;
+  background-color: #131316;
+  color: rgb(255 255 255 / 0.85);
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.divider {
+  width: 1px;
+  height: 32px;
+  margin: 0 4px;
+  background-color: rgb(255 255 255 / 0.2);
+}
+
+.headerCenter {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  padding: 0 24px;
+}
+
+.menuNav {
+  display: flex;
+  align-items: center;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}

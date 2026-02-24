@@ -1,0 +1,90 @@
+.fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 48px 24px;
+  background: var(--colorBgContainer);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 480px;
+  padding: 40px;
+  border-radius: 12px;
+  background: var(--colorBgElevated);
+  box-shadow: 0 4px 24px rgb(0 0 0 / 0.08);
+  text-align: center;
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  margin-bottom: 24px;
+  border-radius: 50%;
+  background: var(--colorErrorBg);
+  color: var(--colorError);
+}
+
+.title {
+  margin: 0 0 12px;
+  color: var(--colorTextHeading);
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.message {
+  margin: 0 0 32px;
+  color: var(--colorTextSecondary);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.actions {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
+}
+
+.details {
+  width: 100%;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--colorBorderSecondary);
+  text-align: left;
+}
+
+.stackHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding: 8px 0;
+
+  span {
+    color: var(--colorTextSecondary);
+    font-size: 13px;
+    font-weight: 500;
+  }
+}
+
+.stack {
+  max-height: 240px;
+  padding: 16px;
+  overflow: auto;
+  border: 1px solid var(--colorBorderSecondary);
+  border-radius: 8px;
+  background: var(--colorFillAlter);
+  color: var(--colorTextSecondary);
+  font-family: 'SF Mono', Consolas, Monaco, 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.8;
+  word-break: break-all;
+  white-space: pre-wrap;
+}

@@ -1,7 +1,6 @@
 import path from 'node:path';
 import UnoCSS from 'unocss/vite';
-import vue from '@vitejs/plugin-vue';
-import vueJsx from '@vitejs/plugin-vue-jsx';
+import react from '@vitejs/plugin-react';
 import { rmSync } from 'node:fs';
 import { visualizer } from 'rollup-plugin-visualizer';
 import { defineConfig, loadEnv } from 'vite';
@@ -10,12 +9,9 @@ import electron from 'vite-plugin-electron';
 import renderer from 'vite-plugin-electron-renderer';
 import { devServer } from './config/devServer';
 import pkg from './package.json';
-import { VueMcp } from 'vite-plugin-vue-mcp';
 import AutoImport from 'unplugin-auto-import/vite';
 import Icons from 'unplugin-icons/vite';
 import IconsResolver from 'unplugin-icons/resolver';
-import Components from 'unplugin-vue-components/vite';
-import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
 import { codeInspectorPlugin } from 'code-inspector-plugin';
 import mkcert from 'vite-plugin-mkcert';
 import legacy from '@vitejs/plugin-legacy';
@@ -42,6 +38,11 @@ const modernLegacyPolyfills = [
   'core-js/es/promise/any',
 ];
 
+/**
+ * 生成插件
+ * @param mode - 模式
+ * @returns 插件
+ */
 function generatePlugins(mode: string): PluginOption[] {
   const isServe = mode === 'serve';
   const isBuild = mode === 'build';
@@ -49,29 +50,17 @@ function generatePlugins(mode: string): PluginOption[] {
 
   const plugins: PluginOption[] = [
     UnoCSS(),
-    vue(),
-    vueJsx(),
-    VueMcp(),
+    react(),
     AutoImport({
       resolvers: [
-        ElementPlusResolver(),
-        // 自动导入图标组件
         IconsResolver({
           prefix: 'Icon',
         }),
       ],
     }),
-    Components({
-      resolvers: [
-        ElementPlusResolver(),
-        // 自动注册图标组件
-        IconsResolver({
-          enabledCollections: ['ep'],
-        }),
-      ],
-    }),
     Icons({
       autoInstall: true,
+      compiler: 'jsx',
     }),
     codeInspectorPlugin({
       bundler: 'vite',
@@ -129,18 +118,17 @@ function generatePlugins(mode: string): PluginOption[] {
         additionalModernPolyfills: modernLegacyPolyfills,
       }),
       viteCompression({
-        verbose: true, // 是否在控制台输出压缩结果
-        disable: false, // 是否禁用压缩
-        threshold: 10240, // 体积大于阈值时才会被压缩，单位为 b，默认为 10kb
-        algorithm: 'gzip', // 压缩算法
-        ext: '.gz', // 生成的压缩包后缀
-        deleteOriginFile: false, // 是否删除原文件
+        verbose: true,
+        disable: false,
+        threshold: 10240,
+        algorithm: 'gzip',
+        ext: '.gz',
+        deleteOriginFile: false,
       }),
     );
 
     if (process.env.VITE_UPLOAD_TO_SENTRY) {
       plugins.push(
-        // 上传到sentry平台
         sentryVitePlugin({
           org: process.env.VITE_SENTRY_ORG,
           project: process.env.VITE_SENTRY_PROJECT,
@@ -151,7 +139,6 @@ function generatePlugins(mode: string): PluginOption[] {
     }
     if (process.env.VITE_ENABLE_ANALYZER) {
       plugins.push(
-        // 打包产物分析
         visualizer({
           title: 'Vite Bundle Visualizer',
           open: true,
@@ -173,9 +160,12 @@ function generatePlugins(mode: string): PluginOption[] {
 }
 
 export default ({ mode }: { mode: string }) => {
+  const isBuild = mode === 'build';
   process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
 
-  rmSync('dist-electron', { recursive: true, force: true });
+  if (isBuild) {
+    rmSync('dist-electron', { recursive: true, force: true });
+  }
 
   return defineConfig({
     /** 开发服务器配置 */
@@ -191,31 +181,41 @@ export default ({ mode }: { mode: string }) => {
     /** css配置 */
     css: {
       preprocessorOptions: {
+        /** 配置全局scss */
         scss: {
-          // 配置全局scss
           // additionalData: '@use "@/styles/index.scss" as *;',
         },
       },
-      devSourcemap: true, // 开发环境启用sourcemap
+      /** 开发环境启用sourcemap */
+      devSourcemap: true,
     },
     /** 构建配置 */
     build: {
-      sourcemap: true, // 生成 sourcemap
-      assetsInlineLimit: 4 * 1024, // 内联资源限制
-      outDir: 'dist', // 打包目录名称
-      assetsDir: 'static/assets', // 资源目录名称
-      cssCodeSplit: true, // CSS 代码分割
+      /** 生产环境开启sourcemap */
+      sourcemap: true,
+      /** 内联资源限制 */
+      assetsInlineLimit: 4 * 1024,
+      /** 打包目录名称 */
+      outDir: 'dist',
+      /** 资源目录名称 */
+      assetsDir: 'static/assets',
+      /** CSS开启代码分割 */
+      cssCodeSplit: true,
       rollupOptions: {
         output: {
-          experimentalMinChunkSize: 100 * 1024, // 最小拆分大小
+          /** 最小拆分大小 */
+          experimentalMinChunkSize: 100 * 1024,
+          /** 手动拆分chunks */
           manualChunks: {
             'utils-vendor': ['lodash-es', 'dayjs', 'axios'],
-            'vue-vendor': ['vue', 'vue-router', 'vue-i18n', 'pinia', 'pinia-plugin-persistedstate'],
+            'react-vendor': ['react', 'react-dom', 'react-router-dom', '@reduxjs/toolkit', 'react-redux'],
           },
-          entryFileNames: `static/js/[name].[hash].js`, // 入口文件名称
-          chunkFileNames: `static/js/[name].[hash].js`, // 分块文件名称
+          /** 入口文件名称 */
+          entryFileNames: `static/js/[name].[hash].js`,
+          /** 分块文件名称 */
+          chunkFileNames: `static/js/[name].[hash].js`,
+          /** 资源文件名称 */
           assetFileNames: ({ names }) => {
-            // 资源文件名称
             const fileName = names?.[0] ?? '';
             if (/\.(css)$/.test(fileName)) {
               return 'static/css/[name].[hash].[ext]';

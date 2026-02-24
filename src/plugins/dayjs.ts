@@ -12,4 +12,9 @@ dayjs.extend(utc);
 dayjs.extend(isoWeek);
 dayjs.extend(isToday);
 
+export const dayjsLocaleMap: Record<string, string> = {
+  'zh-CN': 'zh-cn',
+  'en-US': 'en',
+};
+
 export default dayjs;

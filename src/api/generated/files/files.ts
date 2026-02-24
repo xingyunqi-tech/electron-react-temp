@@ -7,24 +7,24 @@
  *  * 如需自定义接口，请在 src/api/custom/ 目录下创建覆盖文件
  *  *\/
  */
-import type { ApiResponseFileUploadDto, UploadFileBody, UploadFileParams } from '.././model';
+import type { FileResponseDto, UploadFileBody } from '.././model';
 
 import { customMutator } from '../../core/mutator';
 
 /**
- * 支持图片、文档、视频等多种文件类型，最大100MB
- * @summary 上传单个文件
+ * @summary 上传文件
  */
-export const uploadFile = (uploadFileBody: UploadFileBody, params?: UploadFileParams) => {
+export const uploadFile = (uploadFileBody: UploadFileBody) => {
   const formData = new FormData();
-  formData.append(`file`, uploadFileBody.file);
+  if (uploadFileBody.file !== undefined) {
+    formData.append(`file`, uploadFileBody.file);
+  }
 
-  return customMutator<ApiResponseFileUploadDto>({
-    url: `/api/files/upload`,
+  return customMutator<FileResponseDto>({
+    url: `/api/v1/files/upload`,
     method: 'POST',
     headers: { 'Content-Type': 'multipart/form-data' },
     data: formData,
-    params,
   });
 };
 export type UploadFileResult = NonNullable<Awaited<ReturnType<typeof uploadFile>>>;

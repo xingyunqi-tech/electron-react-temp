@@ -1,72 +1,94 @@
-import { defineStore } from 'pinia';
-import { ref } from 'vue';
-import type { RouteRecordRaw } from 'vue-router';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import type { RouteMeta } from '../../../typings/router';
+import { createSelector } from 'reselect';
+
+export const NAMESPACE = 'permission' as const;
 
 /**
- * 权限管理 Store
+ * 路由配置类型
  */
-export const usePermissionStore = defineStore('permission', () => {
-  // 状态
-  const routes = ref<RouteRecordRaw[]>([]);
-  const isRoutesGenerated = ref(false);
+export interface RouteConfig {
+  path: string;
+  meta?: RouteMeta;
+  children?: RouteConfig[];
+}
 
-  /**
-   * 根据角色过滤路由
-   */
-  const filterRoutesByRoles = (routes: RouteRecordRaw[], roles: string[]): RouteRecordRaw[] => {
-    const result: RouteRecordRaw[] = [];
+interface PermissionState {
+  routes: RouteConfig[];
+  isRoutesGenerated: boolean;
+}
 
-    routes.forEach(route => {
-      const routeCopy = { ...route };
+const initialState: PermissionState = {
+  routes: [],
+  isRoutesGenerated: false,
+};
 
-      if (hasRoutePermission(roles, routeCopy)) {
-        if (routeCopy.children) {
-          routeCopy.children = filterRoutesByRoles(routeCopy.children, roles);
-        }
-        result.push(routeCopy);
+/**
+ * 检查是否有路由访问权限
+ */
+const hasRoutePermission = (userRoles: string[], route: RouteConfig): boolean => {
+  const routeRoles = route.meta?.roles;
+  if (!routeRoles || routeRoles.length === 0) {
+    return true;
+  }
+  return userRoles.some(role => routeRoles.includes(role));
+};
+
+/**
+ * 根据角色过滤路由
+ */
+const filterRoutesByRoles = (routes: RouteConfig[], roles: string[]): RouteConfig[] => {
+  const result: RouteConfig[] = [];
+
+  routes.forEach(route => {
+    const routeCopy = { ...route };
+
+    if (hasRoutePermission(roles, routeCopy)) {
+      if (routeCopy.children) {
+        routeCopy.children = filterRoutesByRoles(routeCopy.children, roles);
       }
-    });
-
-    return result;
-  };
-
-  /**
-   * 检查是否有路由访问权限
-   */
-  const hasRoutePermission = (userRoles: string[], route: RouteRecordRaw): boolean => {
-    const routeRoles = route.meta?.roles as string[] | undefined;
-
-    // 路由未配置 roles，任何人都可访问
-    if (!routeRoles || routeRoles.length === 0) {
-      return true;
+      result.push(routeCopy);
     }
+  });
 
-    // 检查用户是否拥有路由要求的任一角色
-    return userRoles.some(role => routeRoles.includes(role));
-  };
+  return result;
+};
 
-  /**
-   * 生成可访问路由
-   */
-  const generateRoutes = (asyncRoutes: RouteRecordRaw[], roles: string[]): RouteRecordRaw[] => {
-    const accessedRoutes = filterRoutesByRoles(asyncRoutes, roles);
-    routes.value = accessedRoutes;
-    isRoutesGenerated.value = true;
-    return accessedRoutes;
-  };
-
-  /**
-   * 重置权限状态
-   */
-  const resetPermission = () => {
-    routes.value = [];
-    isRoutesGenerated.value = false;
-  };
-
-  return {
-    routes,
-    isRoutesGenerated,
-    generateRoutes,
-    resetPermission,
-  };
+const permissionSlice = createSlice({
+  name: NAMESPACE,
+  initialState,
+  reducers: {
+    /** 生成权限路由 */
+    generateRoutesAction(state, action: PayloadAction<{ asyncRoutes: RouteConfig[]; roles: string[] }>) {
+      const { asyncRoutes, roles } = action.payload;
+      state.routes = filterRoutesByRoles(asyncRoutes, roles);
+      state.isRoutesGenerated = true;
+    },
+    /** 重置权限路由 */
+    resetPermissionAction() {
+      return { ...initialState };
+    },
+  },
 });
+
+// ==================== Actions ====================
+
+export const { generateRoutesAction, resetPermissionAction } = permissionSlice.actions;
+
+// ==================== Selectors ====================
+
+/** permission状态 */
+export const permissionRootSelector = (state: { [NAMESPACE]: PermissionState }) => state[NAMESPACE];
+
+/** 路由权限 */
+export const permissionRoutesSelector = createSelector(permissionRootSelector, state => {
+  return state.routes;
+});
+/** 权限路由是否生成 */
+export const isRoutesGeneratedSelector = createSelector(permissionRootSelector, state => {
+  return state.isRoutesGenerated;
+});
+
+// ==================== Reducer ====================
+
+export default permissionSlice.reducer;

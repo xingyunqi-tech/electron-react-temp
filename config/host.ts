@@ -19,5 +19,5 @@ export const port = 4326;
 export const hostDict = {
   /** 本地服务 */
   LOCAL_SERVICE: 'localhost:3001',
-  API_SERVICE: 'ai-project-verification.zhihuishu.com',
+  API_SERVICE: 'localhost:3000',
 };

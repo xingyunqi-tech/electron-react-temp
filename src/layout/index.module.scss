@@ -1,0 +1,18 @@
+.layoutContainer {
+  display: grid;
+  grid-template: 'header header' auto 'nav main' 1fr / auto 1fr;
+  height: 100vh;
+}
+
+.areaHeader {
+  grid-area: header;
+}
+
+.areaNav {
+  grid-area: nav;
+}
+
+.areaMain {
+  grid-area: main;
+  overflow: auto;
+}

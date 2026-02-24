@@ -119,12 +119,12 @@ main() {
     DOCKERFILE_PATH="./Dockerfile"
     BASE_IMAGE="nginx:alpine"
     REGISTRY_LOCAL='docker-local'
-    REPO_PREFIX='vue-admin-template/web'
+    REPO_PREFIX='react-admin-temp/web'
     gitBranch=$(git rev-parse --abbrev-ref HEAD)
     gitHash=$(git rev-parse --short HEAD)
     dateTime=$(date "+%Y-%m-%d_%H-%M-%S")
-    packagePrefix='vue-admin-web'
-    imagePrefix='vue-admin-web'
+    packagePrefix='react-admin-web'
+    imagePrefix='react-admin-web'
     imageTag="${gitHash}"
     websitImageName="${REGISTRY_LOCAL}/${REPO_PREFIX}:${imageTag}"
     imageTagName="${imagePrefix}:${imageTag}"

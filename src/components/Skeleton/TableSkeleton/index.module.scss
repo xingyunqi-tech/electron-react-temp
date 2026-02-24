@@ -1,0 +1,56 @@
+.tableSkeleton {
+  padding: 20px;
+  background: var(--colorBgContainer);
+}
+
+.searchBar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.toolbar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.table {
+  overflow: hidden;
+  border: 1px solid var(--colorBorderSecondary);
+  border-radius: 4px;
+}
+
+.header {
+  display: grid;
+  gap: 16px;
+  align-items: center;
+  height: 55px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--colorBorderSecondary);
+  background: var(--colorFillAlter);
+}
+
+.body {
+  background: var(--colorBgContainer);
+}
+
+.row {
+  display: grid;
+  gap: 16px;
+  align-items: center;
+  height: 55px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--colorBorderSecondary);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}

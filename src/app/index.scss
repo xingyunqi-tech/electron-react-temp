@@ -1,7 +1,11 @@
 @use '../styles/index';
 
-// 自定义主题覆盖element
-@use '../styles/element';
-
 // 重置样式
 @import 'normalize.css';
+
+html,
+body,
+#root {
+  background-color: var(--colorBgLayout);
+  color: var(--colorTextBase);
+}
