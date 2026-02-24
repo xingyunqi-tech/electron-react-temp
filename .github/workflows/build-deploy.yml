@@ -1,31 +1,32 @@
-# ------------------------------------------------------------
-# GitHub Actions - 构建、打包与部署
+# 构建与部署工作流
+# 构建 Docker 镜像并通过 SSH 部署到阿里云 ECS
 #
-# 执行顺序：
-# 1. quality-gate: 代码质量检查（lint / type-check / test）
-# 2. build: 构建前端资源，生成 dist/ 和构建信息
-# 3. package: 打包 Docker 镜像和部署包
-# 4. deploy: 上传部署包并在服务器上执行部署
+# 触发条件:
+#   1. 推送 v* tag - 自动部署
+#   2. 手动触发 (可选择是否部署)
 #
-# 触发条件：
-# - push 到 main / master / release/** 分支
-# - 推送 v* tag
-# - 手动触发（workflow_dispatch）
+# 注意: 代码质量检查由 check-quality.yml 独立执行，不在此重复
 #
-# 前置条件（在 Settings > Secrets 中配置）：
-# - DEPLOY_SERVER_HOST: 部署服务器地址
-# - DEPLOY_SERVER_USER: 部署用户名
-# - DEPLOY_SERVER_PATH: 部署路径
-# - DEPLOY_SSH_PRIVATE_KEY: SSH 私钥
-# ------------------------------------------------------------
+# 配置步骤:
+#   在 GitHub 仓库 Settings -> Secrets and variables -> Actions 中添加:
+#     - DEPLOY_SERVER_HOST: 服务器 IP 或域名
+#     - DEPLOY_SERVER_USER: SSH 用户名
+#     - DEPLOY_SERVER_PATH: 部署目标路径
+#     - DEPLOY_SSH_PRIVATE_KEY: SSH 私钥 (完整内容，包括 BEGIN/END)
 
 name: Build & Deploy
 
 on:
-  workflow_dispatch:
   push:
-    branches: [main, master, 'release/**']
     tags: ['v*']
+
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: '是否部署到服务器'
+        required: true
+        default: true
+        type: boolean
 
 concurrency:
   group: build-${{ github.ref }}
@@ -40,44 +41,10 @@ env:
   DEFAULT_LANGUAGE: 'zh-CN'
 
 jobs:
-  # ============================
-  # Quality Gate - 代码质量检查
-  # ============================
-  quality-gate:
-    name: Quality Gate
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Lint
-        run: pnpm run lint
-
-      - name: TypeScript type check
-        run: pnpm run type-check
-
-      - name: Test
-        run: pnpm run test
-
-  # ============================
-  # Build - 构建前端资源
-  # ============================
+  # ==================== 构建 ====================
   build:
     name: Build
     runs-on: ubuntu-latest
-    needs: quality-gate
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -132,13 +99,11 @@ jobs:
             node_build_info.sh
           retention-days: 7
 
-  # ============================
-  # Package - 打包 Docker 镜像和部署包
-  # ============================
+  # ==================== 打包 Docker 镜像 ====================
   package:
     name: Package
-    runs-on: ubuntu-latest
     needs: build
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -185,58 +150,83 @@ jobs:
             node_build_info.sh
           retention-days: 30
 
-  # ============================
-  # Deploy - 部署到服务器
-  # ============================
+  # ==================== 部署到阿里云 ECS ====================
   deploy:
-    name: Deploy
-    runs-on: ubuntu-latest
+    name: Deploy to Aliyun
     needs: package
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event.inputs.deploy == 'true'
     concurrency:
       group: deploy-production
       cancel-in-progress: false
     environment:
       name: production
       url: http://${{ secrets.DEPLOY_SERVER_HOST }}:31190
+
     steps:
+      - name: Check secrets
+        run: |
+          has_error=0
+          if [[ -z "${{ secrets.DEPLOY_SERVER_HOST }}" ]]; then
+            echo "::error::缺少 DEPLOY_SERVER_HOST secret"
+            has_error=1
+          fi
+          if [[ -z "${{ secrets.DEPLOY_SERVER_USER }}" ]]; then
+            echo "::error::缺少 DEPLOY_SERVER_USER secret"
+            has_error=1
+          fi
+          if [[ -z "${{ secrets.DEPLOY_SERVER_PATH }}" ]]; then
+            echo "::error::缺少 DEPLOY_SERVER_PATH secret"
+            has_error=1
+          fi
+          if [[ -z "${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}" ]]; then
+            echo "::error::缺少 DEPLOY_SSH_PRIVATE_KEY secret"
+            has_error=1
+          fi
+          if [[ $has_error -eq 1 ]]; then
+            echo "请在 Settings -> Secrets and variables -> Actions 中配置以上 secrets"
+            exit 1
+          fi
+          echo "✅ Secrets 配置正确"
+
       - name: Download deploy package
         uses: actions/download-artifact@v4
         with:
           name: deploy-package
 
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "${{ secrets.DEPLOY_SERVER_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
+
       - name: Deploy to server
         env:
-          DEPLOY_SERVER_HOST: ${{ secrets.DEPLOY_SERVER_HOST }}
-          DEPLOY_SERVER_USER: ${{ secrets.DEPLOY_SERVER_USER }}
-          DEPLOY_SERVER_PATH: ${{ secrets.DEPLOY_SERVER_PATH }}
-          DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+          DEPLOY_HOST: ${{ secrets.DEPLOY_SERVER_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_SERVER_USER }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_SERVER_PATH }}
         run: |
-          # 配置 SSH
-          mkdir -p ~/.ssh
-          echo "${DEPLOY_SSH_PRIVATE_KEY}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H "${DEPLOY_SERVER_HOST}" >> ~/.ssh/known_hosts
-
           source node_build_info.sh
           PACKAGE_FILE=$(ls ${{ env.PACKAGE_PREFIX }}_${hash}_*.tar.gz | head -1)
 
           echo "=========================================="
           echo "部署信息:"
           echo "  分支/标签: ${GITHUB_REF_NAME}"
-          echo "  服务器: ${DEPLOY_SERVER_USER}@${DEPLOY_SERVER_HOST}"
-          echo "  路径: ${DEPLOY_SERVER_PATH}"
+          echo "  服务器: ${DEPLOY_USER}@${DEPLOY_HOST}"
+          echo "  路径: ${DEPLOY_PATH}"
           echo "  部署包: ${PACKAGE_FILE}"
           echo "  Git Hash: ${hash}"
           echo "  构建时间: ${build_at}"
           echo "=========================================="
 
           # 上传部署包到服务器
-          scp "${PACKAGE_FILE}" "${DEPLOY_SERVER_USER}@${DEPLOY_SERVER_HOST}:${DEPLOY_SERVER_PATH}/"
+          scp -i ~/.ssh/deploy_key "${PACKAGE_FILE}" "${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_PATH}/"
 
           # 在服务器上执行部署
-          ssh "${DEPLOY_SERVER_USER}@${DEPLOY_SERVER_HOST}" << EOF
+          ssh -i ~/.ssh/deploy_key "${DEPLOY_USER}@${DEPLOY_HOST}" << EOF
             set -e
-            cd ${DEPLOY_SERVER_PATH}
+            cd ${DEPLOY_PATH}
 
             # 解压部署包
             echo "解压部署包..."
@@ -263,12 +253,38 @@ jobs:
             ./manage.sh status
 
             # 清理旧部署包（保留最近3个）
-            cd ${DEPLOY_SERVER_PATH}
+            cd ${DEPLOY_PATH}
             ls -t ${{ env.PACKAGE_PREFIX }}_*.tar.gz | tail -n +4 | xargs -r rm -f
 
             echo "=========================================="
             echo "部署成功！"
-            echo "访问地址: http://${DEPLOY_SERVER_HOST}:31190"
-            echo "版本信息: http://${DEPLOY_SERVER_HOST}:31190/web/version"
+            echo "访问地址: http://${DEPLOY_HOST}:31190"
+            echo "版本信息: http://${DEPLOY_HOST}:31190/web/version"
             echo "=========================================="
           EOF
+
+      - name: Cleanup SSH key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
+
+  # ==================== 通知 ====================
+  notify:
+    name: Notify
+    needs: [build, package, deploy]
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Summary
+        run: |
+          echo "# 部署结果" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| 项目 | 状态 |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|------|" >> $GITHUB_STEP_SUMMARY
+          echo "| 构建 | ${{ needs.build.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 打包 | ${{ needs.package.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 部署 | ${{ needs.deploy.result || 'skipped' }} |" >> $GITHUB_STEP_SUMMARY
+          if [[ "${{ needs.deploy.result }}" == "success" ]]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "🖥️ **服务器**: ${{ secrets.DEPLOY_SERVER_HOST }}" >> $GITHUB_STEP_SUMMARY
+          fi

@@ -1,15 +1,11 @@
-# ------------------------------------------------------------
-# GitHub Actions - CI 质量门禁
+# 代码质量检查工作流
+# 职责: lint、type-check、test
 #
-# 执行顺序：
-# 1. install: 安装依赖 + 缓存
-# 2. lint / type-check / test: 并行执行质量检查
-#
-# 触发条件：
-# - PR 提交到 main / master / release/** 分支
-# - 直接 push 到 main / master / release/** 分支
-# - 推送 v* tag
-# ------------------------------------------------------------
+# 触发条件:
+#   1. PR 提交到 main / master / release/** 分支
+#   2. push 到 main / master / release/** 分支
+#   3. 推送 v* tag
+#   4. 手动触发 (workflow_dispatch)
 
 name: Check Quality
 
@@ -19,6 +15,7 @@ on:
   push:
     branches: [main, master, 'release/**']
     tags: ['v*']
+  workflow_dispatch:
 
 concurrency:
   group: ci-${{ github.ref }}
