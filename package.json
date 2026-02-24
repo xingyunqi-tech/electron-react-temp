@@ -4,6 +4,7 @@
   "type": "module",
   "main": "dist-electron/main/index.js",
   "description": "Electron Vite React Template",
+  "packageManager": "pnpm@10.20.0",
   "engines": {
     "node": ">= 22"
   },
