@@ -13,7 +13,7 @@ COPY dist/ .
 COPY version.html .
 
 # 暴露端口
-EXPOSE 80 31180 31181
+EXPOSE 80 31190 31191
 
 # 镜像包含默认nginx.conf,可通过volume挂载自定义配置覆盖:
 CMD ["nginx", "-g", "daemon off;"]

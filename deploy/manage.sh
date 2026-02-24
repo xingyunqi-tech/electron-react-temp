@@ -13,9 +13,9 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # 配置变量
-CONTAINER_NAME="vue-admin-web"
-IMAGE_NAME="vue-admin-web:local"
-PORT="${PORT:-31180}"
+CONTAINER_NAME="electron-react-web"
+IMAGE_NAME="electron-react-web:local"
+PORT="${PORT:-31190}"
 NGINX_PORT=80
 
 # 日志函数
@@ -49,7 +49,7 @@ image_exists() {
 
 # 加载镜像（从 tar 文件）
 load_image() {
-    local tar_file=$(find . -name "vue-admin-web*.tar" -type f | head -1)
+    local tar_file=$(find . -name "electron-react-web*.tar" -type f | head -1)
 
     if [ -n "$tar_file" ]; then
         log_info "Found Docker image tar: $tar_file"
@@ -57,7 +57,7 @@ load_image() {
         docker load -i "$tar_file"
 
         # 获取加载的镜像名称并重新标记
-        local loaded_image=$(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'vue-admin-web' | head -1)
+        local loaded_image=$(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'electron-react-web' | head -1)
         if [ -n "$loaded_image" ] && [ "$loaded_image" != "$IMAGE_NAME" ]; then
             log_info "Tagging image as $IMAGE_NAME"
             docker tag "$loaded_image" "$IMAGE_NAME"
@@ -238,11 +238,11 @@ ${GREEN}Commands:${NC}
   help        Show this help message
 
 ${GREEN}Environment Variables:${NC}
-  PORT        Host port to bind (default: 31180)
+  PORT        Host port to bind (default: 31190)
               Example: PORT=3000 $0 start
 
 ${GREEN}Examples:${NC}
-  $0 start              # Start container on port 31180
+  $0 start              # Start container on port 31190
   PORT=3000 $0 start    # Start container on port 3000
   $0 stop               # Stop container
   $0 restart            # Restart container

@@ -328,7 +328,7 @@ pnpm clean
 # 进入部署目录
 cd deploy
 
-# 启动容器（默认端口 31180）
+# 启动容器（默认端口 31190）
 ./manage.sh start
 
 # 使用自定义端口启动
@@ -354,8 +354,8 @@ PORT=3000 ./manage.sh start
 ```
 
 **访问地址**:
-- 应用首页: http://localhost:31180
-- 版本信息: http://localhost:31180/web/version
+- 应用首页: http://localhost:31190
+- 版本信息: http://localhost:31190/web/version
 
 **详细说明**: 查看 [deploy/README.md](./deploy/README.md)
 
@@ -371,11 +371,11 @@ PORT=3000 ./manage.sh start
 ./package.sh --full
 
 # 3. 将生成的部署包上传到服务器
-# vue-admin-web_<git-hash>_<timestamp>.tar.gz
+# electron-react-web_<git-hash>_<timestamp>.tar.gz
 
 # 4. 在服务器上解压并部署
-tar -xzf vue-admin-web_*.tar.gz
-cd vue_admin_web
+tar -xzf electron-react-web_*.tar.gz
+cd electron_react_web
 ./manage.sh start
 ```
 
@@ -564,7 +564,7 @@ cd deploy
 ./manage.sh logs
 
 # 检查端口占用
-lsof -i :31180
+lsof -i :31190
 ```
 
 ## 🎯 核心功能

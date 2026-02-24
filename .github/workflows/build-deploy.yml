@@ -2,13 +2,15 @@
 # GitHub Actions - 构建、打包与部署
 #
 # 执行顺序：
-# 1. build: 构建前端资源，生成 dist/ 和构建信息
-# 2. package: 打包 Docker 镜像和部署包
-# 3. deploy: 上传部署包并在服务器上执行部署（手动触发）
+# 1. quality-gate: 代码质量检查（lint / type-check / test）
+# 2. build: 构建前端资源，生成 dist/ 和构建信息
+# 3. package: 打包 Docker 镜像和部署包
+# 4. deploy: 上传部署包并在服务器上执行部署
 #
 # 触发条件：
 # - push 到 main / master / release/** 分支
-# - 推送 tag
+# - 推送 v* tag
+# - 手动触发（workflow_dispatch）
 #
 # 前置条件（在 Settings > Secrets 中配置）：
 # - DEPLOY_SERVER_HOST: 部署服务器地址
@@ -20,29 +22,62 @@
 name: Build & Deploy
 
 on:
+  workflow_dispatch:
   push:
     branches: [main, master, 'release/**']
     tags: ['v*']
 
 concurrency:
-  group: deploy-${{ github.ref }}
+  group: build-${{ github.ref }}
   cancel-in-progress: true
 
 env:
   BASE_IMAGE: 'nginx:alpine'
   REGISTRY_LOCAL: 'docker-local'
-  REPO_PREFIX: 'vue-admin-template/web'
-  IMAGE_PREFIX: 'vue-admin-web'
-  PACKAGE_PREFIX: 'vue-admin-web'
+  REPO_PREFIX: 'electron-react/web'
+  IMAGE_PREFIX: 'electron-react-web'
+  PACKAGE_PREFIX: 'electron-react-web'
   DEFAULT_LANGUAGE: 'zh-CN'
 
 jobs:
+  # ============================
+  # Quality Gate - 代码质量检查
+  # ============================
+  quality-gate:
+    name: Quality Gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm run lint
+
+      - name: TypeScript type check
+        run: pnpm run type-check
+
+      - name: Test
+        run: pnpm run test
+
   # ============================
   # Build - 构建前端资源
   # ============================
   build:
     name: Build
     runs-on: ubuntu-latest
+    needs: quality-gate
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -126,19 +161,19 @@ jobs:
           docker build -f Dockerfile -t "${website_docker_name}" --build-arg BASE_IMAGE="${{ env.BASE_IMAGE }}" .
 
           # 准备部署文件
-          mkdir -p vue_admin_web
-          cp -r deploy/* vue_admin_web/
+          mkdir -p electron_react_web
+          cp -r deploy/* electron_react_web/
 
           # 保存 Docker 镜像
           docker tag "${website_docker_name}" "${IMAGE_TAG_NAME}"
-          docker save "${IMAGE_TAG_NAME}" -o "vue_admin_web/${IMAGE_TAG_NAME//:/\_}.tar"
+          docker save "${IMAGE_TAG_NAME}" -o "electron_react_web/${IMAGE_TAG_NAME//:/\_}.tar"
 
           # 更新构建信息（添加 MD5）
-          echo "web_docker_md5=$(md5sum vue_admin_web/${IMAGE_TAG_NAME//:/\_}.tar | awk '{print $1}')" >> node_build_info.sh
-          cp node_build_info.sh vue_admin_web/
+          echo "web_docker_md5=$(md5sum electron_react_web/${IMAGE_TAG_NAME//:/\_}.tar | awk '{print $1}')" >> node_build_info.sh
+          cp node_build_info.sh electron_react_web/
 
           # 创建最终部署包
-          tar -czf "${PACKAGE_NAME}" vue_admin_web
+          tar -czf "${PACKAGE_NAME}" electron_react_web
           echo "Package created - ${PACKAGE_NAME}"
 
       - name: Upload deploy package
@@ -151,15 +186,18 @@ jobs:
           retention-days: 30
 
   # ============================
-  # Deploy - 部署到服务器（手动触发）
+  # Deploy - 部署到服务器
   # ============================
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
     needs: package
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
     environment:
       name: production
-      url: http://${{ secrets.DEPLOY_SERVER_HOST }}:31180
+      url: http://${{ secrets.DEPLOY_SERVER_HOST }}:31190
     steps:
       - name: Download deploy package
         uses: actions/download-artifact@v4
@@ -193,10 +231,10 @@ jobs:
           echo "=========================================="
 
           # 上传部署包到服务器
-          scp -o StrictHostKeyChecking=no "${PACKAGE_FILE}" "${DEPLOY_SERVER_USER}@${DEPLOY_SERVER_HOST}:${DEPLOY_SERVER_PATH}/"
+          scp "${PACKAGE_FILE}" "${DEPLOY_SERVER_USER}@${DEPLOY_SERVER_HOST}:${DEPLOY_SERVER_PATH}/"
 
           # 在服务器上执行部署
-          ssh -o StrictHostKeyChecking=no "${DEPLOY_SERVER_USER}@${DEPLOY_SERVER_HOST}" << EOF
+          ssh "${DEPLOY_SERVER_USER}@${DEPLOY_SERVER_HOST}" << EOF
             set -e
             cd ${DEPLOY_SERVER_PATH}
 
@@ -205,11 +243,11 @@ jobs:
             tar -xzf $(basename ${PACKAGE_FILE})
 
             # 进入部署目录
-            cd vue_admin_web
+            cd electron_react_web
 
             # 加载 Docker 镜像
             echo "加载 Docker 镜像..."
-            docker load -i vue-admin-web_*.tar
+            docker load -i electron-react-web_*.tar
 
             # 停止旧容器
             echo "停止旧容器..."
@@ -230,7 +268,7 @@ jobs:
 
             echo "=========================================="
             echo "部署成功！"
-            echo "访问地址: http://${DEPLOY_SERVER_HOST}:31180"
-            echo "版本信息: http://${DEPLOY_SERVER_HOST}:31180/web/version"
+            echo "访问地址: http://${DEPLOY_SERVER_HOST}:31190"
+            echo "版本信息: http://${DEPLOY_SERVER_HOST}:31190/web/version"
             echo "=========================================="
           EOF

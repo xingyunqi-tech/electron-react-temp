@@ -8,6 +8,7 @@
 # 触发条件：
 # - PR 提交到 main / master / release/** 分支
 # - 直接 push 到 main / master / release/** 分支
+# - 推送 v* tag
 # ------------------------------------------------------------
 
 name: Check Quality
@@ -17,6 +18,7 @@ on:
     branches: [main, master, 'release/**']
   push:
     branches: [main, master, 'release/**']
+    tags: ['v*']
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -50,7 +52,7 @@ jobs:
         with:
           path: |
             node_modules
-          key: deps-${{ github.sha }}
+          key: deps-${{ hashFiles('pnpm-lock.yaml') }}
 
   # ============================
   # Lint - 代码规范检查
@@ -77,7 +79,7 @@ jobs:
         with:
           path: |
             node_modules
-          key: deps-${{ github.sha }}
+          key: deps-${{ hashFiles('pnpm-lock.yaml') }}
           fail-on-cache-miss: true
 
       - name: Lint
@@ -108,7 +110,7 @@ jobs:
         with:
           path: |
             node_modules
-          key: deps-${{ github.sha }}
+          key: deps-${{ hashFiles('pnpm-lock.yaml') }}
           fail-on-cache-miss: true
 
       - name: TypeScript type check
@@ -139,7 +141,7 @@ jobs:
         with:
           path: |
             node_modules
-          key: deps-${{ github.sha }}
+          key: deps-${{ hashFiles('pnpm-lock.yaml') }}
           fail-on-cache-miss: true
 
       - name: Run tests

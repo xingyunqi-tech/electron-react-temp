@@ -1,6 +1,6 @@
 # Docker 部署管理文档
 
-用于管理 Vue Admin Template 应用的 Docker 容器。
+用于管理 Electron React Web 应用的 Docker 容器。
 
 ## 📁 文件说明
 
@@ -18,11 +18,11 @@
 ./package.sh
 
 # 2. 解压部署包
-tar -xzf vue-admin-web_xxxxx.tar.gz
-cd vue-admin-web
+tar -xzf electron-react-web_xxxxx.tar.gz
+cd electron-react-web
 
 # 3. 加载Docker镜像
-docker load -i vue-admin-web_xxxxx.tar
+docker load -i electron-react-web_xxxxx.tar
 
 # 4. 使用管理脚本启动
 ./manage.sh start
@@ -37,17 +37,17 @@ docker load -i vue-admin-web_xxxxx.tar
 # 2. 运行容器
 # 方式A: 使用默认配置(镜像内置nginx.conf)
 docker run -d \
-  --name vue-admin-template \
+  --name electron-react-web \
   -p 80:80 \
-  vue-admin-web:<git-hash>
+  electron-react-web:<git-hash>
 
 # 方式B: 挂载自定义配置覆盖默认配置
 docker run -d \
-  --name vue-admin-template \
+  --name electron-react-web \
   -p 80:80 \
   -v $(pwd)/deploy/nginx.conf:/etc/nginx/nginx.conf:ro \
   -v $(pwd)/logs:/var/log/nginx \
-  vue-admin-web:<git-hash>
+  electron-react-web:<git-hash>
 ```
 
 ## 📋 可用命令
@@ -65,9 +65,9 @@ docker run -d \
 
 ## 🔧 配置
 
-- 容器名称: `vue-admin-web`
-- 镜像名称: `vue-admin-web:local`
-- 默认端口: `31180`
+- 容器名称: `electron-react-web`
+- 镜像名称: `electron-react-web:local`
+- 默认端口: `31190`
 - 环境变量: `PORT` - 自定义端口
 
 ## 📝 使用场景
@@ -76,20 +76,20 @@ docker run -d \
 ```bash
 pnpm build
 cd deploy && ./manage.sh start
-# 访问 http://localhost:31180
+# 访问 http://localhost:31190
 ```
 
 **生产部署:**
 ```bash
-tar -xzf vue-admin-web_xxxxx.tar.gz
-cd vue_admin_web && ./manage.sh start
+tar -xzf electron-react-web_xxxxx.tar.gz
+cd electron_react_web && ./manage.sh start
 ```
 
 ## 🐛 故障排查
 
 **端口被占用:**
 ```bash
-lsof -i :31180
+lsof -i :31190
 PORT=3000 ./manage.sh start  # 换端口
 ```
 
@@ -109,8 +109,8 @@ cd deploy && ./manage.sh build
 
 ## 🔗 访问地址
 
-- 应用: http://localhost:31180
-- 版本: http://localhost:31180/web/version
+- 应用: http://localhost:31190
+- 版本: http://localhost:31190/web/version
 
 ## 🔧 配置文件挂载
 
@@ -150,11 +150,11 @@ Docker镜像**默认包含**`nginx.conf`配置文件，可直接启动。如需�
 
 ```bash
 # 方式一：使用管理脚本
-cd vue_admin_web
+cd electron_react_web
 ./manage.sh restart
 
 # 方式二：手动重启容器
-docker restart vue-admin-template
+docker restart electron-react-web
 ```
 
 ### 在线修改配置示例
@@ -184,11 +184,11 @@ vim deploy/nginx.conf
 
 # Docker 原生命令
 docker ps -a                       # 查看所有容器
-docker logs vue-admin-web          # 查看日志
-docker logs -f vue-admin-web       # 实时查看日志
-docker exec -it vue-admin-web sh   # 进入容器
-docker stats vue-admin-web         # 资源占用
-docker inspect vue-admin-web       # 查看容器详细信息
+docker logs electron-react-web          # 查看日志
+docker logs -f electron-react-web       # 实时查看日志
+docker exec -it electron-react-web sh   # 进入容器
+docker stats electron-react-web         # 资源占用
+docker inspect electron-react-web       # 查看容器详细信息
 ```
 
 ## 🔒 生产环境部署建议
@@ -208,8 +208,8 @@ docker inspect vue-admin-web       # 查看容器详细信息
    docker run -d \
      --cpus="1" \
      --memory="512m" \
-     --name vue-admin-template \
-     vue-admin-web:latest
+     --name electron-react-web \
+     electron-react-web:latest
    ```
 
 3. **配置日志持久化**
@@ -217,7 +217,7 @@ docker inspect vue-admin-web       # 查看容器详细信息
    # 挂载日志目录
    docker run -d \
      -v /var/log/nginx:/var/log/nginx \
-     vue-admin-web:latest
+     electron-react-web:latest
    ```
 
 4. **健康检查**
@@ -236,10 +236,10 @@ docker inspect vue-admin-web       # 查看容器详细信息
 
 ```bash
 # 1. 检查挂载是否成功
-docker exec vue-admin-web cat /etc/nginx/nginx.conf
+docker exec electron-react-web cat /etc/nginx/nginx.conf
 
 # 2. 检查配置文件语法
-docker exec vue-admin-web nginx -t
+docker exec electron-react-web nginx -t
 
 # 3. 重启容器
 ./manage.sh restart
@@ -251,7 +251,7 @@ docker exec vue-admin-web nginx -t
 # 查看应用日志
 ./manage.sh logs
 # 或
-docker logs -f vue-admin-web
+docker logs -f electron-react-web
 
 # 查看nginx错误日志(如果挂载了日志目录)
 tail -f logs/error.log
@@ -280,7 +280,7 @@ tail -f logs/access.log
 |--------|------|------|
 | `DEPLOY_SERVER_HOST` | 服务器地址 | `192.168.1.100` |
 | `DEPLOY_SERVER_USER` | SSH 用户名 | `deploy` |
-| `DEPLOY_SERVER_PATH` | 部署目录 | `/opt/vue-admin-web` |
+| `DEPLOY_SERVER_PATH` | 部署目录 | `/opt/electron-react-web` |
 | `DEPLOY_SSH_PRIVATE_KEY` | SSH 私钥 | `-----BEGIN RSA PRIVATE KEY-----...` |
 
 ### 服务器准备
@@ -295,8 +295,8 @@ sudo useradd -m deploy
 sudo usermod -aG docker deploy
 
 # 3. 创建部署目录
-sudo mkdir -p /opt/vue-admin-web
-sudo chown deploy:deploy /opt/vue-admin-web
+sudo mkdir -p /opt/electron-react-web
+sudo chown deploy:deploy /opt/electron-react-web
 
 # 4. 配置 SSH 免密登录
 # 将 GitLab CI 的公钥添加到 ~/.ssh/authorized_keys
@@ -335,19 +335,19 @@ git push origin v1.0.0
 # CI/CD > Pipelines > 下载 static_assets_<hash>.tar.gz
 
 # 2. 上传到服务器
-scp static_assets_*.tar.gz deploy@your-server.com:/opt/vue-admin-web/
+scp static_assets_*.tar.gz deploy@your-server.com:/opt/electron-react-web/
 
 # 3. SSH 到服务器执行热更新
 ssh deploy@your-server.com
-cd /opt/vue-admin-web
+cd /opt/electron-react-web
 tar -xzf static_assets_*.tar.gz
 
 # 复制新资源到容器
-docker cp dist/. vue-admin-web:/usr/share/nginx/html/
-docker cp version.html vue-admin-web:/usr/share/nginx/html/
+docker cp dist/. electron-react-web:/usr/share/nginx/html/
+docker cp version.html electron-react-web:/usr/share/nginx/html/
 
 # 重载 Nginx（不重启）
-docker exec vue-admin-web nginx -s reload
+docker exec electron-react-web nginx -s reload
 
 # 清理临时文件
 rm -rf dist version.html static_assets_*.tar.gz
@@ -357,7 +357,7 @@ rm -rf dist version.html static_assets_*.tar.gz
 
 Pipeline 会生成两个文件：
 
-1. **vue-admin-web_<hash>_<timestamp>.tar.gz**
+1. **electron-react-web_<hash>_<timestamp>.tar.gz**
    完整部署包，包含 Docker 镜像和管理脚本
 
 2. **static_assets_<hash>.tar.gz**
@@ -367,12 +367,12 @@ Pipeline 会生成两个文件：
 
 ```bash
 # 查看历史部署包（自动保留最近3个）
-ls -lt /opt/vue-admin-web/vue-admin-web_*.tar.gz
+ls -lt /opt/electron-react-web/electron-react-web_*.tar.gz
 
 # 解压旧版本并部署
-tar -xzf vue-admin-web_<old-hash>_*.tar.gz
-cd vue_admin_web
-docker load -i vue-admin-web_*.tar
+tar -xzf electron-react-web_<old-hash>_*.tar.gz
+cd electron_react_web
+docker load -i electron-react-web_*.tar
 ./manage.sh restart
 ```
 
