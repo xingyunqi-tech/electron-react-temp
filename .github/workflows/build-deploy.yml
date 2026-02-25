@@ -2,10 +2,8 @@
 # 构建 Docker 镜像并通过 SSH 部署到阿里云 ECS
 #
 # 触发条件:
-#   1. Check Quality 工作流成功完成，且触发来源是 v* tag push - 自动部署
+#   1. Check Quality 在 master 分支通过后自动触发
 #   2. 手动触发 (可选择是否部署)
-#
-# 质量关卡: 依赖 check-quality.yml 通过后才触发，确保代码质量
 #
 # 配置步骤:
 #   在 GitHub 仓库 Settings -> Secrets and variables -> Actions 中添加:
@@ -17,12 +15,10 @@
 name: Build and Deploy
 
 on:
-  # 当 Check Quality 工作流完成后触发（质量关卡）
-  # branches 过滤：只有 v* tag 触发的 Check Quality 才会启动本流程
   workflow_run:
     workflows: ['Check Quality']
+    branches: [master]
     types: [completed]
-    branches: ['v*']
 
   workflow_dispatch:
     inputs:
@@ -33,8 +29,6 @@ on:
         type: boolean
 
 concurrency:
-  # workflow_run 触发时用触发来源的 sha 区分，避免不同 tag 的构建互相取消
-  # workflow_dispatch 触发时用 run_id 保证每次手动触发都独立运行
   group: build-${{ github.event.workflow_run.head_sha || github.run_id }}
   cancel-in-progress: false
 
@@ -51,13 +45,12 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    # 手动触发，或 Check Quality 通过（触发层已过滤 v* tag，此处只需检查结论）
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    # 仅在 Check Quality 成功后执行，或手动触发
+    if: github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          # workflow_run 时检出触发质量检查的具体 commit
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
           fetch-depth: 0
 
@@ -222,7 +215,7 @@ jobs:
 
           echo "=========================================="
           echo "部署信息:"
-          echo "  分支/标签: ${{ github.event.workflow_run.head_branch || github.ref_name }}"
+          echo "  分支: ${{ github.event.workflow_run.head_branch || github.ref_name }}"
           echo "  服务器: ${DEPLOY_USER}@${DEPLOY_HOST}"
           echo "  路径: ${DEPLOY_PATH}"
           echo "  部署包: ${PACKAGE_FILE}"
