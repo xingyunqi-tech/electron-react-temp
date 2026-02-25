@@ -45,7 +45,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.sha }}
-          fetch-depth: 0
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -114,9 +113,6 @@ jobs:
           source node_build_info.sh
           IMAGE_TAG_NAME="${{ env.IMAGE_PREFIX }}:${hash}"
           PACKAGE_NAME="${{ env.PACKAGE_PREFIX }}_${hash}_$(date '+%Y-%m-%d_%H-%M-%S').tar.gz"
-
-          # 创建静态资源包（热更新用）
-          tar -czf "static_assets_${hash}.tar.gz" dist version.html
 
           # 构建 Docker 镜像
           docker build -f Dockerfile -t "${website_docker_name}" --build-arg BASE_IMAGE="${{ env.BASE_IMAGE }}" .
@@ -235,7 +231,7 @@ jobs:
 
             # 加载 Docker 镜像
             echo "加载 Docker 镜像..."
-            docker load -i electron-react-web_*.tar
+            docker load -i "${{ env.IMAGE_PREFIX }}_${hash}.tar"
 
             # 停止旧容器
             echo "停止旧容器..."
@@ -253,6 +249,9 @@ jobs:
             # 清理旧部署包（保留最近3个）
             cd ${DEPLOY_PATH}
             ls -t ${{ env.PACKAGE_PREFIX }}_*.tar.gz | tail -n +4 | xargs -r rm -f
+
+            # 清理旧 Docker 镜像（保留最近3个）
+            docker images "${{ env.IMAGE_PREFIX }}" -q | tail -n +4 | xargs -r docker rmi 2>/dev/null || true
 
             echo "=========================================="
             echo "部署成功！"

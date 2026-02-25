@@ -46,7 +46,7 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: node_modules
-          key: build-${{ github.sha }}
+          key: node-modules-${{ hashFiles('**/pnpm-lock.yaml') }}
 
   # ============================
   # Lint - 代码规范检查
@@ -71,7 +71,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: node_modules
-          key: build-${{ github.sha }}
+          key: node-modules-${{ hashFiles('**/pnpm-lock.yaml') }}
           fail-on-cache-miss: true
 
       - name: Lint
@@ -100,7 +100,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: node_modules
-          key: build-${{ github.sha }}
+          key: node-modules-${{ hashFiles('**/pnpm-lock.yaml') }}
           fail-on-cache-miss: true
 
       - name: TypeScript type check
@@ -129,7 +129,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: node_modules
-          key: build-${{ github.sha }}
+          key: node-modules-${{ hashFiles('**/pnpm-lock.yaml') }}
           fail-on-cache-miss: true
 
       - name: Run tests
