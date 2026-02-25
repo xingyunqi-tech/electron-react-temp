@@ -69,7 +69,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: pnpm
 
       - name: Restore dependencies
         uses: actions/cache/restore@v4
@@ -80,7 +79,7 @@ jobs:
           fail-on-cache-miss: true
 
       - name: Lint
-        run: pnpm run lint
+        run: pnpm run lint:ci
 
   # ============================
   # Type Check - TypeScript 类型检查
@@ -100,7 +99,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: pnpm
 
       - name: Restore dependencies
         uses: actions/cache/restore@v4
@@ -131,7 +129,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: pnpm
 
       - name: Restore dependencies
         uses: actions/cache/restore@v4

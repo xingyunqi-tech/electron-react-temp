@@ -2,10 +2,10 @@
 # 构建 Docker 镜像并通过 SSH 部署到阿里云 ECS
 #
 # 触发条件:
-#   1. 推送 v* tag - 自动部署
+#   1. Check Quality 工作流成功完成，且触发来源是 v* tag push - 自动部署
 #   2. 手动触发 (可选择是否部署)
 #
-# 注意: 代码质量检查由 check-quality.yml 独立执行，不在此重复
+# 质量关卡: 依赖 check-quality.yml 通过后才触发，确保代码质量
 #
 # 配置步骤:
 #   在 GitHub 仓库 Settings -> Secrets and variables -> Actions 中添加:
@@ -17,8 +17,10 @@
 name: Build and Deploy
 
 on:
-  push:
-    tags: ['v*']
+  # 当 Check Quality 工作流完成后触发（质量关卡）
+  workflow_run:
+    workflows: ['Check Quality']
+    types: [completed]
 
   workflow_dispatch:
     inputs:
@@ -29,8 +31,10 @@ on:
         type: boolean
 
 concurrency:
-  group: build-${{ github.ref }}
-  cancel-in-progress: true
+  # workflow_run 触发时用触发来源的 sha 区分，避免不同 tag 的构建互相取消
+  # workflow_dispatch 触发时用 run_id 保证每次手动触发都独立运行
+  group: build-${{ github.event.workflow_run.head_sha || github.run_id }}
+  cancel-in-progress: false
 
 env:
   BASE_IMAGE: 'nginx:alpine'
@@ -45,10 +49,16 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    # 仅在以下情况运行：
+    # 1. 手动触发
+    # 2. Check Quality 成功完成，且触发事件是 v* tag 的 push
+    if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && startsWith(github.event.workflow_run.head_branch, 'v'))
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          # workflow_run 时检出触发质量检查的具体 commit
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
           fetch-depth: 0
 
       - name: Setup pnpm
@@ -67,7 +77,7 @@ jobs:
         id: info
         run: |
           GIT_HASH=$(git rev-parse --short HEAD)
-          GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+          GIT_BRANCH="${{ github.event.workflow_run.head_branch || github.ref_name }}"
           BUILD_TIME=$(date "+%Y-%m-%d_%H-%M-%S")
           WEBSITE_IMAGE_NAME="${{ env.REGISTRY_LOCAL }}/${{ env.REPO_PREFIX }}:${GIT_HASH}"
 
@@ -155,7 +165,7 @@ jobs:
     name: Deploy to Aliyun
     needs: package
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' || github.event.inputs.deploy == 'true'
+    if: github.event_name == 'workflow_run' || github.event.inputs.deploy == 'true'
     concurrency:
       group: deploy-production
       cancel-in-progress: false
@@ -212,7 +222,7 @@ jobs:
 
           echo "=========================================="
           echo "部署信息:"
-          echo "  分支/标签: ${GITHUB_REF_NAME}"
+          echo "  分支/标签: ${{ github.event.workflow_run.head_branch || github.ref_name }}"
           echo "  服务器: ${DEPLOY_USER}@${DEPLOY_HOST}"
           echo "  路径: ${DEPLOY_PATH}"
           echo "  部署包: ${PACKAGE_FILE}"
