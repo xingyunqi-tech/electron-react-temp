@@ -215,6 +215,9 @@ jobs:
           echo "  构建时间: ${build_at}"
           echo "=========================================="
 
+          # 确保目标目录存在
+          ssh -i ~/.ssh/deploy_key "${DEPLOY_USER}@${DEPLOY_HOST}" "mkdir -p ${DEPLOY_PATH}"
+
           # 上传部署包到服务器
           scp -i ~/.ssh/deploy_key "${PACKAGE_FILE}" "${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_PATH}/"
 
