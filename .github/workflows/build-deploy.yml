@@ -157,7 +157,6 @@ jobs:
       cancel-in-progress: false
     environment:
       name: production
-      url: http://${{ secrets.DEPLOY_SERVER_HOST }}:31190
 
     steps:
       - name: Check secrets
