@@ -1,4 +1,4 @@
-import { isSentryEnabled, getDefaultSentryConfig, type SentryConfig } from './const';
+import { isSentryEnabled, getSentryConfig, type SentryConfig } from './const';
 
 /**
  * 动态加载 Sentry
@@ -30,7 +30,7 @@ export async function initSentry(config: Partial<SentryConfig> = {}) {
     return null;
   }
 
-  const finalConfig = { ...getDefaultSentryConfig(), ...config };
+  const finalConfig = { ...getSentryConfig(), ...config };
 
   if (!finalConfig.dsn) {
     console.warn('Sentry DSN not configured. Sentry will not be initialized.');

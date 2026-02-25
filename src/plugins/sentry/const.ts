@@ -1,59 +1,22 @@
 /**
  * Sentry 配置模块
- * 这个模块只包含配置和工具函数，不包含动态导入
- * 可以被静态导入而不会影响代码分割
+ * 可配置项从前端配置系统读取，安全/过滤规则保留在代码中
  */
 
-/**
- * Sentry 配置常量
- */
-export const SENTRY_CONFIG = {
-  DSN: 'https://6914505451e51547265bf2ffdf603f57@o4506822939508736.ingest.us.sentry.io/4510939975122944',
-  ENVIRONMENT: import.meta.env.MODE || 'development',
-  RELEASE: '1.0.0',
-
-  // 开发/生产环境差异化配置
-  DEVELOPMENT: {
-    debug: false,
-    tracesSampleRate: 1.0,
-    replaysSessionSampleRate: 0.1,
-    replaysOnErrorSampleRate: 1.0,
-  },
-
-  PRODUCTION: {
-    debug: false,
-    tracesSampleRate: 0.1,
-    replaysSessionSampleRate: 0.01,
-    replaysOnErrorSampleRate: 1.0,
-  },
-} as const;
+import { config as frontendConfig } from '@/constants/frontendConfig';
 
 /**
  * 检查是否启用 Sentry
- * 通过环境变量 VITE_ENABLE_SENTRY 控制
- * 这个函数不依赖于 Sentry SDK，可以安全地被静态导入
+ * 通过环境变量 VITE_ENABLE_SENTRY 控制（主开关，不受前端配置影响）
  */
 export const isSentryEnabled = (): boolean => {
-  return import.meta.env.VITE_ENABLE_SENTRY === 'true' && !!SENTRY_CONFIG.DSN;
+  return import.meta.env.VITE_ENABLE_SENTRY === 'true' && !!frontendConfig.sentry?.dsn;
 };
 
 /**
- * 功能开关配置
+ * 安全和隐私配置（包含 RegExp，无法序列化到 JSON，保留在代码中）
  */
-export const SENTRY_FEATURE_CONFIG = {
-  enableReplay: true,
-  enableFeedback: false,
-  enablePerformance: true,
-  enableRouterTracking: true,
-  enableStateTracking: true,
-} as const;
-
-/**
- * 安全和隐私配置
- */
-export const SENTRY_SECURITY_CONFIG = {
-  sendDefaultPii: false,
-  maxBreadcrumbs: 100,
+const SENTRY_SECURITY_CONFIG = {
   ignoreErrors: [
     // 浏览器扩展错误
     'Non-Error promise rejection captured',
@@ -118,22 +81,30 @@ export interface SentryConfig {
 }
 
 /**
- * 默认Sentry配置
+ * 获取 Sentry 配置
+ * 从前端配置系统读取可配置项，合并代码级安全配置
  */
-export const getDefaultSentryConfig = (): Required<SentryConfig> => ({
-  dsn: SENTRY_CONFIG.DSN,
-  environment: SENTRY_CONFIG.ENVIRONMENT,
-  release: SENTRY_CONFIG.RELEASE,
-  ...(import.meta.env.PROD ? SENTRY_CONFIG.PRODUCTION : SENTRY_CONFIG.DEVELOPMENT),
-  ...SENTRY_FEATURE_CONFIG,
-  ...SENTRY_SECURITY_CONFIG,
-  allowUrls: [window.location.origin],
-});
-
-/**
- * 获取当前 Sentry 配置
- */
-export const getSentryConfig = (): Required<SentryConfig> => getDefaultSentryConfig();
+export const getSentryConfig = (): Required<SentryConfig> => {
+  const sentry = frontendConfig.sentry;
+  return {
+    dsn: sentry.dsn,
+    environment: import.meta.env.MODE || 'development',
+    release: sentry.release,
+    debug: sentry.debug,
+    tracesSampleRate: sentry.tracesSampleRate,
+    replaysSessionSampleRate: sentry.replaysSessionSampleRate,
+    replaysOnErrorSampleRate: sentry.replaysOnErrorSampleRate,
+    enablePerformance: sentry.enablePerformance,
+    enableReplay: sentry.enableReplay,
+    enableFeedback: sentry.enableFeedback,
+    enableRouterTracking: sentry.enableRouterTracking,
+    enableStateTracking: sentry.enableStateTracking,
+    sendDefaultPii: sentry.sendDefaultPii,
+    maxBreadcrumbs: sentry.maxBreadcrumbs,
+    ...SENTRY_SECURITY_CONFIG,
+    allowUrls: [window.location.origin],
+  };
+};
 
 /**
  * 获取当前环境的 Sentry 配置摘要

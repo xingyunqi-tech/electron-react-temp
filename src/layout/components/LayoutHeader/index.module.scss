@@ -28,9 +28,12 @@
   padding: 0 24px;
 }
 
-.menuNav {
-  display: flex;
-  align-items: center;
+.headerMenu {
+  flex: 1;
+  justify-content: center;
+  border-bottom: none;
+  background: transparent;
+  line-height: 54px;
 }
 
 .headerRight {

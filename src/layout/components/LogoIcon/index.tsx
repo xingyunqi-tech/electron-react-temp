@@ -1,8 +1,9 @@
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAppDispatch } from '@/store';
 import { message } from '@/components/StaticFunction';
 import { advanceModeTapAction } from '@/store/modules/global';
-import { useLogoConfig } from '../../LayoutContext';
+import { useLayout } from '../../LayoutContext';
 import logoImg from '@/assets/images/common/logo.png';
 
 interface LogoIconProps {
@@ -10,14 +11,15 @@ interface LogoIconProps {
 }
 
 function LogoIcon({ className }: LogoIconProps) {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const { logoConfig } = useLogoConfig();
+  const { logoConfig } = useLayout();
   const iconSrc = logoConfig.icon || logoImg;
 
   const handleClick = () => {
     const result = dispatch(advanceModeTapAction());
     if (result !== null) {
-      message.success(result ? '已开启高级模式' : '已关闭高级模式');
+      message.success(result ? t('layout.advanceModeOn') : t('layout.advanceModeOff'));
     }
   };
 

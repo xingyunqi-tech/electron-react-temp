@@ -6,6 +6,9 @@
     "admin": "管理员",
     "logoutConfirm": "确定要退出登录吗？",
     "logoutSuccess": "退出登录成功",
-    "tip": "提示"
+    "tip": "提示",
+    "home": "首页",
+    "advanceModeOn": "已开启高级模式",
+    "advanceModeOff": "已关闭高级模式"
   }
 }

@@ -6,6 +6,7 @@ import { MobileOutlined, LockOutlined } from '@ant-design/icons';
 import logoImg from '@/assets/images/common/logo.png';
 import { useAppDispatch } from '@/store';
 import { loginAction } from '@/store/modules/user';
+import { useFrontendConfig } from '@/hooks/useFrontendConfig';
 import styles from './index.module.scss';
 
 export default function LoginPage() {
@@ -13,6 +14,7 @@ export default function LoginPage() {
   const [searchParams] = useSearchParams();
   const dispatch = useAppDispatch();
   const [form] = Form.useForm();
+  const config = useFrontendConfig();
   const [loading, setLoading] = useState(false);
 
   const handleLogin = useCallback(async () => {
@@ -31,12 +33,12 @@ export default function LoginPage() {
       const redirect = searchParams.get('redirect');
       // 校验 redirect 参数：必须是同源相对路径，防止 open redirect
       const redirectUrl = (() => {
-        if (!redirect) return '/home';
+        if (!redirect) return config.basic.defaultPage;
         try {
           const url = new URL(redirect, window.location.origin);
-          return url.origin === window.location.origin ? redirect : '/home';
+          return url.origin === window.location.origin ? redirect : config.basic.defaultPage;
         } catch {
-          return '/home';
+          return config.basic.defaultPage;
         }
       })();
       navigate(redirectUrl);
@@ -46,7 +48,7 @@ export default function LoginPage() {
     } finally {
       setLoading(false);
     }
-  }, [form, dispatch, navigate, searchParams]);
+  }, [form, dispatch, navigate, searchParams, config.basic.defaultPage]);
 
   return (
     <div className={styles.loginContainer}>

@@ -2,12 +2,11 @@ import { Skeleton } from 'antd';
 import styles from './index.module.scss';
 
 interface LayoutSkeletonProps {
-  menuItems?: number;
   cardCount?: number;
   cardRows?: number;
 }
 
-export default function LayoutSkeleton({ menuItems = 6, cardCount = 4, cardRows = 3 }: LayoutSkeletonProps) {
+export default function LayoutSkeleton({ cardCount = 4, cardRows = 3 }: LayoutSkeletonProps) {
   return (
     <div className={styles.layoutSkeleton}>
       <div className={styles.header}>
@@ -18,12 +17,6 @@ export default function LayoutSkeleton({ menuItems = 6, cardCount = 4, cardRows 
           <Skeleton.Avatar active size={24} />
           <Skeleton.Avatar active size={40} />
         </div>
-      </div>
-
-      <div className={styles.nav}>
-        {Array.from({ length: menuItems }).map((_, i) => (
-          <Skeleton.Avatar key={i} active size={45} style={{ marginBottom: 4 }} />
-        ))}
       </div>
 
       <div className={styles.main}>

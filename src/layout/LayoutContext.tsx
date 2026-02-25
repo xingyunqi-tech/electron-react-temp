@@ -3,7 +3,6 @@ import { createContext, useContext, useCallback, useMemo, useState } from 'react
 // 布局可见性类型
 export interface LayoutVisible {
   header: boolean;
-  nav: boolean;
 }
 
 // 头部组件可见性类型
@@ -33,7 +32,7 @@ export interface MenuItem {
 }
 
 // 默认配置
-const defaultLayoutConfig: LayoutVisible = { header: true, nav: true };
+const defaultLayoutConfig: LayoutVisible = { header: true };
 const defaultHeaderConfig: HeaderVisible = {
   logoIcon: true,
   logoTitle: true,
@@ -44,16 +43,6 @@ const defaultHeaderConfig: HeaderVisible = {
   avatar: true,
 };
 const defaultLogoConfig: LogoConfig = { icon: undefined, title: undefined };
-const hiddenLayoutConfig: LayoutVisible = { header: false, nav: false };
-const hiddenHeaderConfig: HeaderVisible = {
-  logoIcon: false,
-  logoTitle: false,
-  nav: false,
-  themeSwitch: false,
-  localeSwitch: false,
-  setting: false,
-  avatar: false,
-};
 
 // 布局上下文类型
 export interface LayoutContextType {
@@ -65,14 +54,6 @@ export interface LayoutContextType {
   setHeaderVisible: (visible: Partial<HeaderVisible>) => void;
   setLogoConfig: (config: Partial<LogoConfig>) => void;
   setCustomMenuList: (menuList: MenuItem[]) => void;
-  hideLayout: () => void;
-  showLayout: () => void;
-  hideHeader: () => void;
-  showHeader: () => void;
-  resetCustomMenuList: () => void;
-  resetLayout: () => void;
-  resetHeader: () => void;
-  resetLogo: () => void;
   resetAll: () => void;
 }
 
@@ -99,20 +80,12 @@ export function LayoutProvider({ children }: { children: React.ReactNode }) {
     setLogoConfigState(prev => ({ ...prev, ...config }));
   }, []);
 
-  const hideLayout = useCallback(() => setLayoutVisibleState({ ...hiddenLayoutConfig }), []);
-  const showLayout = useCallback(() => setLayoutVisibleState({ ...defaultLayoutConfig }), []);
-  const hideHeader = useCallback(() => setHeaderVisibleState({ ...hiddenHeaderConfig }), []);
-  const showHeader = useCallback(() => setHeaderVisibleState({ ...defaultHeaderConfig }), []);
-  const resetCustomMenuList = useCallback(() => setCustomMenuList([]), []);
-  const resetLayout = useCallback(() => setLayoutVisibleState({ ...defaultLayoutConfig }), []);
-  const resetHeader = useCallback(() => setHeaderVisibleState({ ...defaultHeaderConfig }), []);
-  const resetLogo = useCallback(() => setLogoConfigState({ ...defaultLogoConfig }), []);
   const resetAll = useCallback(() => {
-    resetLayout();
-    resetHeader();
-    resetLogo();
-    resetCustomMenuList();
-  }, [resetLayout, resetHeader, resetLogo, resetCustomMenuList]);
+    setLayoutVisibleState({ ...defaultLayoutConfig });
+    setHeaderVisibleState({ ...defaultHeaderConfig });
+    setLogoConfigState({ ...defaultLogoConfig });
+    setCustomMenuList([]);
+  }, []);
 
   const value = useMemo<LayoutContextType>(
     () => ({
@@ -124,14 +97,6 @@ export function LayoutProvider({ children }: { children: React.ReactNode }) {
       setHeaderVisible,
       setLogoConfig,
       setCustomMenuList,
-      hideLayout,
-      showLayout,
-      hideHeader,
-      showHeader,
-      resetCustomMenuList,
-      resetLayout,
-      resetHeader,
-      resetLogo,
       resetAll,
     }),
     [
@@ -143,14 +108,6 @@ export function LayoutProvider({ children }: { children: React.ReactNode }) {
       setHeaderVisible,
       setLogoConfig,
       setCustomMenuList,
-      hideLayout,
-      showLayout,
-      hideHeader,
-      showHeader,
-      resetCustomMenuList,
-      resetLayout,
-      resetHeader,
-      resetLogo,
       resetAll,
     ],
   );
@@ -167,47 +124,4 @@ export function useLayout(): LayoutContextType {
     throw new Error('useLayout must be used within a LayoutProvider');
   }
   return context;
-}
-
-/**
- * 控制头部组件显隐
- */
-export function useHeaderControl() {
-  const { headerVisible, setHeaderVisible, hideHeader, showHeader, resetHeader } = useLayout();
-  return { headerVisible, setHeaderVisible, hideHeader, showHeader, reset: resetHeader };
-}
-
-/**
- * 控制布局显隐
- */
-export function useLayoutControl() {
-  const { layoutVisible, setLayoutVisible, hideLayout, showLayout, resetLayout } = useLayout();
-  return { layoutVisible, setLayoutVisible, hideLayout, showLayout, reset: resetLayout };
-}
-
-/**
- * 控制Logo配置
- */
-export function useLogoConfig() {
-  const { logoConfig, setLogoConfig, resetLogo } = useLayout();
-  return { logoConfig, setLogoConfig, reset: resetLogo };
-}
-
-/**
- * 控制自定义菜单列表
- */
-export function useCustomMenuList() {
-  const { customMenuList, setCustomMenuList, resetCustomMenuList } = useLayout();
-  return { customMenuList, setCustomMenuList, reset: resetCustomMenuList };
-}
-
-/**
- * 控制导航区域显隐
- */
-export function useNavControl() {
-  const { layoutVisible, setLayoutVisible } = useLayout();
-  const showNav = useCallback(() => setLayoutVisible({ nav: true }), [setLayoutVisible]);
-  const hideNav = useCallback(() => setLayoutVisible({ nav: false }), [setLayoutVisible]);
-  const reset = useCallback(() => setLayoutVisible({ nav: defaultLayoutConfig.nav }), [setLayoutVisible]);
-  return { navVisible: layoutVisible.nav, showNav, hideNav, reset };
 }

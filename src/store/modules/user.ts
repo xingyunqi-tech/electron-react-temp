@@ -100,11 +100,6 @@ const userSlice = createSlice({
 /** user状态 */
 export const userRootSelector = (state: { [NAMESPACE]: UserState }) => state[NAMESPACE];
 
-/** 真实姓名 */
-export const realNameSelector = createSelector(userRootSelector, state => {
-  return state.realName;
-});
-
 /** 用户角色 */
 export const userRoleSelector = createSelector(userRootSelector, state => {
   return state.role;

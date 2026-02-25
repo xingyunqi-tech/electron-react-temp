@@ -4,7 +4,9 @@ import { ConfigProvider, App as AntdApp } from 'antd';
 import { StyleProvider, legacyLogicalPropertiesTransformer } from '@ant-design/cssinjs';
 import { useAppSelector, useAppDispatch } from '@/store';
 import { stopAllLoopsAction } from '@/store/framework';
-import { currentLocaleSelector, currentThemeSelector } from '@/store/modules/global';
+import { currentLocaleSelector, currentThemeSelector, setLocaleAction } from '@/store/modules/global';
+import { useFrontendConfig } from '@/hooks/useFrontendConfig';
+import type { LocaleKey } from '@/interface/system';
 import i18n, { getAntdLocales, loadLocaleMessages } from '@/plugins/locale';
 import { getAntdTheme } from '@/plugins/theme';
 import { os } from '@/utils/os';
@@ -21,6 +23,7 @@ export default function App() {
   const dispatch = useAppDispatch();
   const currentLocale = useAppSelector(currentLocaleSelector);
   const currentTheme = useAppSelector(currentThemeSelector);
+  const config = useFrontendConfig();
 
   // 应用卸载时清理副作用
   useEffect(() => {
@@ -28,6 +31,15 @@ export default function App() {
       dispatch(stopAllLoopsAction());
     };
   }, [dispatch]);
+
+  // 前端配置的默认语言同步到 store
+  useEffect(() => {
+    if (config.basic.defaultLanguage !== currentLocale) {
+      dispatch(setLocaleAction(config.basic.defaultLanguage as LocaleKey));
+    }
+    // 仅在配置变化时执行，不依赖 currentLocale 避免循环
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [config.basic.defaultLanguage]);
 
   // 监听语言变化：先加载语言包，再切换语言
   useEffect(() => {

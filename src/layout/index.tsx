@@ -1,18 +1,25 @@
 import { useEffect } from 'react';
 import { useLocation, useMatches } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { ConfigProvider, theme as antdTheme } from 'antd';
+import type { RouteMeta } from '../../typings/router';
 import LayoutHeader from './components/LayoutHeader/index';
-import LayoutMenu from './components/LayoutMenu/index';
 import LayoutMain from './components/LayoutMain/index';
 import { LayoutProvider, useLayout } from './LayoutContext';
+import { useFrontendConfig } from '@/hooks/useFrontendConfig';
+import { ConfigProvider, Watermark, theme as antdTheme } from 'antd';
 import styles from './index.module.scss';
 
 function LayoutContent() {
-  const { t } = useTranslation();
   const location = useLocation();
   const matches = useMatches();
+  const config = useFrontendConfig();
   const { layoutVisible, setLayoutVisible, setHeaderVisible, setLogoConfig, setCustomMenuList, resetAll } = useLayout();
+
+  // 前端配置的 logoImage 变化时同步到 LayoutContext
+  useEffect(() => {
+    if (config.basic.logoImage) {
+      setLogoConfig({ icon: config.basic.logoImage });
+    }
+  }, [config.basic.logoImage, setLogoConfig]);
 
   // 监听路由变化，应用 Layout 配置
   useEffect(() => {
@@ -20,7 +27,7 @@ function LayoutContent() {
 
     // 查找当前路由的 layout 配置
     const currentMatch = matches[matches.length - 1];
-    const handle = currentMatch?.handle as { layout?: any } | undefined;
+    const handle = currentMatch?.handle as RouteMeta | undefined;
     const layoutConfig = handle?.layout;
 
     if (layoutConfig) {
@@ -29,20 +36,42 @@ function LayoutContent() {
       if (layoutConfig.logo) setLogoConfig(layoutConfig.logo);
       if (layoutConfig.customMenu) setCustomMenuList(layoutConfig.customMenu);
     }
+
+    // 路由重置后重新应用前端配置的 logo
+    if (config.basic.logoImage && !layoutConfig?.logo?.icon) {
+      setLogoConfig({ icon: config.basic.logoImage });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
-  return (
+  const content = (
     <div className={styles.layoutContainer}>
       {layoutVisible.header && (
         <ConfigProvider theme={{ algorithm: antdTheme.darkAlgorithm }}>
-          <LayoutHeader logoTitle={t('layout.systemTitle')} className={styles.areaHeader} />
+          <LayoutHeader logoTitle={config.basic.systemTitle} className={styles.areaHeader} />
         </ConfigProvider>
       )}
-      {layoutVisible.nav && <LayoutMenu className={styles.areaNav} />}
       <LayoutMain className={styles.areaMain} />
     </div>
   );
+
+  if (config.watermark.enabled && config.watermark.content) {
+    return (
+      <Watermark
+        content={config.watermark.content}
+        font={{
+          color: config.watermark.color,
+          fontSize: config.watermark.fontSize,
+        }}
+        gap={[100, 100]}
+        style={{ opacity: config.watermark.opacity }}
+      >
+        {content}
+      </Watermark>
+    );
+  }
+
+  return content;
 }
 
 export default function Layout() {

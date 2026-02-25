@@ -3,8 +3,8 @@ import { Navigate } from 'react-router-dom';
 import type { RouteObject } from 'react-router-dom';
 import type { RouteConfig } from '@/store/modules/permission';
 import type { RouteMeta } from '../../../typings/router';
-import { ROLES } from '@/constants/roles';
 
+const SettingLayout = lazy(() => import('@/views/Setting/index'));
 const SettingFrontend = lazy(() => import('@/views/Setting/frontend'));
 const SettingTheme = lazy(() => import('@/views/Setting/theme'));
 
@@ -14,7 +14,11 @@ const SettingTheme = lazy(() => import('@/views/Setting/theme'));
 export const asyncRoutes: RouteObject[] = [
   {
     path: 'setting',
-    handle: { title: '设置' },
+    element: <SettingLayout />,
+    handle: {
+      title: '设置',
+      layout: { header: { nav: false } },
+    },
     children: [
       {
         index: true,
@@ -23,12 +27,12 @@ export const asyncRoutes: RouteObject[] = [
       {
         path: 'frontend',
         element: <SettingFrontend />,
-        handle: { title: '前端配置', roles: [ROLES.ADMIN] },
+        handle: { title: '前端配置', layout: { header: { nav: false } } },
       },
       {
         path: 'theme',
         element: <SettingTheme />,
-        handle: { title: '主题配置', roles: [ROLES.ADMIN] },
+        handle: { title: '主题配置', layout: { header: { nav: false } } },
       },
     ],
   },

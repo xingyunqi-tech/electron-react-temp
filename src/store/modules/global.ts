@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { ThunkAction, UnknownAction } from '@reduxjs/toolkit';
 import { DEFAULT_LOCALE, DEFAULT_THEME_STYLE } from '@/constants/system';
 import type { LocaleKey, ThemeStyleKey } from '@/interface/system';
+import type { FrontendConfig } from '@/constants/frontendConfig';
 import { createSelector } from 'reselect';
 
 export const NAMESPACE = 'global' as const;
@@ -13,6 +14,8 @@ interface GlobalState {
   currentTheme: ThemeStyleKey;
   /** 高级模式 */
   advanceMode: boolean;
+  /** 前端配置 */
+  frontendConfig: Partial<FrontendConfig>;
 }
 
 /**
@@ -25,6 +28,8 @@ const initialState: GlobalState = {
   currentTheme: DEFAULT_THEME_STYLE as ThemeStyleKey,
   /** 高级模式 */
   advanceMode: false,
+  /** 前端配置 */
+  frontendConfig: {},
 };
 
 const globalSlice = createSlice({
@@ -47,12 +52,27 @@ const globalSlice = createSlice({
     toggleAdvanceModeAction(state) {
       state.advanceMode = !state.advanceMode;
     },
+    /** 设置前端配置 */
+    setFrontendConfigAction(state, action: PayloadAction<Partial<FrontendConfig>>) {
+      state.frontendConfig = action.payload;
+    },
+    /** 重置前端配置 */
+    resetFrontendConfigAction(state) {
+      state.frontendConfig = {};
+    },
   },
 });
 
 // ==================== Actions ====================
 
-export const { setLocaleAction, toggleThemeAction, setThemeAction, toggleAdvanceModeAction } = globalSlice.actions;
+export const {
+  setLocaleAction,
+  toggleThemeAction,
+  setThemeAction,
+  toggleAdvanceModeAction,
+  setFrontendConfigAction,
+  resetFrontendConfigAction,
+} = globalSlice.actions;
 
 // ==================== Thunks ====================
 
@@ -105,6 +125,10 @@ export const currentThemeSelector = createSelector(globalRootSelector, state => 
 /** 是否开启高级模式 */
 export const advanceModeSelector = createSelector(globalRootSelector, state => {
   return state.advanceMode;
+});
+/** 前端配置 */
+export const frontendConfigSelector = createSelector(globalRootSelector, state => {
+  return state.frontendConfig;
 });
 
 // ==================== Reducer ====================

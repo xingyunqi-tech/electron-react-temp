@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Menu } from 'antd';
 import type { MenuProps } from 'antd';
+import { SettingOutlined, BgColorsOutlined } from '@ant-design/icons';
 import styles from './index.module.scss';
 
 export default function SettingLayout() {
@@ -10,8 +11,8 @@ export default function SettingLayout() {
 
   const menuItems: MenuProps['items'] = useMemo(
     () => [
-      { key: '/setting/frontend', label: '前端配置' },
-      { key: '/setting/theme', label: '主题配置' },
+      { key: '/setting/frontend', label: '前端配置', icon: <SettingOutlined /> },
+      { key: '/setting/theme', label: '主题配置', icon: <BgColorsOutlined /> },
     ],
     [],
   );

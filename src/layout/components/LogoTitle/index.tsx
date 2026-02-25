@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useLogoConfig } from '../../LayoutContext';
+import { useLayout } from '../../LayoutContext';
 
 interface LogoTitleProps {
   title?: string;
@@ -9,7 +9,7 @@ interface LogoTitleProps {
 
 function LogoTitle({ title = '', className }: LogoTitleProps) {
   const navigate = useNavigate();
-  const { logoConfig } = useLogoConfig();
+  const { logoConfig } = useLayout();
   const displayTitle = logoConfig.title ?? title;
 
   const handleClick = () => {

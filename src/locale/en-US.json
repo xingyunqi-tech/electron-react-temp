@@ -6,6 +6,9 @@
     "admin": "Administrator",
     "logoutConfirm": "Are you sure you want to logout?",
     "logoutSuccess": "Logout successful",
-    "tip": "Tip"
+    "tip": "Tip",
+    "home": "Home",
+    "advanceModeOn": "Advanced mode enabled",
+    "advanceModeOff": "Advanced mode disabled"
   }
 }

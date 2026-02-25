@@ -7,6 +7,9 @@
   "dictionaries": ["typescript", "node", "npm", "html", "css", "fonts", "softwareTerms"],
   "words": [
     "idx",
+    "Strs",
+    "daterange",
+    "datetimerange",
     "persistor",
     "cssinjs",
     "moretab",

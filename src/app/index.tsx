@@ -4,8 +4,10 @@ import './index.scss';
 import type { ComponentType } from 'react';
 import { createRoot } from 'react-dom/client';
 import { ReduxProvider } from '@/store/framework';
-import { reduxContext } from '@/store';
+import { reduxContext, type RootState } from '@/store';
 import { setupGlobalErrorHandler } from '@/utils/errorHandler';
+import { frontendConfigSelector } from '@/store/modules/global';
+import { mergeConfig } from '@/constants/frontendConfig';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import '@/plugins/locale';
 import App from './App';
@@ -17,6 +19,10 @@ setupGlobalErrorHandler();
  * 初始化应用
  */
 async function initApp() {
+  // 从持久化 store 中恢复前端配置到全局单例，确保 Sentry 等插件初始化时能读到
+  const storedConfig = frontendConfigSelector(reduxContext.store.getState() as RootState);
+  mergeConfig(storedConfig);
+
   // 并行初始化可选插件
   const tasks: Promise<void>[] = [];
 
