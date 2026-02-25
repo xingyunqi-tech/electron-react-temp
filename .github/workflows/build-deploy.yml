@@ -14,7 +14,7 @@
 #     - DEPLOY_SERVER_PATH: 部署目标路径
 #     - DEPLOY_SSH_PRIVATE_KEY: SSH 私钥 (完整内容，包括 BEGIN/END)
 
-name: Build & Deploy
+name: 'Build & Deploy'
 
 on:
   workflow_run:
@@ -48,10 +48,7 @@ jobs:
     runs-on: ubuntu-latest
     # workflow_run 触发时：仅当质量检查通过且是 v* tag 推送时执行
     # workflow_dispatch 触发时：直接执行
-    if: >
-      github.event_name == 'workflow_dispatch' ||
-      (github.event.workflow_run.conclusion == 'success' &&
-       startsWith(github.event.workflow_run.head_branch, 'v'))
+    if: "github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && startsWith(github.event.workflow_run.head_branch, 'v'))"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
