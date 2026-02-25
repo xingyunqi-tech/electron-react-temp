@@ -18,9 +18,11 @@ name: Build and Deploy
 
 on:
   # 当 Check Quality 工作流完成后触发（质量关卡）
+  # branches 过滤：只有 v* tag 触发的 Check Quality 才会启动本流程
   workflow_run:
     workflows: ['Check Quality']
     types: [completed]
+    branches: ['v*']
 
   workflow_dispatch:
     inputs:
@@ -49,10 +51,8 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    # 仅在以下情况运行：
-    # 1. 手动触发
-    # 2. Check Quality 成功完成，且触发事件是 v* tag 的 push
-    if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && startsWith(github.event.workflow_run.head_branch, 'v'))
+    # 手动触发，或 Check Quality 通过（触发层已过滤 v* tag，此处只需检查结论）
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
