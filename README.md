@@ -1,59 +1,69 @@
-# Vue3 企业级前端模板
+# Electron React 企业级桌面应用模板
 
-> 基于 Vue3 + TypeScript + Vite 构建的现代化前端开发模板，集成完整的开发工具链和最佳实践
+> 基于 React 18 + Electron 40 + TypeScript + Vite 构建的现代化桌面应用模板，同时支持 Web 部署
 
 [![Node.js](https://img.shields.io/badge/node-%3E%3D22-green)](https://nodejs.org/)
-[![Vue.js](https://img.shields.io/badge/vue-3.x-brightgreen)](https://vuejs.org/)
-[![TypeScript](https://img.shields.io/badge/typescript-5.x-blue)](https://www.typescriptlang.org/)
-[![Vite](https://img.shields.io/badge/vite-latest-646CFF)](https://vitejs.dev/)
+[![React](https://img.shields.io/badge/react-18.x-61DAFB)](https://react.dev/)
+[![Electron](https://img.shields.io/badge/electron-40.x-47848F)](https://www.electronjs.org/)
+[![TypeScript](https://img.shields.io/badge/typescript-5.9-blue)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/vite-7.x-646CFF)](https://vitejs.dev/)
 
-## ✨ 特性
+## 特性
 
-- 🚀 **现代化技术栈**: Vue3 + TypeScript + Vite + Pinia
-- 📱 **响应式设计**: 支持移动端和桌面端适配
-- 🎨 **UI组件库**: Element Plus + UnoCSS，支持组件自动导入
-- 🌍 **国际化**: 完整的i18n解决方案，支持AI自动翻译和交互式管理
-- 📦 **状态管理**: Pinia 状态管理，支持持久化
-- 💀 **骨架屏系统**: 路由级和组件级骨架屏，提升加载体验
-- 🔧 **开发工具**: ESLint + Prettier + Stylelint + Husky + lint-staged
-- 📊 **监控集成**: Sentry 错误监控和性能追踪
-- 🐳 **容器化**: Docker 一键部署，支持Nginx反向代理
-- 🔒 **类型安全**: 完整的TypeScript类型定义
-- ✅ **测试完善**: Vitest 单元测试，支持覆盖率报告
-- 🎯 **代码质量**: 完整的代码检查、格式化和拼写检查工具链
-- 🔍 **开发体验**: 代码检查器插件，快速定位组件源码
+- **现代化技术栈**: React 18 + Electron 40 + TypeScript 5.9 + Vite 7
+- **桌面 + Web**: 同一套代码同时支持 Electron 桌面端和 Web 端部署
+- **UI 组件库**: Ant Design 6 + UnoCSS 原子化 CSS
+- **状态管理**: Redux Toolkit + Redux Saga，自定义框架支持动态模块注册
+- **权限路由**: React Router 7，三层路由体系（基础/公共/异步权限）
+- **API 自动生成**: Orval 从 OpenAPI 规范自动生成类型安全的 API 层
+- **国际化**: i18next + react-i18next，支持 AI 自动翻译
+- **主题系统**: Ant Design Token + CSS 变量，支持 dark/light 切换
+- **Electron 安全**: contextBridge + IPC 通道白名单，遵循安全最佳实践
+- **测试完善**: Vitest 单元测试 + Playwright E2E 测试
+- **代码质量**: ESLint + Stylelint + Prettier + Husky + lint-staged
+- **监控集成**: Sentry 错误监控和性能追踪
+- **容器化**: Docker + Nginx 一键部署
+- **CI/CD**: GitHub Actions 自动化质量检查和部署
+- **AI 辅助开发**: Claude Code Skills 配置，75% 效率提升
 
-## 🏗️ 技术架构
+## 技术架构
 
 ### 核心技术栈
-- **框架**: Vue 3 (Composition API)
-- **构建工具**: Vite
-- **语言**: TypeScript
-- **状态管理**: Pinia
-- **路由**: Vue Router
-- **UI库**: Element Plus
-- **样式**: UnoCSS + SCSS
-- **HTTP客户端**: Axios
+
+| 分类 | 技术 |
+|------|------|
+| **框架** | React 18 (Hooks + Function Component) |
+| **桌面端** | Electron 40 (Main + Preload + Renderer 三进程) |
+| **语言** | TypeScript 5.9 (严格类型检查) |
+| **构建** | Vite 7 + vite-plugin-electron |
+| **状态管理** | Redux Toolkit + Redux Saga |
+| **路由** | React Router 7 |
+| **UI 库** | Ant Design 6 |
+| **样式** | UnoCSS + SCSS + CSS Modules |
+| **HTTP** | Axios + Orval (API 自动生成) |
+| **测试** | Vitest 4 + Playwright 1.57 |
+| **监控** | Sentry (错误 + 性能) |
 
 ### 开发工具
-- **代码检查**: ESLint
-- **代码格式化**: Prettier
-- **样式检查**: Stylelint
-- **Git钩子**: Husky
-- **提交规范**: Commitizen + cz-git
-- **拼写检查**: CSpell
-- **测试框架**: Vitest + @vitest/ui
-- **监控工具**: Sentry
 
-## 📁 项目结构
+| 分类 | 技术 |
+|------|------|
+| **代码检查** | ESLint |
+| **代码格式化** | Prettier |
+| **样式检查** | Stylelint |
+| **Git 钩子** | Husky + lint-staged |
+| **提交规范** | Commitizen + cz-git |
+| **拼写检查** | CSpell |
+| **桌面打包** | electron-builder |
 
-```md
-vue-admin-template/
-├── .claude/                   # Claude AI 配置和文档
-│   └── agents/                # AI Agent 配置文件
+## 项目结构
+
+```
+electron-react-temp/
+├── .claude/                   # Claude AI 配置 (Skills/Agents/Commands)
+├── .github/workflows/         # GitHub Actions CI/CD
 ├── .husky/                    # Git hooks 配置
 ├── .vscode/                   # VS Code 编辑器配置
-│   └── extensions.json        # 推荐插件列表
 ├── config/                    # 项目配置文件
 │   ├── devServer.ts           # 开发服务器配置
 │   ├── host.ts                # 主机配置
@@ -62,594 +72,389 @@ vue-admin-template/
 │   ├── manage.sh              # Docker 容器管理脚本
 │   ├── nginx.conf             # Nginx 配置文件
 │   └── README.md              # 部署说明文档
+├── e2e/                       # E2E 测试
+├── electron/                  # Electron 桌面端
+│   ├── main/                  # 主进程 (窗口管理、IPC)
+│   └── preload/               # 预加载脚本 (contextBridge)
 ├── public/                    # 静态资源
-│   ├── favicon.ico            # 网站图标
-│   ├── loading.css            # 加载动画样式
 │   └── theme.css              # CSS 主题变量
 ├── scripts/                   # 构建和工具脚本
 │   ├── i18n/                  # 国际化自动化脚本
-│   │   ├── index.ts           # 交互式国际化管理
-│   │   ├── translate.ts       # AI 自动翻译
-│   │   ├── exportLocale.ts    # 导出语言包
-│   │   ├── generate.ts        # 生成国际化文件
-│   │   ├── merge.ts           # 合并翻译
-│   │   ├── pick.ts            # 提取待翻译文本
-│   │   └── restore.ts         # 恢复翻译
 │   ├── cssVars/               # CSS 变量检查脚本
-│   ├── husky/                 # 提交信息检查
-│   │   ├── commit-msg.ts      # 提交信息检查
-│   │   ├── pre-commit.ts      # 提交前检查
-│   │   └── pre-push.ts        # 推送前检查
-├── src/                       # 源代码目录
+│   └── husky/                 # 提交信息检查
+├── src/                       # 源代码 (渲染进程)
 │   ├── api/                   # API 接口层
-│   │   ├── instance.ts        # Axios 实例配置
-│   │   └── modules/           # API 模块
-│   │       └── login.ts       # 登录接口
-│   ├── assets/                # 静态资源
-│   │   ├── icons/             # SVG 图标资源
-│   │   └── images/            # 图片资源
+│   │   ├── core/              # HTTP 客户端、拦截器 (手动维护)
+│   │   ├── generated/         # Orval 自动生成 (禁止修改!)
+│   │   ├── custom/            # 自定义扩展 API
+│   │   └── index.ts           # 统一导出
+│   ├── app/                   # App 配置
+│   ├── assets/                # 静态资源 (图片、图标)
 │   ├── components/            # 全局公用组件
-│   │   ├── BaseInput/         # 基础输入组件
-│   │   └── Skeleton/          # 骨架屏组件
+│   │   ├── ErrorBoundary/     # 错误边界
+│   │   ├── LazyImage/         # 懒加载图片
+│   │   ├── Skeleton/          # 骨架屏
+│   │   └── StaticFunction/    # 静态方法组件
 │   ├── constants/             # 常量定义
+│   ├── hooks/                 # 自定义 Hooks
 │   ├── interface/             # TypeScript 接口定义
 │   ├── layout/                # 布局组件
-│   ├── locales/               # 国际化语言包
+│   ├── locale/                # 国际化语言包
+│   ├── plugins/               # 全局插件
+│   │   ├── dayjs.ts           # 日期处理
+│   │   ├── locale.ts          # i18n 配置
+│   │   ├── sentry/            # 错误监控
+│   │   ├── storage/           # 存储管理
+│   │   ├── theme.ts           # 主题配置
+│   │   └── webVitals.ts       # 性能指标
 │   ├── router/                # 路由配置
-│   ├── store/                 # Pinia 状态管理
-│   │   └── modules/           # 状态模块
-│   ├── styles/                # 全局样式文件
+│   │   ├── routes/            # 路由定义 (base/common/async)
+│   │   └── guards.tsx         # 路由守卫 (AuthGuard)
+│   ├── store/                 # Redux 状态管理
+│   │   ├── modules/           # 业务模块 (global/user/permission)
+│   │   └── framework/         # 自定义框架 (动态模块/插件)
+│   ├── styles/                # 全局样式
 │   ├── utils/                 # 工具函数
 │   ├── views/                 # 页面组件
 │   │   ├── Home/              # 首页
 │   │   ├── Login/             # 登录页
 │   │   ├── Setting/           # 设置页
-│   │   └── 404.vue            # 404 页面
-│   ├── App.vue                # 根组件
-│   └── main.ts                # 应用入口
-├── tests/                     # 测试文件
-│   └── setup.ts               # 测试环境配置
+│   │   ├── Forbidden/         # 403 页面
+│   │   └── NotFound/          # 404 页面
+│   └── index.ts               # 应用入口
+├── tests/                     # 单元测试
 ├── typings/                   # TypeScript 全局类型声明
-├── package.json               # 项目依赖配置
-├── package.sh                 # 部署打包脚本
-├── vite.config.ts             # Vite 构建配置
-├── tsconfig.json              # TypeScript 配置
-├── eslint.config.ts           # ESLint 配置
-├── uno.config.ts              # UnoCSS 配置
 ├── Dockerfile                 # Docker 镜像配置
-└── index.html                 # HTML 入口文件
+├── electron-builder.json5     # Electron 打包配置
+├── orval.config.ts            # Orval API 生成配置
+├── playwright.config.ts       # Playwright E2E 配置
+├── vitest.config.ts           # Vitest 测试配置
+├── package.json               # 项目依赖配置
+└── package.sh                 # 部署打包脚本
 ```
 
-## 🚀 快速开始
+## 快速开始
 
 ### 环境要求
 
 - **Node.js**: >= 22.0.0
-- **包管理器**: pnpm (推荐) / npm / yarn
+- **包管理器**: pnpm (必须)
 
 ### 安装依赖
 
 ```bash
-# 使用 pnpm (推荐)
 pnpm install
-
-# 或使用 npm
-npm install
-
-# 或使用 yarn
-yarn install
 ```
 
 ### 开发模式
 
 ```bash
-# 启动开发服务器
+# 启动开发服务器 (Web + Electron)
 pnpm start
 
 # 启动 HTTPS 开发服务器
 pnpm start:https
 ```
 
-### 构建部署
+### 构建
 
 ```bash
-# 构建生产版本
+# 构建 Web 生产版本
 pnpm build
 
-# 预览构建结果
+# 打包 Electron 桌面应用
+pnpm package
+
+# 预览 Web 构建结果
 pnpm preview
 
 # 构建并分析包大小
 pnpm analyzer
 ```
 
-## 🛠️ 开发工具配置
-
-### VS Code 插件推荐
-
-本项目推荐安装以下 VS Code 插件（已配置在 `.vscode/extensions.json`）：
-
-#### 核心插件
-- **Vue - Official** (`Vue.volar`): Vue 3 官方语言支持
-- **Vue VSCode Snippets** (`sdras.vue-vscode-snippets`): Vue 代码片段
-
-#### 代码质量
-- **ESLint** (`dbaeumer.vscode-eslint`): JavaScript/TypeScript 代码检查
-- **Stylelint** (`stylelint.vscode-stylelint`): CSS/SCSS 代码检查
-- **Prettier** (`esbenp.prettier-vscode`): 代码格式化
-- **Code Spell Checker** (`streetsidesoftware.code-spell-checker`): 拼写检查
-
-#### 开发增强
-- **i18n Ally** (`lokalise.i18n-ally`): 国际化开发辅助
-- **CSS Variable Autocomplete** (`vunguyentuan.vscode-css-variables`): CSS 变量自动补全
-- **UnoCSS** (`antfu.unocss`): UnoCSS 智能提示
-- **VSC NVM** (`henrynguyen5-vsc.vsc-nvm`): Node 版本管理
-
-**快速安装**: 打开项目后，VS Code 会自动提示安装推荐的插件
-
-## 📜 脚本命令
+## 脚本命令
 
 ### 开发相关
+
 ```bash
-# 启动开发服务器
-pnpm start
-
-# 启动 HTTPS 开发服务器
-pnpm start:https
-
-# 类型检查
-pnpm type-check
+pnpm start              # 启动开发服务器
+pnpm start:https        # HTTPS 开发服务器
+pnpm type-check         # TypeScript 类型检查
 ```
 
 ### 测试相关
+
 ```bash
-# 运行所有测试
-pnpm test
-
-# 监听模式运行测试
-pnpm test:watch
-
-# 生成测试覆盖率报告
-pnpm test:coverage
-
-# 启动测试 UI 界面
-pnpm test:ui
+pnpm test               # 运行单元测试
+pnpm test:watch         # 监听模式
+pnpm test:coverage      # 测试覆盖率报告
+pnpm test:ui            # Vitest UI 界面
+pnpm test:e2e           # Playwright E2E 测试
+pnpm test:e2e:report    # 查看 E2E 测试报告
 ```
 
 ### 代码质量
+
 ```bash
-# 完整代码检查
-pnpm lint
-
-# 分类检查
-pnpm lint:script    # JavaScript/TypeScript 检查
-pnpm lint:style     # 样式文件检查
-pnpm lint:md        # Markdown 文档检查
-
-# 代码格式化
-pnpm format
-
-# 拼写检查
-pnpm cspell
-
-# 规范化提交
-pnpm commit
+pnpm lint               # 完整代码检查 (ESLint + Stylelint + Markdownlint)
+pnpm lint:script        # JavaScript/TypeScript 检查
+pnpm lint:style         # 样式文件检查
+pnpm lint:md            # Markdown 文档检查
+pnpm format             # Prettier 代码格式化
+pnpm cspell             # 拼写检查
+pnpm commit             # 规范化提交 (Commitizen)
 ```
 
-### 国际化
-```bash
-# 交互式国际化管理（推荐）
-pnpm i18n
+### API 和国际化
 
-# 导出语言包（构建时自动执行）
-pnpm i18n:exportLocale
+```bash
+pnpm api:gen            # Orval 生成 API 代码 (从 openapi.json)
+pnpm i18n               # 交互式国际化管理
+pnpm i18n:exportLocale  # 导出语言包
 ```
 
-**国际化功能说明**:
-- 支持多语言管理和切换
-- AI 自动翻译（使用 DeepSeek API）
-- 交互式命令行工具
-- 自动提取待翻译文本
-- 支持语言包导入导出
-- 翻译结果合并和恢复
+### 构建和部署
 
-### 骨架屏
+```bash
+pnpm build              # 构建 Web 生产版本
+pnpm package            # 打包 Electron 桌面应用
+pnpm preview            # 预览构建结果
+pnpm analyzer           # 分析构建产物
+pnpm uploadToSentry     # 上传 Source Map 到 Sentry
+pnpm clean              # 清理构建产物
+```
 
-项目支持在路由配置中使用骨架屏，提升页面加载体验。
+## 核心架构
 
-**路由配置示例**:
+### Orval API 自动生成
 
-```typescript
-// 使用预置类型 - 卡片型
-{
-  path: '/home',
-  name: 'Home',
-  component: () => import('@/views/Home/index.vue'),
-  meta: {
-    title: '首页',
-    skeleton: {
-      type: 'card',
-      props: { count: 4, rows: 3, columns: 2 },
-    },
-  },
+项目使用 Orval 从 OpenAPI 规范自动生成类型安全的 API 层：
+
+```
+后端更新 API → 更新 openapi.json → pnpm api:gen → 自动生成代码
+```
+
+- `src/api/generated/` — 自动生成，**禁止手动修改**
+- `src/api/custom/` — 自定义扩展 (文件上传、WebSocket 等)
+- 从 `@/api` 统一导入，不直接从 `generated/` 导入
+
+### 三层路由体系
+
+| 路由层 | 文件 | 说明 |
+|--------|------|------|
+| 基础路由 | `routes/base.tsx` | 登录、404、403，无需登录 |
+| 公共路由 | `routes/common.tsx` | 首页等，登录即可访问 |
+| 异步路由 | `routes/async.tsx` | 管理页面，需要角色权限 |
+
+路由守卫流程：Token 检查 → 初始化权限路由 → 获取用户信息 → 角色过滤 → 放行/403
+
+### Redux 自定义框架
+
+- **动态模块注册**: `defineModule()` / `destroyModule()` 支持按需加载
+- **插件系统**: 持久化插件 (redux-persist + localforage)、循环任务插件
+- **模块模式**: Slice + AsyncThunk + createSelector 统一导出
+
+### Electron 三进程架构
+
+| 进程 | 目录 | 职责 |
+|------|------|------|
+| Main | `electron/main/` | 窗口管理、IPC 处理、系统集成 |
+| Preload | `electron/preload/` | contextBridge 安全暴露 API |
+| Renderer | `src/` | React 应用 |
+
+安全要求：IPC 通道白名单、禁止关闭 contextIsolation、禁止在渲染进程使用 Node.js API
+
+### 主题系统
+
+所有颜色使用 CSS 变量或 Ant Design Token，支持 dark/light 主题切换：
+
+```scss
+// 正确
+.component {
+  color: var(--ant-color-text);
+  background: var(--ant-color-bg-container);
 }
-
-// 使用预置类型 - 表格型
-{
-  path: '/user-list',
-  name: 'UserList',
-  component: () => import('@/views/user-list/index.vue'),
-  meta: {
-    title: '用户列表',
-    skeleton: {
-      type: 'table',
-      props: { columns: 6, rows: 10 },
-    },
-  },
-}
 ```
 
-**骨架屏功能说明**:
-- 支持路由级和组件级骨架屏
-- 预置 4 种骨架屏组件（Card、Table、Layout、Login）
-- 支持自定义骨架屏组件
-- TypeScript 类型安全
-- 基于 Element Plus el-skeleton
+主题配置：`src/plugins/theme.ts` | CSS 变量：`public/theme.css`
 
-**详细配置**: 参见 [.claude/agents/router-development.md#骨架屏配置](.claude/agents/router-development.md#骨架屏配置)
+## VS Code 配置
 
-### 构建相关
-```bash
-# 构建生产版本
-pnpm build
+项目推荐安装以下插件（已配置在 `.vscode/extensions.json`）：
 
-# 预览构建结果
-pnpm preview
+| 插件 | 用途 |
+|------|------|
+| ESLint | JavaScript/TypeScript 代码检查 |
+| Stylelint | CSS/SCSS 代码检查 |
+| Prettier | 代码格式化 |
+| CSS Modules | CSS Modules 智能提示 |
+| ES7+ React snippets | React 代码片段 |
+| Code Spell Checker | 拼写检查 |
+| i18n Ally | 国际化开发辅助 |
+| CSS Variable Autocomplete | CSS 变量自动补全 |
+| UnoCSS | UnoCSS 智能提示 |
 
-# 分析构建产物
-pnpm analyzer
-
-# 上传到 Sentry
-pnpm uploadToSentry
-
-# 清理构建产物
-pnpm clean
-```
-
-## 🐳 Docker 部署
-
-本项目提供了完整的 Docker 部署方案，支持快速部署和版本管理。
-
-### 方式一：本地开发部署（推荐）
-
-使用 Docker 快速启动本地开发环境：
-
-```bash
-# 进入部署目录
-cd deploy
-
-# 启动容器（默认端口 31190）
-./manage.sh start
-
-# 使用自定义端口启动
-PORT=3000 ./manage.sh start
-
-# 查看容器状态
-./manage.sh status
-
-# 查看容器日志
-./manage.sh logs
-
-# 停止容器
-./manage.sh stop
-
-# 重启容器
-./manage.sh restart
-
-# 清理容器和镜像
-./manage.sh clean
-
-# 查看所有可用命令
-./manage.sh help
-```
-
-**访问地址**:
-- 应用首页: http://localhost:31190
-- 版本信息: http://localhost:31190/web/version
-
-**详细说明**: 查看 [deploy/README.md](./deploy/README.md)
-
-### 方式二：生产环境部署
-
-构建完整的部署包用于生产环境：
-
-```bash
-# 1. 构建标准部署包
-./package.sh
-
-# 2. 构建完整部署包（包含静态资源包，用于热更新）
-./package.sh --full
-
-# 3. 将生成的部署包上传到服务器
-# electron-react-web_<git-hash>_<timestamp>.tar.gz
-
-# 4. 在服务器上解压并部署
-tar -xzf electron-react-web_*.tar.gz
-cd electron_react_web
-./manage.sh start
-```
-
-**部署包内容**:
-- Docker 镜像（tar 格式）
-- Nginx 配置文件
-- 部署管理脚本
-- 构建信息和版本文件
-
-**部署特性**:
-- 基于 Nginx Alpine 镜像，体积小巧
-- 自动生成版本信息（Git hash、构建时间、分支信息）
-- 支持静态资源包生成，便于热更新
-- 完整的容器管理脚本
-
-## 🔧 配置说明
-
-### 环境变量
-
-项目支持多环境配置，通过不同的 `.env` 文件管理：
+## 环境变量
 
 **开发环境** (`.env.development`):
+
 ```bash
-# API 基础地址
 VITE_BASEURL=http://localhost:3001/
 ```
 
 **生产环境** (`.env.production`):
-```bash
-# API 基础地址
-VITE_BASEURL=//127.0.0.1:3001/
 
-# Sentry 配置
+```bash
+VITE_BASEURL=//127.0.0.1:3001/
 VITE_SENTRY_ORG=your_org
 VITE_SENTRY_PROJECT=your_project
 VITE_SENTRY_AUTH_TOKEN=your_auth_token
 ```
 
-**本地覆盖配置** (`.env.local` - 可选):
+**本地覆盖** (`.env.local`):
+
 ```bash
-# 是否启用 HTTPS
 VITE_ENABLE_HTTPS=false
-
-# 是否启用构建分析
 VITE_ENABLE_ANALYZER=false
-
-# 是否上传到 Sentry
 VITE_UPLOAD_TO_SENTRY=false
 ```
 
-### 代理配置
+## Docker 部署
 
-在 `config/proxy.ts` 中配置开发服务器代理：
+### 本地开发部署
 
-```typescript
-export const proxy = {
-  '/api': {
-    target: 'http://localhost:3000',
-    changeOrigin: true,
-    rewrite: (path: string) => path.replace(/^\/api/, '')
-  }
-};
+```bash
+pnpm build
+cd deploy && ./manage.sh start
+# 访问 http://localhost:31190
 ```
 
-### Vite 构建配置
+### 生产环境部署
 
-项目在 `vite.config.ts` 中配置了以下功能：
+```bash
+# 构建部署包
+./package.sh
 
-- **插件系统**: Vue、JSX、自动导入、组件自动导入
-- **开发工具**: HTTPS支持、代码检查器、Vue MCP
-- **生产优化**: Legacy浏览器支持、Gzip压缩、代码分割
-- **监控集成**: Sentry错误上报和源码映射
-- **构建分析**: 可视化分析构建产物
-- **测试配置**: Vitest 单元测试和覆盖率
+# 在服务器上解压并部署
+tar -xzf electron-react-web_*.tar.gz
+cd electron_react_web
+./manage.sh start
+```
 
-### 测试配置
+支持的命令：`start` | `stop` | `restart` | `status` | `logs` | `build` | `remove` | `help`
 
-项目使用 Vitest 作为测试框架，配置了完整的测试环境：
+详细部署文档：[deploy/README.md](./deploy/README.md)
 
-**测试覆盖率要求**:
-- 分支覆盖率: 80%
-- 函数覆盖率: 80%
-- 代码行覆盖率: 80%
-- 语句覆盖率: 80%
+## Electron 桌面打包
 
-**测试环境**:
-- 基于 jsdom 模拟浏览器环境
-- 支持 Vue 组件测试（@vue/test-utils）
-- 内联 Element Plus 避免样式导入问题
-- 测试文件放在 `tests/` 目录下
-## 💡 最佳实践
+```bash
+# 打包当前平台
+pnpm package
+```
+
+支持 macOS (DMG)、Windows (NSIS) 和 Linux (AppImage)，配置文件：`electron-builder.json5`
+
+## CI/CD
+
+项目配置了 GitHub Actions 自动化流程：
+
+| Workflow | 触发条件 | 功能 |
+|----------|---------|------|
+| Check Quality | Push / PR | 代码检查、类型检查、单元测试 |
+| Build & Deploy | Quality 通过后 | 构建、Docker 打包、部署 |
+
+## Claude Code AI 辅助
+
+项目配置了完整的 Claude Code 工具链，支持 AI 辅助开发：
+
+- **9 个 Skills**: 从架构设计到测试生成的完整工作流
+- **12 个 Agents**: 各领域的深度开发指导
+- **7 个 Commands**: 快速参考清单
+- **自动化 Hooks**: 安全规则强制执行
+
+详细配置：[.claude/README.md](.claude/README.md)
+
+## 最佳实践
 
 ### 代码组织
-- **组件**: 全局公用组件放在 `src/components/`，页面级组件放在 `src/views/[page]/components/`
-- **API**: 按功能模块划分，放在 `src/api/modules/` 目录下
-- **状态管理**: 使用 Pinia，按功能划分 Store 模块
-- **类型定义**: 全局类型放在 `typings/`，模块类型放在 `src/interface/`
+
+- **全局组件** → `src/components/` (多页面复用)
+- **页面级组件** → `src/views/[page]/components/` (单页面使用)
+- **API 调用** → 优先使用 Orval 生成的 API，特殊场景在 `src/api/custom/` 扩展
+- **状态管理** → Redux Store 模块放在 `src/store/modules/`
+- **类型定义** → 全局类型放在 `typings/`，模块类型放在 `src/interface/`
 
 ### 开发规范
-- **提交规范**: 使用 `pnpm commit` 进行规范化提交
-- **代码检查**: 提交前自动运行 ESLint 和 Stylelint
-- **类型安全**: 充分利用 TypeScript 类型系统
-- **国际化**: 所有文本使用 i18n，支持多语言
+
+- 使用 `pnpm commit` 进行规范化提交
+- 提交前自动运行 ESLint、Stylelint 和类型检查
+- 所有颜色使用 CSS 变量，禁止硬编码
+- Props 使用 TypeScript 接口定义
+- Views 之间禁止互相导入
 
 ### 性能优化
-- **组件按需导入**: Element Plus 组件自动按需导入
-- **路由懒加载**: 使用动态 import 进行路由懒加载
-- **图片优化**: 小于 10KB 的图片自动转 base64
-- **代码分割**: 自动按模块分割打包，控制包体积
 
-## 🆘 常见问题
+- 路由懒加载 (React.lazy + Suspense)
+- Redux Selector 缓存 (createSelector)
+- 组件按需渲染 (React.memo + useMemo)
+- 代码分割和 Tree Shaking
+- Gzip 压缩
+
+## 常见问题
 
 ### 依赖安装问题
 
-**依赖安装失败**:
 ```bash
 # 清理缓存后重新安装
 pnpm store prune
 pnpm install
 ```
 
-**Node 版本不匹配**:
+### Node 版本不匹配
+
 ```bash
-# 检查 Node 版本 (需要 >= 22)
+# 需要 Node >= 22
 node -v
-
-# 使用 nvm 切换版本
-nvm install 22
-nvm use 22
+nvm install 22 && nvm use 22
 ```
 
-### 开发问题
+### 类型检查错误
 
-**类型检查错误**:
 ```bash
-# 运行类型检查
 pnpm type-check
-
-# VS Code 中重启 TypeScript 服务
-# Cmd/Ctrl + Shift + P -> "TypeScript: Restart TS Server"
+# VS Code: Cmd+Shift+P → "TypeScript: Restart TS Server"
 ```
 
-**热更新失效**:
+### 构建失败
+
 ```bash
-# 检查文件路径大小写
-# 确保导入路径与文件名大小写一致
-
-# 重启开发服务器
-# Ctrl + C 停止，然后重新运行 pnpm start
-```
-
-### 构建问题
-
-**构建失败**:
-```bash
-# 清理构建产物后重新构建
 pnpm clean
 pnpm build
+# 构建已设置 max-old-space-size=16384
 ```
 
-**内存溢出**:
+### Docker 容器无法访问
+
 ```bash
-# 构建时已设置 max-old-space-size=16384
-# 如果仍然失败，检查系统可用内存
-```
-
-### Docker 部署问题
-
-**镜像构建失败**:
-```bash
-# 确保已安装 Docker
-docker --version
-
-# 检查 Dockerfile 和构建上下文
-# 确保 dist 目录存在
-pnpm build
-```
-
-**容器无法访问**:
-```bash
-# 检查容器状态
 cd deploy
-./manage.sh status
-
-# 查看容器日志
-./manage.sh logs
-
-# 检查端口占用
-lsof -i :31190
+./manage.sh status    # 检查状态
+./manage.sh logs      # 查看日志
+lsof -i :31190        # 检查端口
 ```
 
-## 🎯 核心功能
-
-### 组件自动导入
-- Element Plus 组件自动导入，无需手动注册
-- Vue API 自动导入（ref、reactive、computed 等）
-- 开发体验优化，减少样板代码
-
-### 国际化系统
-- 基于 vue-i18n 的完整国际化方案
-- AI 自动翻译功能（DeepSeek API）
-- 交互式命令行工具管理语言包
-- 支持动态语言切换
-
-### 错误监控
-- Sentry 集成，实时错误追踪
-- 自动上传 Source Map
-- 性能监控和用户行为追踪
-- 支持开发/生产环境分离
-
-### 代码质量保障
-- ESLint + TypeScript 静态代码检查
-- Stylelint 样式代码检查
-- Prettier 统一代码格式
-- Husky Git 钩子自动化检查
-- Commitizen 规范化提交
-- CSpell 拼写检查
-
-## 📖 项目文档
-
-本项目提供完整的开发文档，涵盖所有技术细节和最佳实践：
-
-### 核心开发规范
-- **[API接口开发规范](./docs/api-development.md)** - Orval + HttpClient + Custom Mutator完整架构，请求去重、重试机制
-- **[组件开发规范](./docs/component-development.md)** - Vue 3 Composition API组件开发，ErrorBoundary、Context模式
-- **[路由与状态管理规范](./docs/router-and-store.md)** - 动态路由生成、权限控制、Pinia + IndexedDB持久化
-- **[类型与常量规范](./docs/types-and-constants.md)** - TypeScript类型定义、常量管理最佳实践
-- **[样式开发规范](./docs/styles-development.md)** - UnoCSS + SCSS + CSS Variables主题系统
-- **[工具函数开发规范](./docs/utils-development.md)** - 工具函数设计原则、纯函数、错误处理
-
-### 综合文档
-- **[前端架构设计文档](./docs/前端架构设计文档.md)** - 完整项目架构、分层设计、性能优化、安全策略
-- **[开发规范文档](./docs/开发规范文档.md)** - 综合开发规范、编码规范、提交规范
-
-> 💡 **提示**: 开始开发前，建议先阅读相关文档了解项目架构和开发规范
-
-## 📚 外部参考文档
-
-- [Vue 3 官方文档](https://vuejs.org/)
-- [Vite 官方文档](https://vitejs.dev/)
-- [TypeScript 官方文档](https://www.typescriptlang.org/)
-- [Element Plus 官方文档](https://element-plus.org/)
-- [UnoCSS 官方文档](https://unocss.dev/)
-- [Pinia 官方文档](https://pinia.vuejs.org/)
-- [Vitest 官方文档](https://vitest.dev/)
-- [Orval 官方文档](https://orval.dev/)
-
-## 🤝 贡献指南
-
-欢迎贡献代码！请遵循以下步骤：
+## 贡献指南
 
 1. Fork 本仓库
-2. 创建功能分支 (`git checkout -b feature/AmazingFeature`)
+2. 创建功能分支 (`git checkout -b feat/amazing-feature`)
 3. 提交更改 (`pnpm commit`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
+4. 推送到分支 (`git push origin feat/amazing-feature`)
 5. 提交 Pull Request
 
-**注意**:
-- 确保所有测试通过 (`pnpm test`)
-- 确保代码检查通过 (`pnpm lint`)
-- 遵循项目的代码规范和提交规范
+要求：
+- 所有测试通过 (`pnpm test`)
+- 代码检查通过 (`pnpm lint`)
+- 类型检查通过 (`pnpm type-check`)
 
-## 📄 License
+## License
 
-本项目采用 MIT 协议，详见 [LICENSE](./LICENSE) 文件
-
-## 📮 联系方式
-
-如有问题或建议，欢迎通过以下方式联系：
-
-- 提交 Issue
-- 提交 Pull Request
-- 邮件联系项目维护者
-
----
-
-**⭐ 如果这个项目对你有帮助，请给个 Star 支持一下！**
+MIT
