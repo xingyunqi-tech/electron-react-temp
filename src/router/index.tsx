@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import { AuthGuard } from './guards';
 import { baseRoutes, commonRoutes, asyncRoutes } from './routes';
+import { LayoutSkeleton } from '@/components/Skeleton';
 
 const Layout = lazy(() => import('@/layout/index'));
 const NotFound = lazy(() => import('@/views/NotFound/index'));
@@ -22,7 +23,7 @@ const router = createBrowserRouter([
     path: '/',
     element: (
       <AuthGuard>
-        <Suspense fallback={null}>
+        <Suspense fallback={<LayoutSkeleton />}>
           <Layout />
         </Suspense>
       </AuthGuard>

@@ -1,8 +1,8 @@
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import classNames from 'classnames';
-import { useParticleCanvas } from '@/composables/useParticleCanvas';
-import type { ParticleCanvasOptions } from '@/composables/useParticleCanvas';
+import { useParticleCanvas } from '@/hooks/useParticleCanvas';
+import type { ParticleCanvasOptions } from '@/hooks/useParticleCanvas';
 import styles from './index.module.scss';
 
 // Pre-compute data stream styles

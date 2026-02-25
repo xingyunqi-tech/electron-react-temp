@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react';
 import type { RouteObject } from 'react-router-dom';
+import { LoginSkeleton } from '@/components/Skeleton';
 
 const Login = lazy(() => import('@/views/Login/index'));
 const NotFound = lazy(() => import('@/views/NotFound/index'));
@@ -12,7 +13,7 @@ export const baseRoutes: RouteObject[] = [
   {
     path: '/login',
     element: (
-      <Suspense fallback={null}>
+      <Suspense fallback={<LoginSkeleton />}>
         <Login />
       </Suspense>
     ),

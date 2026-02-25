@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { RouteMeta } from '../../../typings/router';
 import { createSelector } from 'reselect';
+import { logoutAction } from './user';
 
 export const NAMESPACE = 'permission' as const;
 
@@ -68,6 +69,10 @@ const permissionSlice = createSlice({
     resetPermissionAction() {
       return { ...initialState };
     },
+  },
+  extraReducers: builder => {
+    // 退出登录时同步重置权限状态，避免再次登录时跳过权限初始化
+    builder.addCase(logoutAction.fulfilled, () => ({ ...initialState }));
   },
 });
 

@@ -41,8 +41,8 @@ export default function LoginPage() {
       })();
       navigate(redirectUrl);
     } catch (error) {
+      // 响应拦截器已统一处理服务端错误提示，此处只记录日志
       console.error('登录失败:', error);
-      message.error('登录失败，请检查手机号和密码');
     } finally {
       setLoading(false);
     }
