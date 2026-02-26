@@ -1,0 +1,264 @@
+@import 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;600;700;800&family=Roboto+Serif:wght@400&display=swap';
+
+.page {
+  overflow-x: hidden;
+  background: #000;
+  color: #fff;
+  font-family: Roboto, sans-serif;
+}
+
+// ==================== Announcement Bar ====================
+.announcement {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60px;
+  border-bottom: 2px solid rgb(255 255 255 / 0.4);
+  font-size: 24px;
+  line-height: 1.02;
+}
+
+// ==================== Hero ====================
+.hero {
+  position: relative;
+  padding: 0 240px;
+  padding-top: 45px;
+  padding-bottom: 120px;
+}
+
+.heroLogo {
+  margin-bottom: 248px;
+
+  img {
+    width: 252px;
+    height: auto;
+  }
+}
+
+.heroTitle {
+  max-width: 1080px;
+  margin: 0 0 80px;
+  font-family: 'Roboto Serif', serif;
+  font-size: 64px;
+  font-weight: 400;
+  line-height: 1.17;
+}
+
+.introColumns {
+  display: flex;
+  gap: 144px;
+}
+
+.introParagraph {
+  flex: 1;
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.17;
+}
+
+// ==================== Mid Nav ====================
+.midNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 26px 48px;
+}
+
+// ==================== Mission ====================
+.mission {
+  display: flex;
+  gap: 120px;
+  padding: 200px 240px 160px;
+}
+
+.missionLeft {
+  flex: 0 0 576px;
+}
+
+.sectionLabel {
+  display: block;
+  margin-bottom: 28px;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.02;
+}
+
+.missionSubtitle {
+  margin: 0;
+  font-family: 'Roboto Serif', serif;
+  font-size: 40px;
+  font-weight: 400;
+  line-height: 1.17;
+}
+
+.missionPillars {
+  display: flex;
+  flex: 0 0 720px;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.pillar {
+  display: flex;
+  flex-direction: column;
+  gap: 34px;
+  padding-bottom: 48px;
+  border-bottom: 1px solid rgb(255 255 255 / 0.8);
+
+  &:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+}
+
+.pillarTitle {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.17;
+}
+
+.pillarDescription {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.17;
+}
+
+// ==================== News & Perspectives ====================
+.newsSection {
+  padding: 100px 240px 120px;
+  background: #fff;
+  color: #000;
+}
+
+.newsContent {
+  position: relative;
+}
+
+.newsLabel {
+  display: block;
+  margin-bottom: 28px;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.17;
+}
+
+.newsDivider {
+  width: 56px;
+  margin: 0 0 32px;
+  border: none;
+  border-top: 4px solid rgb(0 0 0 / 0.3);
+}
+
+.newsTitle {
+  max-width: 1087px;
+  margin: 0 0 48px;
+  font-family: 'Roboto Serif', serif;
+  font-size: 64px;
+  font-weight: 400;
+  line-height: 1.17;
+}
+
+.contactLink {
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: #000;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 20px;
+  line-height: 1.32;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// ==================== Shared Nav Styles ====================
+.logo {
+  width: auto;
+  height: 48px;
+}
+
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.navLink {
+  transition: opacity 0.2s;
+  color: #fff;
+  font-size: 16px;
+  line-height: 1.17;
+  text-decoration: none;
+
+  &:hover {
+    opacity: 0.7;
+  }
+}
+
+.navDivider {
+  flex-shrink: 0;
+  width: 1px;
+  height: 35px;
+  background: rgb(255 255 255 / 0.2);
+}
+
+// ==================== Footer ====================
+.footer {
+  padding-top: 0;
+}
+
+.footerNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 26px 48px;
+}
+
+.footerBottom {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  min-height: 200px;
+  padding: 48px;
+}
+
+.footerTitle {
+  margin: 0;
+  font-size: 36px;
+  font-weight: 800;
+  line-height: 1.18;
+}
+
+.footerAddress {
+  margin-bottom: 16px;
+  font-size: 16px;
+  font-style: normal;
+  line-height: 1.36;
+}
+
+.footerCopyright {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.36;
+}
+
+.footerSocial {
+  display: flex;
+  flex-direction: column;
+
+  a {
+    transition: color 0.2s;
+    color: rgb(255 255 255 / 0.8);
+    font-size: 14px;
+    line-height: 1.79;
+    text-decoration: none;
+
+    &:hover {
+      color: #fff;
+    }
+  }
+}

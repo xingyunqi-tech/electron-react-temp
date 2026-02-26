@@ -217,6 +217,7 @@
 
 // ==================== Buttons ====================
 .darkOutlineBtn {
+  display: inline-block;
   padding: 20px 24px;
   transition: all 0.2s;
   border: 0.75px solid #000;
@@ -226,6 +227,7 @@
   font-family: Roboto, sans-serif;
   font-size: 20px;
   line-height: 1.17;
+  text-decoration: none;
   cursor: pointer;
 
   &:hover {
@@ -235,6 +237,7 @@
 }
 
 .lightOutlineBtn {
+  display: inline-block;
   padding: 20px 24px;
   transition: all 0.2s;
   border: 0.75px solid #fff;
@@ -244,6 +247,7 @@
   font-family: Roboto, sans-serif;
   font-size: 20px;
   line-height: 1.17;
+  text-decoration: none;
   cursor: pointer;
 
   &:hover {

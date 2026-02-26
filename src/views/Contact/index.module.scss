@@ -1,0 +1,199 @@
+@import 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;600;700;800&family=Roboto+Serif:wght@400&display=swap';
+
+.page {
+  overflow-x: hidden;
+  background: #000;
+  color: #fff;
+  font-family: Roboto, sans-serif;
+}
+
+// ==================== Announcement Bar ====================
+.announcement {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60px;
+  border-bottom: 2px solid rgb(255 255 255 / 0.4);
+  font-size: 24px;
+  line-height: 1.02;
+}
+
+// ==================== Contact Section ====================
+.contactSection {
+  background: #fff;
+  color: #000;
+}
+
+.contactContent {
+  padding: 342px 240px 100px;
+}
+
+.contactTitle {
+  margin: 0 0 40px;
+  font-family: 'Roboto Serif', serif;
+  font-size: 64px;
+  font-weight: 400;
+  line-height: 1.17;
+}
+
+.contactSubtitle {
+  margin: 0 0 90px;
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1.17;
+}
+
+// ==================== Form ====================
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.formRow {
+  display: flex;
+  gap: 128px;
+}
+
+.formField {
+  flex: 1;
+  max-width: 456px;
+}
+
+.formFieldFull {
+  max-width: 1040px;
+}
+
+.formInput {
+  width: 100%;
+  padding: 16px 0;
+  border: none;
+  border-top: 1px dashed rgb(0 0 0 / 0.5);
+  outline: none;
+  background: transparent;
+  color: #000;
+  font-family: Roboto, sans-serif;
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1.17;
+
+  &::placeholder {
+    color: rgb(0 0 0 / 0.4);
+  }
+
+  &:focus {
+    border-top-color: #000;
+  }
+}
+
+.formTextarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.submitBtn {
+  align-self: flex-start;
+  margin-top: 48px;
+  padding: 20px 24px;
+  transition: all 0.2s;
+  border: 0.75px solid #000;
+  border-radius: 2px;
+  background: transparent;
+  color: #000;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 20px;
+  line-height: 1.15;
+  cursor: pointer;
+
+  &:hover {
+    background: #000;
+    color: #fff;
+  }
+}
+
+// ==================== Footer ====================
+.footer {
+  padding-top: 0;
+}
+
+.footerNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 26px 48px;
+}
+
+.logo {
+  width: auto;
+  height: 48px;
+}
+
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.navLink {
+  transition: opacity 0.2s;
+  color: #fff;
+  font-size: 16px;
+  line-height: 1.17;
+  text-decoration: none;
+
+  &:hover {
+    opacity: 0.7;
+  }
+}
+
+.navDivider {
+  flex-shrink: 0;
+  width: 1px;
+  height: 35px;
+  background: rgb(255 255 255 / 0.2);
+}
+
+.footerBottom {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  min-height: 200px;
+  padding: 48px;
+}
+
+.footerTitle {
+  margin: 0;
+  font-size: 36px;
+  font-weight: 800;
+  line-height: 1.18;
+}
+
+.footerAddress {
+  margin-bottom: 16px;
+  font-size: 16px;
+  font-style: normal;
+  line-height: 1.36;
+}
+
+.footerCopyright {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.36;
+}
+
+.footerSocial {
+  display: flex;
+  flex-direction: column;
+
+  a {
+    transition: color 0.2s;
+    color: rgb(255 255 255 / 0.8);
+    font-size: 14px;
+    line-height: 1.79;
+    text-decoration: none;
+
+    &:hover {
+      color: #fff;
+    }
+  }
+}

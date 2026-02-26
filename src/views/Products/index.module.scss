@@ -1,0 +1,276 @@
+@import 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;600;700;800&family=Roboto+Serif:wght@400&family=Headland+One&display=swap';
+
+.page {
+  overflow-x: hidden;
+  background: #000;
+  color: #fff;
+  font-family: Roboto, sans-serif;
+}
+
+// ==================== Announcement Bar ====================
+.announcement {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60px;
+  border-bottom: 2px solid rgb(255 255 255 / 0.4);
+  font-size: 24px;
+  line-height: 1.02;
+}
+
+// ==================== Navigation Bar ====================
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 26px 48px;
+}
+
+.logo {
+  width: auto;
+  height: 48px;
+}
+
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.navLink {
+  transition: opacity 0.2s;
+  color: #fff;
+  font-size: 16px;
+  line-height: 1.17;
+  text-decoration: none;
+
+  &:hover {
+    opacity: 0.7;
+  }
+}
+
+.navDivider {
+  flex-shrink: 0;
+  width: 1px;
+  height: 35px;
+  background: rgb(255 255 255 / 0.2);
+}
+
+// ==================== Hero Section ====================
+.hero {
+  padding: 120px 240px 100px;
+}
+
+.heroTitle {
+  margin: 0 0 48px;
+  font-family: 'Roboto Serif', serif;
+  font-size: clamp(40px, 3.33vw, 64px);
+  font-weight: 400;
+  line-height: 1.17;
+}
+
+.heroDescription {
+  max-width: 1255px;
+  margin: 0;
+  font-size: clamp(18px, 1.25vw, 24px);
+  line-height: 1.17;
+}
+
+// ==================== Product Showcase (White Section) ====================
+.showcase {
+  min-height: 800px;
+  padding: 120px 240px;
+  background: #fff;
+}
+
+.showcaseImageWrapper {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.showcasePlaceholder {
+  width: 354px;
+  height: 402px;
+  border-radius: 4px;
+  background: #e8e8e8;
+}
+
+// ==================== Product Cards ====================
+.products {
+  background: #fff;
+  color: #000;
+}
+
+.productsInner {
+  display: flex;
+  flex-direction: column;
+  padding: 100px 240px;
+  gap: 64px;
+}
+
+.productsTitle {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.02;
+}
+
+.productCards {
+  display: flex;
+  justify-content: space-between;
+  gap: 60px;
+}
+
+.productCard {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  max-width: 400px;
+  gap: 24px;
+}
+
+.productName {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.17;
+}
+
+.productDescription {
+  margin: 0;
+  font-family: 'Roboto Serif', serif;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.17;
+}
+
+.productLink {
+  transition: opacity 0.2s;
+  color: #000;
+  font-size: 16px;
+  line-height: 1.17;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// ==================== Buttons ====================
+.darkOutlineBtn {
+  display: inline-block;
+  align-self: flex-start;
+  padding: 20px 24px;
+  transition: all 0.2s;
+  border: 0.75px solid #000;
+  border-radius: 2px;
+  background: transparent;
+  color: #000;
+  font-family: Roboto, sans-serif;
+  font-size: 20px;
+  line-height: 1.17;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover {
+    background: #000;
+    color: #fff;
+  }
+}
+
+// ==================== Capabilities CTA ====================
+.capabilitiesCta {
+  padding: 120px 0;
+  background: #000;
+}
+
+.capabilitiesCtaInner {
+  padding: 0 119px;
+}
+
+.capabilitiesLabel {
+  display: block;
+  margin-bottom: 32px;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.capabilitiesHeadline {
+  max-width: 1001px;
+  margin: 0 0 48px;
+  font-family: 'Headland One', 'Roboto Serif', serif;
+  font-size: clamp(40px, 3.33vw, 64px);
+  font-weight: 400;
+  line-height: 1.25;
+}
+
+.decorativeArrow {
+  display: flex;
+  align-items: center;
+}
+
+// ==================== Footer ====================
+.footer {
+  padding-top: 0;
+}
+
+.footerNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 26px 48px;
+}
+
+.footerDivider {
+  width: 100%;
+  height: 1px;
+  background: rgb(255 255 255 / 0.08);
+}
+
+.footerBottom {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  min-height: 200px;
+  padding: 48px;
+}
+
+.footerTitle {
+  margin: 0;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 36px;
+  font-weight: 400;
+  line-height: 1.02;
+}
+
+.footerAddress {
+  margin-bottom: 16px;
+  font-size: 16px;
+  font-style: normal;
+  line-height: 1.36;
+}
+
+.footerCopyright {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.36;
+}
+
+.footerSocial {
+  display: flex;
+  flex-direction: column;
+
+  a {
+    transition: color 0.2s;
+    color: rgb(255 255 255 / 0.8);
+    font-size: 14px;
+    line-height: 1.79;
+    text-decoration: none;
+
+    &:hover {
+      color: #fff;
+    }
+  }
+}

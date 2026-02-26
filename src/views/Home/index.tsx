@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import styles from './index.module.scss';
 import heroBg from '@/assets/images/home/hero-bg.png';
 import platformImg from '@/assets/images/home/platform-532331.png';
@@ -26,9 +27,18 @@ const PRODUCTS = [
   },
 ];
 
-const NAV_LINKS = ['Organoid Intelligence', 'Platform', 'Capabilities', 'Products', 'About us'];
+const NAV_LINKS = [
+  { label: 'Organoid Intelligence', path: '/organoid-intelligence' },
+  { label: 'Platform', path: '/platform' },
+  { label: 'Capabilities', path: '/capabilities' },
+  { label: 'Products', path: '/products' },
+  { label: 'About us', path: '/about-us' },
+];
 
-const SECONDARY_NAV_LINKS = ['News & Perspectives', 'Contact'];
+const SECONDARY_NAV_LINKS = [
+  { label: 'News & Perspectives', path: '/news' },
+  { label: 'Contact', path: '/contact' },
+];
 
 export default function HomePage() {
   return (
@@ -55,7 +65,9 @@ export default function HomePage() {
 
       {/* Explore CTA (White Transition) */}
       <section className={styles.exploreCta}>
-        <button className={styles.darkOutlineBtn}>Explore Organoid Intelligence</button>
+        <Link to="/organoid-intelligence" className={styles.darkOutlineBtn}>
+          Explore Organoid Intelligence
+        </Link>
       </section>
 
       {/* Platform Section */}
@@ -73,7 +85,9 @@ export default function HomePage() {
                 <li key={cap}>{cap}</li>
               ))}
             </ul>
-            <button className={styles.lightOutlineBtn}>Explore Platform</button>
+            <Link to="/platform" className={styles.lightOutlineBtn}>
+              Explore Platform
+            </Link>
           </div>
           <div className={styles.platformImage}>
             <img src={platformImg} alt="OrgaNova Platform" />
@@ -83,7 +97,9 @@ export default function HomePage() {
 
       {/* Capabilities Section (Grey) */}
       <section className={styles.capabilitiesSection}>
-        <button className={styles.darkOutlineBtn}>Explore Capabilities</button>
+        <Link to="/capabilities" className={styles.darkOutlineBtn}>
+          Explore Capabilities
+        </Link>
       </section>
 
       {/* Products Section */}
@@ -95,13 +111,15 @@ export default function HomePage() {
               <div key={product.title} className={styles.productCard}>
                 <h4 className={styles.productName}>{product.title}</h4>
                 <p className={styles.productDescription}>{product.description}</p>
-                <a href="#" className={styles.productLink}>
+                <Link to="/products" className={styles.productLink}>
                   {product.link}
-                </a>
+                </Link>
               </div>
             ))}
           </div>
-          <button className={styles.darkOutlineBtn}>Explore all Products</button>
+          <Link to="/products" className={styles.darkOutlineBtn}>
+            Explore all Products
+          </Link>
         </div>
       </section>
 
@@ -111,15 +129,15 @@ export default function HomePage() {
           <img src={logoSvg} alt="OrgaNova" className={styles.logo} />
           <div className={styles.navLinks}>
             {NAV_LINKS.map(link => (
-              <a key={link} href="#" className={styles.navLink}>
-                {link}
-              </a>
+              <Link key={link.label} to={link.path} className={styles.navLink}>
+                {link.label}
+              </Link>
             ))}
             <span className={styles.navDivider} />
             {SECONDARY_NAV_LINKS.map(link => (
-              <a key={link} href="#" className={styles.navLink}>
-                {link}
-              </a>
+              <Link key={link.label} to={link.path} className={styles.navLink}>
+                {link.label}
+              </Link>
             ))}
           </div>
         </div>

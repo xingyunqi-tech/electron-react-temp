@@ -1,0 +1,534 @@
+@import 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;600;700;800&family=Roboto+Serif:wght@400&display=swap';
+
+.page {
+  overflow-x: hidden;
+  background: #000;
+  color: #fff;
+  font-family: Roboto, sans-serif;
+}
+
+// ==================== Announcement Bar ====================
+.announcement {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60px;
+  border-bottom: 2px solid rgb(255 255 255 / 0.4);
+  font-size: 24px;
+  line-height: 1.02;
+}
+
+// ==================== Hero ====================
+.hero {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  justify-content: flex-start;
+  min-height: 800px;
+  padding-top: 80px;
+  overflow: hidden;
+}
+
+.heroBgWrapper {
+  position: absolute;
+  inset: 0;
+}
+
+.heroBgPlaceholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, #1a0a2e 0%, #0d1b2a 40%, #000 100%);
+}
+
+.heroGradientTop {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 443px;
+  background: linear-gradient(180deg, rgb(0 0 0 / 0) 0%, rgb(0 0 0 / 1) 85%);
+}
+
+.heroGradientBottom {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 443px;
+  background: linear-gradient(180deg, rgb(0 0 0 / 0) 0%, rgb(0 0 0 / 1) 85%);
+}
+
+.heroContent {
+  position: relative;
+  z-index: 2;
+  padding: 342px 241px 0;
+}
+
+.sectionLabel {
+  display: block;
+  margin-bottom: 24px;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.17;
+  text-align: right;
+}
+
+.heroTitle {
+  margin: 0;
+  font-family: 'Roboto Serif', serif;
+  font-size: 64px;
+  font-weight: 400;
+  line-height: 1.17;
+}
+
+// ==================== Description Section ====================
+.descriptionSection {
+  padding: 80px 241px;
+}
+
+.descriptionGrid {
+  display: flex;
+  gap: 145px;
+}
+
+.descriptionText {
+  flex: 1;
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.17;
+}
+
+// ==================== Engine Section ====================
+.engineSection {
+  padding: 100px 241px;
+}
+
+.engineTitle {
+  margin: 0 0 60px;
+  font-family: 'Roboto Serif', serif;
+  font-size: 40px;
+  font-weight: 400;
+  line-height: 1.17;
+}
+
+.engineContent {
+  display: flex;
+  align-items: flex-start;
+  gap: 120px;
+}
+
+.engineSteps {
+  display: flex;
+  flex-direction: column;
+  gap: 61px;
+}
+
+.engineStep {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.engineStepTitle {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.17;
+}
+
+.engineStepDescription {
+  max-width: 687px;
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.17;
+}
+
+// ==================== Engine Diagram ====================
+.engineDiagram {
+  flex-shrink: 0;
+  width: 525px;
+  height: 525px;
+}
+
+.diagramCircle {
+  position: relative;
+  width: 525px;
+  height: 525px;
+  border: 1px solid #fff;
+  border-radius: 50%;
+}
+
+.diagramCenter {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 147px;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  line-height: 1.17;
+  text-align: center;
+}
+
+.diagramLabel {
+  position: absolute;
+  font-size: 15px;
+  line-height: 1.17;
+  white-space: nowrap;
+}
+
+.diagramLabel1 {
+  top: 50px;
+  left: -100px;
+}
+
+.diagramLabel2 {
+  top: 50px;
+  right: -100px;
+}
+
+.diagramLabel3 {
+  bottom: 50px;
+  left: -100px;
+}
+
+.diagramLabel4 {
+  right: -100px;
+  bottom: 50px;
+}
+
+.diagramDot1,
+.diagramDot2,
+.diagramDot3,
+.diagramDot4 {
+  position: absolute;
+  width: 23px;
+  height: 23px;
+  border-radius: 2px;
+  background: #fff;
+}
+
+.diagramDot1 {
+  top: 66px;
+  left: 67px;
+}
+
+.diagramDot2 {
+  top: 66px;
+  right: 67px;
+}
+
+.diagramDot3 {
+  right: 67px;
+  bottom: 66px;
+}
+
+.diagramDot4 {
+  bottom: 66px;
+  left: 67px;
+}
+
+.diagramImg {
+  position: absolute;
+  border-radius: 4px;
+  background: linear-gradient(135deg, #1a3a4a 0%, #2a1a3a 100%);
+}
+
+.diagramImgTopRight {
+  top: 78px;
+  right: -65px;
+  width: 256px;
+  height: 99px;
+}
+
+.diagramImgRight {
+  top: 128px;
+  right: -125px;
+  width: 147px;
+  height: 248px;
+}
+
+.diagramImgBottom {
+  bottom: -20px;
+  left: 50%;
+  width: 273px;
+  height: 203px;
+  transform: translateX(-30%);
+}
+
+.diagramImgLeft {
+  top: 154px;
+  left: -75px;
+  width: 156px;
+  height: 272px;
+}
+
+// ==================== Tech Sections ====================
+.techSections {
+  display: flex;
+  flex-direction: column;
+}
+
+.techBlock {
+  position: relative;
+  min-height: 800px;
+}
+
+.techBlockImageFull {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.imagePlaceholderWide {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #0a1628 0%, #1a2a4a 30%, #2a1a3a 60%, #0a0a1a 100%);
+}
+
+.imagePlaceholderWide2 {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #0d1b2a 0%, #1b3a4a 30%, #0a2a1a 60%, #0a0a2a 100%);
+}
+
+.techBlockOverlay {
+  display: flex;
+  position: relative;
+  z-index: 2;
+  min-height: 800px;
+  padding: 48px;
+}
+
+.techBlockOverlayRight {
+  display: flex;
+  position: relative;
+  z-index: 2;
+  min-height: 800px;
+  padding: 48px;
+}
+
+.techBlockLeft {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: flex-end;
+  max-width: 468px;
+}
+
+.techBlockRight {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: flex-end;
+  max-width: 468px;
+}
+
+.techBlockSpacer {
+  flex: 1;
+}
+
+.techSubtitle {
+  margin: 0 0 48px;
+  font-family: 'Roboto Serif', serif;
+  font-size: 40px;
+  font-weight: 400;
+  line-height: 1.17;
+}
+
+.techBody {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.17;
+}
+
+// Split layout: text + image block
+.techBlockSplit {
+  display: flex;
+  min-height: 800px;
+}
+
+.techBlockTextLeft {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 48px;
+}
+
+.imagePlaceholderBlock {
+  flex-shrink: 0;
+  width: 532px;
+  background: linear-gradient(180deg, #0a0a1a 0%, #1a1a3a 50%, #0a0a0a 100%);
+}
+
+// Center layout
+.techBlockCenter {
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  min-height: 800px;
+}
+
+.imagePlaceholderCenter {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1143px;
+  max-width: 90%;
+  height: 641px;
+  transform: translate(-50%, -50%);
+  border-radius: 4px;
+  background: linear-gradient(135deg, #1a0a3a 0%, #3a1a5a 30%, #1a3a5a 60%, #0a1a3a 100%);
+}
+
+.techBlockCenterOverlay {
+  display: flex;
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  min-height: 800px;
+  padding: 48px 48px 48px 1412px;
+}
+
+// ==================== Capabilities CTA ====================
+.capabilitiesCta {
+  padding: 120px 0;
+  background: #fff;
+  color: #000;
+}
+
+.capabilitiesCtaInner {
+  padding: 0 236px;
+}
+
+.capabilitiesLabel {
+  display: block;
+  margin-bottom: 37px;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.17;
+}
+
+.capabilitiesTitle {
+  margin: 0 0 48px;
+  font-family: 'Roboto Serif', serif;
+  font-size: 64px;
+  font-weight: 400;
+  line-height: 1.17;
+}
+
+.capabilitiesArrow {
+  display: flex;
+  justify-content: flex-end;
+}
+
+// ==================== Contact Banner ====================
+.contactBanner {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 480px;
+  padding: 0 48px;
+  background: #fff;
+}
+
+.contactLink {
+  transition: opacity 0.2s;
+  color: #fff;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 20px;
+  line-height: 1.32;
+  text-decoration: none;
+
+  &:hover {
+    opacity: 0.7;
+  }
+}
+
+// ==================== Footer ====================
+.footer {
+  padding-top: 0;
+}
+
+.footerNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 26px 48px;
+}
+
+.logo {
+  width: auto;
+  height: 48px;
+}
+
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.navLink {
+  transition: opacity 0.2s;
+  color: #fff;
+  font-size: 16px;
+  line-height: 1.17;
+  text-decoration: none;
+
+  &:hover {
+    opacity: 0.7;
+  }
+}
+
+.navDivider {
+  flex-shrink: 0;
+  width: 1px;
+  height: 35px;
+  background: rgb(255 255 255 / 0.2);
+}
+
+.footerBottom {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  min-height: 200px;
+  padding: 48px;
+}
+
+.footerTitle {
+  margin: 0;
+  font-size: 36px;
+  font-weight: 800;
+  line-height: 1.18;
+}
+
+.footerAddress {
+  margin-bottom: 16px;
+  font-size: 16px;
+  font-style: normal;
+  line-height: 1.36;
+}
+
+.footerCopyright {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.36;
+}
+
+.footerSocial {
+  display: flex;
+  flex-direction: column;
+
+  a {
+    transition: color 0.2s;
+    color: rgb(255 255 255 / 0.8);
+    font-size: 14px;
+    line-height: 1.79;
+    text-decoration: none;
+
+    &:hover {
+      color: #fff;
+    }
+  }
+}

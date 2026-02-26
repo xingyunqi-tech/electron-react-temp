@@ -28,8 +28,8 @@ on:
         type: boolean
 
 concurrency:
-  group: build-${{ github.run_id }}
-  cancel-in-progress: false
+  group: build-${{ github.event.workflow_run.head_branch || github.ref }}
+  cancel-in-progress: true
 
 env:
   BASE_IMAGE: 'nginx:alpine'
@@ -69,7 +69,7 @@ jobs:
         id: info
         run: |
           GIT_HASH=$(git rev-parse --short HEAD)
-          GIT_BRANCH="${{ github.ref_name }}"
+          GIT_BRANCH="${{ github.event.workflow_run.head_branch || github.ref_name }}"
           BUILD_TIME=$(date "+%Y-%m-%d_%H-%M-%S")
           WEBSITE_IMAGE_NAME="${{ env.REGISTRY_LOCAL }}/${{ env.REPO_PREFIX }}:${GIT_HASH}"
 
@@ -212,7 +212,7 @@ jobs:
 
           echo "=========================================="
           echo "部署信息:"
-          echo "  分支: ${{ github.ref_name }}"
+          echo "  分支: ${{ github.event.workflow_run.head_branch || github.ref_name }}"
           echo "  服务器: ${DEPLOY_USER}@${DEPLOY_HOST}"
           echo "  路径: ${DEPLOY_PATH}"
           echo "  部署包: ${PACKAGE_FILE}"
@@ -283,14 +283,16 @@ jobs:
     steps:
       - name: Summary
         run: |
-          echo "# 部署结果" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| 项目 | 状态 |" >> $GITHUB_STEP_SUMMARY
-          echo "|------|------|" >> $GITHUB_STEP_SUMMARY
-          echo "| 构建 | ${{ needs.build.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| 打包 | ${{ needs.package.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| 部署 | ${{ needs.deploy.result || 'skipped' }} |" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "# 部署结果"
+            echo ""
+            echo "| 项目 | 状态 |"
+            echo "|------|------|"
+            echo "| 构建 | ${{ needs.build.result }} |"
+            echo "| 打包 | ${{ needs.package.result }} |"
+            echo "| 部署 | ${{ needs.deploy.result || 'skipped' }} |"
+          } >> "$GITHUB_STEP_SUMMARY"
           if [[ "${{ needs.deploy.result }}" == "success" ]]; then
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "🖥️ **服务器**: ${{ secrets.DEPLOY_SERVER_HOST }}" >> $GITHUB_STEP_SUMMARY
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "**服务器**: ${{ secrets.DEPLOY_SERVER_HOST }}" >> "$GITHUB_STEP_SUMMARY"
           fi
