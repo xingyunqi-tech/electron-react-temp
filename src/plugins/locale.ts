@@ -56,6 +56,9 @@ export const t = i18n.t.bind(i18n);
  * 从 public/locale/ 加载合并后的语言包并注册到 i18next。
  */
 export const loadLocaleMessages = async (locale: LocaleKey) => {
+  // Electron file:// 协议下 fetch 不可用，语言包已通过静态 import 打包
+  if (window.location.protocol === 'file:') return true;
+
   try {
     const response = await fetch(`/locale/${locale}.json`);
     if (!response.ok) {

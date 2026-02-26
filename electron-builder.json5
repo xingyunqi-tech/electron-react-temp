@@ -1,43 +1,56 @@
 // @see https://www.electron.build/configuration/configuration
 {
-  "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
-  "appId": "YourAppID",
-  "asar": true,
-  "productName": "YourAppName",
-  "directories": {
-    "output": "release/${version}"
-  },
-  "files": [
-    "dist",
-    "dist-electron"
+  $schema: 'https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json',
+  appId: 'com.yourcompany.yourapp',
+  productName: 'YourAppName',
+  asar: true,
+  // 深度链接协议 — 必须与 electron/main/env.ts 中 APP_PROTOCOL 保持一致
+  protocols: [
+    {
+      name: 'YourAppName',
+      schemes: ['yourappname'],
+    },
   ],
-  "mac": {
-    "target": [
-      "dmg"
-    ],
-    "artifactName": "${productName}-Mac-${version}-Installer.${ext}"
+  directories: {
+    output: 'release/${version}',
   },
-  "win": {
-    "target": [
+  files: ['dist', 'dist-electron'],
+  // 自动更新发布配置 (按需选择 provider)
+  publish: [
+    {
+      provider: 'generic',
+      url: 'https://your-update-server.com/releases/',
+    },
+  ],
+  mac: {
+    target: [
+      { target: 'dmg', arch: ['universal'] },
+      { target: 'zip', arch: ['universal'] },
+    ],
+    artifactName: '${productName}-Mac-${version}-Installer.${ext}',
+    hardenedRuntime: true,
+    category: 'public.app-category.productivity',
+  },
+  win: {
+    target: [
       {
-        "target": "nsis",
-        "arch": [
-          "x64"
-        ]
-      }
+        target: 'nsis',
+        arch: ['x64', 'arm64'],
+      },
     ],
-    "artifactName": "${productName}-Windows-${version}-Setup.${ext}"
+    artifactName: '${productName}-Windows-${version}-Setup.${ext}',
   },
-  "nsis": {
-    "oneClick": false,
-    "perMachine": false,
-    "allowToChangeInstallationDirectory": true,
-    "deleteAppDataOnUninstall": false
+  nsis: {
+    oneClick: false,
+    perMachine: true,
+    allowToChangeInstallationDirectory: true,
+    deleteAppDataOnUninstall: false,
+    createDesktopShortcut: true,
+    createStartMenuShortcut: true,
   },
-  "linux": {
-    "target": [
-      "AppImage"
-    ],
-    "artifactName": "${productName}-Linux-${version}.${ext}"
-  }
+  linux: {
+    target: ['AppImage', 'deb'],
+    artifactName: '${productName}-Linux-${version}.${ext}',
+    category: 'Utility',
+  },
 }

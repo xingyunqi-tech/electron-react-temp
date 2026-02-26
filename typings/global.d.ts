@@ -3,11 +3,8 @@
  */
 declare global {
   interface Window {
-    // expose in the `electron/preload/index.ts`
-    ipcRenderer: import('electron').IpcRenderer;
-    electronAPI?: {
-      getPublicPath: () => Promise<string>;
-    };
+    /** Electron preload 暴露的命名 API，Web 环境下为 undefined */
+    electronAPI?: ElectronAPI;
   }
 
   /**

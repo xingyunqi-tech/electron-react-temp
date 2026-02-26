@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react';
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, createHashRouter } from 'react-router-dom';
+import { isElectron } from '@/utils/electron';
 import { AuthGuard } from './guards';
 import { baseRoutes, commonRoutes, asyncRoutes } from './routes';
 import { LayoutSkeleton } from '@/components/Skeleton';
@@ -14,7 +15,8 @@ const NotFound = lazy(() => import('@/views/NotFound/index'));
  * - baseRoutes: 不需要登录的独立页面（login, register, 404, 403）
  * - /: 需要登录的主布局，包含 commonRoutes + asyncRoutes
  */
-const router = createBrowserRouter([
+const createRouter = isElectron() ? createHashRouter : createBrowserRouter;
+const router = createRouter([
   // 基础路由（不需要权限）
   ...baseRoutes,
 

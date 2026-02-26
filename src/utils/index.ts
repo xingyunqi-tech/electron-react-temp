@@ -6,3 +6,4 @@
 export * from './os';
 export * from './crypto';
 export * from './errorHandler';
+export * from './electron';

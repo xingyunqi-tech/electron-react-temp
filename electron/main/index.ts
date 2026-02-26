@@ -1,117 +1,68 @@
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
-import { fileURLToPath } from 'node:url';
-import path from 'node:path';
-import os from 'node:os';
+/**
+ * Electron 主进程入口 — 启动编排器
+ *
+ * 职责仅限于按正确顺序初始化各模块:
+ * 1. 生命周期 (单实例锁、平台事件)
+ * 2. 安全策略 (CSP、导航拦截)
+ * 3. IPC 注册 (在窗口创建前就位)
+ * 4. 创建主窗口
+ * 5. 可插拔服务 (菜单、托盘、更新)
+ */
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+import { app, BrowserWindow, nativeTheme } from 'electron';
+import log from 'electron-log';
+import './env';
+import { AppLifecycle } from './core/AppLifecycle';
+import { WindowManager } from './core/WindowManager';
+import { SecurityPolicy } from './core/SecurityPolicy';
+import { registerAllIPC } from './ipc';
+import { MenuService } from './services/MenuService';
+import { TrayService } from './services/TrayService';
+import { UpdaterService } from './services/UpdaterService';
+import { IPC } from '../shared/channels';
 
-// The built directory structure
-//
-// ├─┬ dist-electron
-// │ ├─┬ main
-// │ │ └── index.js    > Electron-Main
-// │ └─┬ preload
-// │   └── index.js    > Preload-Scripts
-// ├─┬ dist
-// │ └── index.html    > Electron-Renderer
-//
-process.env.APP_ROOT = path.join(__dirname, '../..');
+// 配置日志
+log.transports.file.level = 'info';
+log.transports.console.level = app.isPackaged ? 'warn' : 'info';
 
-export const MAIN_DIST = path.join(process.env.APP_ROOT, 'dist-electron');
-export const RENDERER_DIST = path.join(process.env.APP_ROOT, 'dist');
-export const VITE_DEV_SERVER_URL = process.env.VITE_DEV_SERVER_URL;
+// ---- 1. 生命周期 (必须在 app.whenReady 之前) ----
+AppLifecycle.setup();
 
-process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 'public') : RENDERER_DIST;
+app.whenReady().then(() => {
+  // ---- 2. 安全策略 ----
+  SecurityPolicy.apply();
 
-// Disable GPU Acceleration for Windows 7
-if (os.release().startsWith('6.1')) app.disableHardwareAcceleration();
+  // ---- 3. IPC 注册 (窗口创建前) ----
+  registerAllIPC();
 
-// Set application name for Windows 10+ notifications
-if (process.platform === 'win32') app.setAppUserModelId(app.getName());
+  // ---- 4. 创建主窗口 ----
+  const wm = WindowManager.getInstance();
+  const mainWindow = wm.createMainWindow();
 
-if (!app.requestSingleInstanceLock()) {
-  app.quit();
-  process.exit(0);
-}
+  // ---- 5. 服务层 ----
+  MenuService.setup();
+  TrayService.setup(mainWindow);
 
-let win: BrowserWindow | null = null;
-const preload = path.join(__dirname, '../preload/index.js');
-const indexHtml = path.join(RENDERER_DIST, 'index.html');
+  // 自动更新 (仅打包后生效，延迟启动)
+  UpdaterService.setup(mainWindow);
 
-async function createWindow() {
-  win = new BrowserWindow({
-    title: 'Main window',
-    icon: path.join(process.env.VITE_PUBLIC!, 'favicon.ico'),
-    webPreferences: {
-      preload,
-      // Warning: Enable nodeIntegration and disable contextIsolation is not secure in production
-      // nodeIntegration: true,
-
-      // Consider using contextBridge.exposeInMainWorld
-      // Read more on https://www.electronjs.org/docs/latest/tutorial/context-isolation
-      // contextIsolation: false,
-    },
+  // ---- 6. macOS: 点击 Dock 图标重新打开窗口 (含服务重建) ----
+  app.on('activate', () => {
+    const win = BrowserWindow.getAllWindows().find(w => !w.isDestroyed());
+    if (win) {
+      win.focus();
+    } else {
+      const newWin = wm.createMainWindow();
+      MenuService.setup();
+      TrayService.setup(newWin);
+      UpdaterService.setup(newWin);
+    }
   });
 
-  if (VITE_DEV_SERVER_URL) {
-    // #298
-    win.loadURL(VITE_DEV_SERVER_URL);
-    // Open devTool if the app is not packaged
-    win.webContents.openDevTools();
-  } else {
-    win.loadFile(indexHtml);
-  }
-
-  // Test actively push message to the Electron-Renderer
-  win.webContents.on('did-finish-load', () => {
-    win?.webContents.send('main-process-message', new Date().toLocaleString());
+  // ---- 7. 系统深色模式同步 ----
+  nativeTheme.on('updated', () => {
+    wm.sendToAll(IPC.THEME_CHANGED, nativeTheme.shouldUseDarkColors);
   });
 
-  // Make all links open with the browser, not with the application
-  win.webContents.setWindowOpenHandler(({ url }) => {
-    if (url.startsWith('https:')) shell.openExternal(url);
-    return { action: 'deny' };
-  });
-  // win.webContents.on('will-navigate', (event, url) => { }) #344
-}
-
-app.whenReady().then(createWindow);
-
-app.on('window-all-closed', () => {
-  win = null;
-  if (process.platform !== 'darwin') app.quit();
-});
-
-app.on('second-instance', () => {
-  if (win) {
-    // Focus on the main window if the user tried to open another
-    if (win.isMinimized()) win.restore();
-    win.focus();
-  }
-});
-
-app.on('activate', () => {
-  const allWindows = BrowserWindow.getAllWindows();
-  if (allWindows.length) {
-    allWindows[0].focus();
-  } else {
-    createWindow();
-  }
-});
-
-// New window example arg: new windows url
-ipcMain.handle('open-win', (_, arg) => {
-  const childWindow = new BrowserWindow({
-    webPreferences: {
-      preload,
-      nodeIntegration: true,
-      contextIsolation: false,
-    },
-  });
-
-  if (VITE_DEV_SERVER_URL) {
-    childWindow.loadURL(`${VITE_DEV_SERVER_URL}#${arg}`);
-  } else {
-    childWindow.loadFile(indexHtml, { hash: arg });
-  }
+  log.info(`App started — v${app.getVersion()} [${process.platform}/${process.arch}]`);
 });

@@ -43,6 +43,9 @@ const modernLegacyPolyfills = [
  * @param mode - 模式
  * @returns 插件
  */
+// ESM-only packages used in main/preload process — must be bundled, not externalized
+const esmDeps = ['electron-store'];
+
 function generatePlugins(mode: string): PluginOption[] {
   const isServe = mode === 'serve';
   const isBuild = mode === 'build';
@@ -82,7 +85,9 @@ function generatePlugins(mode: string): PluginOption[] {
             minify: isBuild,
             outDir: 'dist-electron/main',
             rollupOptions: {
-              external: Object.keys('dependencies' in pkg ? pkg.dependencies : {}),
+              external: Object.keys('dependencies' in pkg ? pkg.dependencies : {}).filter(
+                dep => !esmDeps.includes(dep),
+              ),
             },
           },
         },
@@ -100,7 +105,9 @@ function generatePlugins(mode: string): PluginOption[] {
             minify: isBuild,
             outDir: 'dist-electron/preload',
             rollupOptions: {
-              external: Object.keys('dependencies' in pkg ? pkg.dependencies : {}),
+              external: Object.keys('dependencies' in pkg ? pkg.dependencies : {}).filter(
+                dep => !esmDeps.includes(dep),
+              ),
             },
           },
         },
