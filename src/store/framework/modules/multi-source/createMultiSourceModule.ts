@@ -157,6 +157,8 @@ export const createMultiSourceModule = <T>(ctx: IMultiSourceModuleContext<T>) =>
           }
           const item = x.getByKey(key);
           if (item === undefined) {
+            // item 尚未写入 store，将该 source 标记为已完成以避免阻塞归并
+            finished.push(sourceId);
             return undefined;
           }
           indexes[sourceId]!++;

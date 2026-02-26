@@ -139,7 +139,7 @@ class IndexedDB {
    */
   clear(table: TableName) {
     return new Promise<Event>((resolve, reject) => {
-      const request = (this.storage as IDBDatabase).transaction(this.dbName, 'readwrite').objectStore(table).clear();
+      const request = (this.storage as IDBDatabase).transaction(table, 'readwrite').objectStore(table).clear();
       request.onsuccess = event => {
         resolve(event);
       };

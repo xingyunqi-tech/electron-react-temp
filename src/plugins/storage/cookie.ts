@@ -82,7 +82,7 @@ class CookieAPI {
       const name = eqPos > -1 ? cookie.substring(0, eqPos) : cookie;
       let path = '';
       for (let j = 0; j < pathBits.length; j++) {
-        path += (path.substring(-1) !== '/' ? '/' : '') + pathBits[j];
+        path += (path.slice(-1) !== '/' ? '/' : '') + pathBits[j];
         document.cookie = `${name}=; expires=${expires}; path=${path}`;
       }
     }

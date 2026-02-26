@@ -1,10 +1,10 @@
 /**
  * 全局错误处理器
  *
- * 统一处理应用中的各类错误，提供用户友好的错误提示
+ * 职责：错误分类、消息提取、认证跳转、日志记录
+ * 不负责 UI 提示 —— 是否弹出提示由调用方决定
  */
 
-import { message, notification } from '@/components/StaticFunction';
 import type { AxiosError } from 'axios';
 
 /**
@@ -28,17 +28,15 @@ export enum ErrorType {
 }
 
 /**
- * 错误配置
+ * 结构化错误信息
  */
-interface ErrorConfig {
-  /** 是否显示错误提示 */
-  showMessage?: boolean;
+export interface ErrorInfo {
   /** 错误类型 */
-  type?: ErrorType;
-  /** 自定义错误消息 */
-  message?: string;
-  /** 是否使用通知而非消息 */
-  useNotification?: boolean;
+  type: ErrorType;
+  /** 用户友好的错误消息 */
+  message: string;
+  /** 原始错误对象 */
+  raw: unknown;
 }
 
 /**
@@ -59,7 +57,7 @@ const ERROR_MESSAGES: Record<number, string> = {
 /**
  * 判断错误类型
  */
-function detectErrorType(error: any): ErrorType {
+export function detectErrorType(error: any): ErrorType {
   if (!error) return ErrorType.UNKNOWN;
 
   // Axios 错误
@@ -87,13 +85,10 @@ function detectErrorType(error: any): ErrorType {
 }
 
 /**
- * 获取错误消息
+ * 获取用户友好的错误消息
  */
-function getErrorMessage(error: any): string {
-  // 自定义消息
-  if (error.message) return error.message;
-
-  // Axios 错误
+export function getErrorMessage(error: any): string {
+  // Axios 错误（优先处理，避免返回技术性 error.message）
   if (error.isAxiosError) {
     const axiosError = error as AxiosError;
 
@@ -116,63 +111,41 @@ function getErrorMessage(error: any): string {
     return `请求失败 (${status})`;
   }
 
+  // 其他错误的自定义消息
+  if (error.message) return error.message;
+
   // 默认消息
   return '操作失败，请稍后重试';
 }
 
 /**
- * 显示错误消息
- */
-function showError(msg: string, type: ErrorType, useNotification = false) {
-  if (useNotification) {
-    notification.error({
-      message: '错误',
-      description: msg,
-      duration: 5,
-    });
-  } else {
-    message.error({ content: msg, duration: 3 });
-  }
-
-  // 记录错误日志
-  console.error(`[ErrorHandler] ${type}:`, msg);
-}
-
-/**
- * 处理错误
+ * 处理错误：分类 + 日志 + 认证跳转
  *
- * @param error 错误对象
- * @param config 错误配置
- * @returns 错误类型
+ * 不弹出 UI 提示。调用方根据返回的 ErrorInfo 自行决定是否展示。
  *
  * @example
  * ```typescript
  * try {
  *   await someApiCall();
  * } catch (error) {
- *   handleError(error);
+ *   const info = handleError(error);
+ *   // 调用方决定是否弹提示
+ *   message.error(info.message);
  * }
  * ```
  */
-export function handleError(error: any, config: ErrorConfig = {}): ErrorType {
-  const { showMessage = true, type: customType, message: customMessage, useNotification = false } = config;
+export function handleError(error: any): ErrorInfo {
+  const type = detectErrorType(error);
+  const msg = getErrorMessage(error);
 
-  const errorType = customType || detectErrorType(error);
-  const errorMessage = customMessage || getErrorMessage(error);
+  console.error(`[ErrorHandler] ${type}:`, msg, error);
 
-  // 是否显示错误提示
-  if (showMessage) {
-    // 服务器错误使用通知，其他使用消息
-    const shouldUseNotification = useNotification || errorType === ErrorType.SERVER;
-    showError(errorMessage, errorType, shouldUseNotification);
-  }
-
-  // 特殊处理：认证错误
-  if (errorType === ErrorType.AUTH) {
+  // 认证错误：自动跳转登录页
+  if (type === ErrorType.AUTH) {
     handleAuthError();
   }
 
-  return errorType;
+  return { type, message: msg, raw: error };
 }
 
 /**
@@ -205,31 +178,6 @@ function handleAuthError() {
 }
 
 /**
- * 静默处理错误（不显示提示）
- */
-export function handleErrorSilently(error: any): ErrorType {
-  return handleError(error, { showMessage: false });
-}
-
-/**
- * 创建错误处理装饰器
- * 用于包装函数，自动处理错误
- */
-export function withErrorHandler<T extends (...args: any[]) => any>(
-  fn: T,
-  config?: ErrorConfig,
-): (...args: Parameters<T>) => Promise<ReturnType<T>> {
-  return async (...args: Parameters<T>) => {
-    try {
-      return await fn(...args);
-    } catch (error) {
-      handleError(error, config);
-      throw error;
-    }
-  };
-}
-
-/**
  * 处理请求配置错误
  * 专门用于请求拦截器中的错误处理
  */
@@ -237,54 +185,37 @@ export function handleRequestError(error: any): never {
   let errorMessage = '请求配置错误';
   let errorType = ErrorType.REQUEST;
 
-  // 请求超时
   if (error.code === 'ECONNABORTED') {
     errorMessage = '请求超时，请检查网络连接';
     errorType = ErrorType.NETWORK;
-  }
-  // 网络错误
-  else if (error.code === 'ERR_NETWORK') {
+  } else if (error.code === 'ERR_NETWORK') {
     errorMessage = '网络错误，请检查网络连接';
     errorType = ErrorType.NETWORK;
-  }
-  // 取消请求
-  else if (error.code === 'ERR_CANCELED') {
+  } else if (error.code === 'ERR_CANCELED') {
     errorMessage = '请求已取消';
     errorType = ErrorType.REQUEST;
-  }
-  // 其他错误
-  else if (error.message) {
+  } else if (error.message) {
     errorMessage = error.message;
   }
 
   console.error('[Request Error]:', errorMessage, error);
 
-  // 网络错误需要显示提示，配置错误通常是代码问题不需要显示
-  const showMessage = errorType === ErrorType.NETWORK;
-
-  handleError(new Error(errorMessage), {
-    type: errorType,
-    showMessage,
-  });
-
-  throw new Error(errorMessage);
+  const enriched = new Error(errorMessage) as Error & { errorType: ErrorType };
+  enriched.errorType = errorType;
+  throw enriched;
 }
 
 /**
  * 全局错误处理器（用于未捕获的错误）
  */
 export function setupGlobalErrorHandler() {
-  // 捕获未处理的 Promise 错误
   window.addEventListener('unhandledrejection', event => {
     console.error('Unhandled promise rejection:', event.reason);
-    handleError(event.reason, { useNotification: true });
-    event.preventDefault();
+    if (import.meta.env.PROD) event.preventDefault();
   });
 
-  // 捕获未处理的 JS 错误
   window.addEventListener('error', event => {
     console.error('Unhandled error:', event.error);
-    handleError(event.error, { useNotification: true });
-    event.preventDefault();
+    if (import.meta.env.PROD) event.preventDefault();
   });
 }

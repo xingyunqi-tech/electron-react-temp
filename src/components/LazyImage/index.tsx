@@ -47,6 +47,7 @@ export default function LazyImage({
   const [currentSrc, setCurrentSrc] = useState(src);
   const retriesRef = useRef(0);
   const timerRef = useRef<number | null>(null);
+  const innerTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     retriesRef.current = 0;
@@ -54,6 +55,7 @@ export default function LazyImage({
     setCurrentSrc(src);
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
+      if (innerTimerRef.current) clearTimeout(innerTimerRef.current);
     };
   }, [src]);
 
@@ -68,7 +70,7 @@ export default function LazyImage({
       retriesRef.current++;
       timerRef.current = window.setTimeout(() => {
         setCurrentSrc('');
-        timerRef.current = window.setTimeout(() => setCurrentSrc(src), 50);
+        innerTimerRef.current = window.setTimeout(() => setCurrentSrc(src), 50);
       }, retryDelay);
       return;
     }

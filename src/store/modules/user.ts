@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { loginWithPhone, getCurrentUser } from '@/api';
 import storage from '@/plugins/storage';
-import { appStorage } from '@/store/framework';
 import { createSelector } from 'reselect';
 import { encryptPassword } from '@/utils';
 
@@ -62,7 +61,6 @@ export const getInfoAction = createAsyncThunk('user/getInfo', async () => {
 export const logoutAction = createAsyncThunk('user/logout', async () => {
   storage('localStorage').remove('token');
   storage('localStorage').remove('refreshToken');
-  await appStorage.removeItem(NAMESPACE);
 });
 
 // ==================== Slice ====================

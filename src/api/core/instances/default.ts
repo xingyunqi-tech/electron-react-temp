@@ -8,8 +8,7 @@ import { requestInterceptor, requestErrorInterceptor } from '../interceptors/req
 import { responseSuccessInterceptor, responseErrorInterceptor } from '../interceptors/response';
 
 // 获取 baseURL 配置
-const baseURL = window.location.origin;
-// const baseURL = import.meta.env.VITE_BASEURL;
+const baseURL = import.meta.env.VITE_BASEURL || window.location.origin;
 
 /**
  * 默认实例配置

@@ -53,7 +53,7 @@ class LocalStorageAPI {
   static setExpire(key: LocaleStorageKeysType, value: string, expire: ExpireObj['time']) {
     let expireTime = '';
     if (expire) {
-      expireTime = new Date(expire).toString();
+      expireTime = new Date(expire).toISOString();
     }
 
     return LocalStorageAPI.set(key, JSON.stringify({ value, time: expireTime }));

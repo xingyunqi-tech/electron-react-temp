@@ -1,7 +1,6 @@
 {
   "name": "electron-react-vite",
   "version": "1.0.0",
-  "type": "module",
   "main": "dist-electron/main/index.js",
   "description": "Electron Vite React Template",
   "packageManager": "pnpm@10.20.0",
