@@ -46,9 +46,9 @@ const modernLegacyPolyfills = [
 // ESM-only packages used in main/preload process — must be bundled, not externalized
 const esmDeps = ['electron-store'];
 
-function generatePlugins(mode: string): PluginOption[] {
-  const isServe = mode === 'serve';
-  const isBuild = mode === 'build';
+function generatePlugins(command: string): PluginOption[] {
+  const isServe = command === 'serve';
+  const isBuild = command === 'build';
   const sourcemap = isServe || !!process.env.VSCODE_DEBUG;
 
   const plugins: PluginOption[] = [
@@ -139,7 +139,7 @@ function generatePlugins(mode: string): PluginOption[] {
         sentryVitePlugin({
           org: process.env.VITE_SENTRY_ORG,
           project: process.env.VITE_SENTRY_PROJECT,
-          authToken: process.env.VITE_SENTRY_AUTH_TOKEN,
+          authToken: process.env.SENTRY_AUTH_TOKEN,
           telemetry: false,
         }),
       );
@@ -166,8 +166,8 @@ function generatePlugins(mode: string): PluginOption[] {
   return plugins;
 }
 
-export default ({ mode }: { mode: string }) => {
-  const isBuild = mode === 'build';
+export default ({ command, mode }: { command: string; mode: string }) => {
+  const isBuild = command === 'build';
   process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
 
   if (isBuild) {
@@ -178,7 +178,7 @@ export default ({ mode }: { mode: string }) => {
     /** 开发服务器配置 */
     server: devServer(),
     /** 插件配置 */
-    plugins: generatePlugins(mode),
+    plugins: generatePlugins(command),
     /** 路径别名配置 */
     resolve: {
       alias: {

@@ -308,7 +308,7 @@ VITE_BASEURL=http://localhost:3001/
 VITE_BASEURL=//127.0.0.1:3001/
 VITE_SENTRY_ORG=your_org
 VITE_SENTRY_PROJECT=your_project
-VITE_SENTRY_AUTH_TOKEN=your_auth_token
+# SENTRY_AUTH_TOKEN 配置在系统环境变量中
 ```
 
 **本地覆盖** (`.env.local`):

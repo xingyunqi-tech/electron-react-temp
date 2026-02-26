@@ -12,14 +12,14 @@
 npx playwright install chrome
 ```
 
-### 2. 配置 API Key (已完成 ✅)
+### 2. 配置 API Key
 
-`.env.development` 中已配置:
+在系统环境变量中配置:
 ```bash
-VITE_APPLITOOLS_API_KEY = 't9ph101...'  # ✅ 已配置
+export APPLITOOLS_API_KEY='your_api_key'
 ```
 
-如需修改，访问: https://eyes.applitools.com/app/admin/account
+获取地址: https://eyes.applitools.com/app/admin/account
 
 ### 3. 启动开发服务器 (必需)
 
@@ -221,7 +221,7 @@ await hideDynamicContent(page, ['.timestamp', '.random-id']);
 | 问题 | 解决方案 |
 |------|---------|
 | **DiffsFoundError** | ✅ **正常！** 首次运行或 UI 变更时会抛出。去 Applitools Dashboard Accept 基准 |
-| API Key 错误 | 检查 `.env.development` 中的 `VITE_APPLITOOLS_API_KEY` |
+| API Key 错误 | 检查系统环境变量 `APPLITOOLS_API_KEY` |
 | 浏览器未安装 | 运行 `npx playwright install chrome` |
 | 测试超时 | 增加 `playwright.config.ts` 中的 `timeout` |
 | 端口占用 | `lsof -ti:5173 \| xargs kill -9` |

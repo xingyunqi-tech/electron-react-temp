@@ -21,11 +21,6 @@ function loadEnvFile(path: string) {
 const envVars = loadEnvFile('.env.development');
 Object.assign(process.env, envVars);
 
-// 转换 VITE_ 前缀的环境变量供 Playwright 使用
-if (envVars.VITE_APPLITOOLS_API_KEY) {
-  process.env.APPLITOOLS_API_KEY = envVars.VITE_APPLITOOLS_API_KEY;
-}
-
 /**
  * Playwright 配置 - Chrome PC 端页面 UI 还原测试
  * @see https://playwright.dev/docs/test-configuration

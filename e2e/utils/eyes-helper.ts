@@ -19,10 +19,8 @@ export class EyesManager {
     // 配置
     const configuration = new Configuration();
 
-    // 从环境变量读取 API Key
-    // 注意: 在 Playwright (Node.js) 环境中使用 process.env
-    // playwright.config.ts 会将 VITE_APPLITOOLS_API_KEY 转换为 APPLITOOLS_API_KEY
-    const apiKey = process.env.APPLITOOLS_API_KEY || process.env.VITE_APPLITOOLS_API_KEY;
+    // 从系统环境变量读取 API Key
+    const apiKey = process.env.APPLITOOLS_API_KEY;
 
     // 设置 API Key
     if (apiKey) {

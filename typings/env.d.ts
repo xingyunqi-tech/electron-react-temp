@@ -13,10 +13,6 @@ interface ImportMetaEnv {
    */
   readonly VITE_SENTRY_PROJECT: string;
   /**
-   * sentry认证token
-   */
-  readonly VITE_SENTRY_AUTH_TOKEN: string;
-  /**
    * api基础地址
    */
   readonly VITE_BASEURL: string;
