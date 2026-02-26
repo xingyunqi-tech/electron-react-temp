@@ -13,7 +13,7 @@ export interface IBaseSchema {
 /** 字符串类型 */
 export interface IStringSchema extends IBaseSchema {
   type: 'string';
-  /** text | password | textarea | color | url | image | file | date | time | datetime | daterange | datetimerange | radio */
+  /** text | password | textarea | color | url | image | file | date | time | datetime | daterange | datetimerange | radio | i18n */
   inputType?:
     | 'text'
     | 'password'
@@ -27,12 +27,14 @@ export interface IStringSchema extends IBaseSchema {
     | 'datetime'
     | 'daterange'
     | 'datetimerange'
-    | 'radio';
+    | 'radio'
+    | 'i18n';
   /** 上传文件的 accept 属性，仅 image/file 类型有效 */
   accept?: string;
   /** 提供枚举值时渲染为下拉选择器或单选按钮组（配合 inputType: 'radio'） */
   enumType?: readonly string[];
-  defaultValue?: string;
+  /** i18n 类型时为 Record<LocaleKey, string>，其他为 string */
+  defaultValue?: string | Record<string, string>;
 }
 
 /** 数字类型 */
@@ -75,7 +77,9 @@ export type JsonSchema = IStringSchema | INumberSchema | IBooleanSchema | IArray
 /** 从 Schema 推导 TypeScript 值类型 */
 export type InferValue<T> = T extends { type: infer Type }
   ? Type extends 'string'
-    ? string
+    ? T extends { inputType: 'i18n' }
+      ? Record<string, string>
+      : string
     : Type extends 'number'
       ? number
       : Type extends 'boolean'
@@ -119,8 +123,9 @@ export const frontendConfigSchema = {
       systemTitle: {
         type: 'string',
         title: '系统标题',
-        description: '显示在头部和浏览器标签页的系统名称',
-        defaultValue: '管理系统',
+        description: '显示在头部和浏览器标签页的系统名称，支持多语言配置',
+        inputType: 'i18n',
+        defaultValue: { 'zh-CN': '管理系统', 'en-US': 'Management System' },
       },
       defaultPage: {
         type: 'string',
@@ -159,7 +164,7 @@ export const frontendConfigSchema = {
       content: {
         type: 'string',
         title: '水印内容',
-        defaultValue: '',
+        defaultValue: 'admin',
       },
       color: {
         type: 'string',
@@ -182,6 +187,39 @@ export const frontendConfigSchema = {
         max: 1,
         step: 0.05,
         defaultValue: 1,
+      },
+      fontWeight: {
+        type: 'string',
+        title: '字重',
+        enumType: ['normal', 'lighter', 'bold', 'bolder'],
+        defaultValue: 'normal',
+      },
+      rotate: {
+        type: 'number',
+        title: '旋转角度',
+        inputType: 'slider',
+        min: -90,
+        max: 90,
+        step: 1,
+        defaultValue: -22,
+      },
+      gapX: {
+        type: 'number',
+        title: '水平间距',
+        description: '水印之间的水平间距 (px)',
+        min: 20,
+        max: 300,
+        step: 10,
+        defaultValue: 100,
+      },
+      gapY: {
+        type: 'number',
+        title: '垂直间距',
+        description: '水印之间的垂直间距 (px)',
+        min: 20,
+        max: 300,
+        step: 10,
+        defaultValue: 100,
       },
     },
   },

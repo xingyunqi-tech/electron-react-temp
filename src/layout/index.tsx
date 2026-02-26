@@ -5,13 +5,17 @@ import LayoutHeader from './components/LayoutHeader/index';
 import LayoutMain from './components/LayoutMain/index';
 import { LayoutProvider, useLayout } from './LayoutContext';
 import { useFrontendConfig } from '@/hooks/useFrontendConfig';
+import { useAppSelector } from '@/store';
+import { currentLocaleSelector } from '@/store/modules/global';
 import { ConfigProvider, Watermark, theme as antdTheme } from 'antd';
+import type { WatermarkProps } from 'antd';
 import styles from './index.module.scss';
 
 function LayoutContent() {
   const location = useLocation();
   const matches = useMatches();
   const config = useFrontendConfig();
+  const currentLocale = useAppSelector(currentLocaleSelector);
   const { layoutVisible, setLayoutVisible, setHeaderVisible, setLogoConfig, setCustomMenuList, resetAll } = useLayout();
 
   // 前端配置的 logoImage 变化时同步到 LayoutContext
@@ -48,7 +52,10 @@ function LayoutContent() {
     <div className={styles.layoutContainer}>
       {layoutVisible.header && (
         <ConfigProvider theme={{ algorithm: antdTheme.darkAlgorithm }}>
-          <LayoutHeader logoTitle={config.basic.systemTitle} className={styles.areaHeader} />
+          <LayoutHeader
+            logoTitle={config.basic.systemTitle[currentLocale] || Object.values(config.basic.systemTitle)[0] || ''}
+            className={styles.areaHeader}
+          />
         </ConfigProvider>
       )}
       <LayoutMain className={styles.areaMain} />
@@ -62,8 +69,10 @@ function LayoutContent() {
         font={{
           color: config.watermark.color,
           fontSize: config.watermark.fontSize,
+          fontWeight: config.watermark.fontWeight as NonNullable<WatermarkProps['font']>['fontWeight'],
         }}
-        gap={[100, 100]}
+        rotate={config.watermark.rotate}
+        gap={[config.watermark.gapX, config.watermark.gapY]}
         style={{ opacity: config.watermark.opacity }}
       >
         {content}

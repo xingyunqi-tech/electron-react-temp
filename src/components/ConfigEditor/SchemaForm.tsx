@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import dayjs from 'dayjs';
 import {
   Checkbox,
@@ -9,6 +9,7 @@ import {
   InputNumber,
   Radio,
   Rate,
+  Segmented,
   Switch,
   Select,
   Slider,
@@ -22,11 +23,51 @@ import {
   Space,
 } from 'antd';
 import { UploadOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+import { LocaleList } from '@/interface/system';
+import type { LocaleKey } from '@/interface/system';
 import { extractDefaults, type JsonSchema, type IObjectSchema, type IStringSchema } from '@/constants/frontendConfig';
 import { message } from '@/components/StaticFunction';
 
 /** 上传文件大小限制：5MB */
 const MAX_UPLOAD_SIZE = 5 * 1024 * 1024;
+
+/** 所有支持的语言列表 */
+const localeKeys = Object.keys(LocaleList).filter(k => isNaN(Number(k))) as LocaleKey[];
+
+/** 语言显示标签 */
+const localeLabels: Record<string, string> = { 'zh-CN': '中文', 'en-US': 'English' };
+
+/**
+ * 多语言输入控件：Segmented 切换语言 + Input
+ */
+function I18nField({
+  value,
+  onChange,
+  disabled,
+}: {
+  value: Record<string, string>;
+  onChange: (v: Record<string, string>) => void;
+  disabled?: boolean;
+}) {
+  const [activeLang, setActiveLang] = useState<string>(localeKeys[0]);
+
+  return (
+    <Space.Compact style={{ width: '100%' }}>
+      <Segmented
+        value={activeLang}
+        onChange={v => setActiveLang(v as string)}
+        options={localeKeys.map(k => ({ value: k, label: localeLabels[k] || k }))}
+        size="middle"
+      />
+      <Input
+        value={value[activeLang] ?? ''}
+        onChange={e => onChange({ ...value, [activeLang]: e.target.value })}
+        disabled={disabled}
+        style={{ flex: 1 }}
+      />
+    </Space.Compact>
+  );
+}
 
 interface SchemaFieldsProps {
   schema: Record<string, JsonSchema>;
@@ -58,6 +99,13 @@ function SchemaFields({ schema, value, onChange, disabled }: SchemaFieldsProps) 
                 options={fieldSchema.enumType.map(v => ({ value: v, label: v }))}
               />
             );
+          }
+          if (fieldSchema.inputType === 'i18n') {
+            const i18nValue = (fieldValue && typeof fieldValue === 'object' ? fieldValue : {}) as Record<
+              string,
+              string
+            >;
+            return <I18nField value={i18nValue} onChange={onFieldChange} disabled={disabled} />;
           }
           if (fieldSchema.enumType) {
             return (
