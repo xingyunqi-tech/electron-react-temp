@@ -2,48 +2,86 @@ import { Link } from 'react-router-dom';
 import styles from './index.module.scss';
 import logoSvg from '@/assets/images/home/logo.svg';
 
-const INTRO_PARAGRAPHS = [
-  'Cancer is far more than a collection of mutations. For too long, we relied on sequencing to find answers, but that was just the tip of the iceberg. We are pioneering Functional Precision Oncology\u2014a revolutionary approach that shifts focus from static genetic lists to dynamic functional behaviors within the native tumor microenvironment.',
-  'True breakthroughs require a convergence of worlds. We are a collective of scientists and industry veterans from top institutions (Stanford, Tsinghua, Novartis, Pfizer), united by a single mission: to rebuild the paradigm of target discovery and validation, providing the data foundation for the next generation of \u201CFirst-in-Class\u201D therapies.',
-];
+// --- Announcement ---
+const ANNOUNCEMENT_TEXT = '公告：双料获奖！OrgaNova 荣获行业认可';
 
-const MISSION_PILLARS = [
-  {
-    title: 'Simulate the clinical reality by retaining the native tumor microenvironment.',
-    description:
-      'We move beyond plastic. By utilizing high-fidelity patient-derived organoids (PDOs) instead of standard cell lines, we systematically screen and validate key drivers in a \u201Cliving\u201D context, ensuring that what works in our lab actually works in the patient.',
-  },
-  {
-    title: 'Unlock functional targets that genomics alone cannot see.',
-    description:
-      'We don\u2019t just read the code; we test the function. Leveraging proprietary CRISPR/shRNA tools, we identify the hidden vulnerabilities of tumor progression. We are built to solve the \u201C0 to 1\u201D problem in drug discovery, finding actionable opportunities where others see only noise.',
-  },
-  {
-    title: 'Unite world-class minds from academia and industry.',
-    description:
-      'Our DNA is a blend of academic rigor and industrial agility. With roots in global research hubs and top pharma giants, our team combines the curiosity to explore unknown mechanisms with the discipline to deliver robust, clinical-grade data.',
-  },
-];
+// --- Hero ---
+const HERO = {
+  title: '我们所做的一切，皆超越基因组。',
+  introParagraphs: [
+    '癌症远不止是基因突变的集合。长期以来，我们依赖测序寻找答案，但那只是冰山一角。我们正在开创功能性精准肿瘤学——一种革命性的方法，将关注点从静态基因列表转向原生肿瘤微环境中的动态功能行为。',
+    '真正的突破需要多领域的融合。我们是一支由顶尖机构（斯坦福、清华、诺华、辉瑞）的科学家和行业资深专家组成的团队，肩负统一使命：重构靶点发现与验证的范式，为下一代"First-in-Class"疗法提供数据基础。',
+  ],
+};
 
-const NAV_LINKS = [
-  { label: 'Organoid Intelligence', path: '/organoid-intelligence' },
-  { label: 'Platform', path: '/platform' },
-  { label: 'Capabilities', path: '/capabilities' },
-  { label: 'Products', path: '/products' },
-  { label: 'About us', path: '/about-us' },
-];
+// --- Mission ---
+const MISSION = {
+  label: 'OrgaNova：我们的核心使命',
+  subtitle: '我们始终致力于让癌症治疗变得确定可控。',
+  pillars: [
+    {
+      title: '保留原生肿瘤微环境，模拟真实临床场景。',
+      description:
+        '我们超越传统培养皿。通过使用高保真度的患者来源类器官（PDO）替代标准细胞系，我们在"活体"环境中系统性地筛选和验证关键驱动因子，确保实验室中有效的方案在患者身上同样有效。',
+    },
+    {
+      title: '解锁基因组学无法发现的功能性靶点。',
+      description:
+        '我们不仅解读代码，更验证功能。利用专有的 CRISPR/shRNA 工具，我们发现肿瘤进展中隐藏的脆弱靶点。我们致力于解决药物发现中的"从 0 到 1"难题，在他人只看到噪声的地方发现可执行的治疗机会。',
+    },
+    {
+      title: '汇聚学术界与产业界的世界级人才。',
+      description:
+        '我们的基因融合了学术严谨与产业敏捷。团队成员根植于全球顶尖研究机构和头部制药企业，将探索未知机制的好奇心与交付稳健、临床级数据的执行力完美结合。',
+    },
+  ],
+};
 
-const SECONDARY_NAV_LINKS = [
-  { label: 'News & Perspectives', path: '/news' },
-  { label: 'Contact', path: '/contact' },
-];
+// --- News Section ---
+const NEWS_SECTION = {
+  label: '新闻与观点',
+  title: '获取团队的最新动态',
+  ctaText: '联系我们',
+};
+
+// --- Navigation ---
+const NAV = {
+  primary: [
+    { label: '类器官智能', path: '/organoid-intelligence' },
+    { label: '平台', path: '/platform' },
+    { label: '能力', path: '/capabilities' },
+    { label: '产品', path: '/products' },
+    { label: '关于我们', path: '/about-us' },
+  ],
+  secondary: [
+    { label: '新闻与观点', path: '/news' },
+    { label: '联系我们', path: '/contact' },
+  ],
+};
+
+// --- Footer ---
+const FOOTER = {
+  title: '解码癌症',
+  address: {
+    company: 'OrgaNova',
+    street: '1610 Cinnamon Lane',
+    city: 'Texas, TX 78212',
+    country: 'United States',
+  },
+  copyright: `OrgaNova \u00a9 2026. 版权所有。`,
+  socialLinks: [
+    { label: 'LinkedIn', url: '#' },
+    { label: 'X', url: '#' },
+    { label: 'YouTube', url: '#' },
+  ],
+};
 
 export default function AboutUsPage() {
   return (
     <div className={styles.page}>
       {/* Announcement Bar */}
       <div className={styles.announcement}>
-        <span>Announcement: Double Award Winner! OrgaNova Receives Industry Recognition</span>
+        <span>{ANNOUNCEMENT_TEXT}</span>
       </div>
 
       {/* Hero Section */}
@@ -51,9 +89,9 @@ export default function AboutUsPage() {
         <div className={styles.heroLogo}>
           <img src={logoSvg} alt="OrgaNova" />
         </div>
-        <h1 className={styles.heroTitle}>Seeing beyond the genome in everything we do.</h1>
+        <h1 className={styles.heroTitle}>{HERO.title}</h1>
         <div className={styles.introColumns}>
-          {INTRO_PARAGRAPHS.map((text, index) => (
+          {HERO.introParagraphs.map((text, index) => (
             <p key={index} className={styles.introParagraph}>
               {text}
             </p>
@@ -64,11 +102,11 @@ export default function AboutUsPage() {
       {/* Mission Section */}
       <section className={styles.mission}>
         <div className={styles.missionLeft}>
-          <span className={styles.sectionLabel}>OrgaNova: Our Core Mission</span>
-          <h2 className={styles.missionSubtitle}>Our consistent drive to make cancer treatment deterministic.</h2>
+          <span className={styles.sectionLabel}>{MISSION.label}</span>
+          <h2 className={styles.missionSubtitle}>{MISSION.subtitle}</h2>
         </div>
         <div className={styles.missionPillars}>
-          {MISSION_PILLARS.map((pillar, index) => (
+          {MISSION.pillars.map((pillar, index) => (
             <div key={index} className={styles.pillar}>
               <h3 className={styles.pillarTitle}>{pillar.title}</h3>
               <p className={styles.pillarDescription}>{pillar.description}</p>
@@ -80,11 +118,11 @@ export default function AboutUsPage() {
       {/* News & Perspectives Section */}
       <section className={styles.newsSection}>
         <div className={styles.newsContent}>
-          <span className={styles.newsLabel}>News &amp; Perspectives</span>
+          <span className={styles.newsLabel}>{NEWS_SECTION.label}</span>
           <hr className={styles.newsDivider} />
-          <h2 className={styles.newsTitle}>Get the latest updates from our team</h2>
+          <h2 className={styles.newsTitle}>{NEWS_SECTION.title}</h2>
           <Link to="/contact" className={styles.contactLink}>
-            Contact
+            {NEWS_SECTION.ctaText}
           </Link>
         </div>
       </section>
@@ -94,13 +132,13 @@ export default function AboutUsPage() {
         <div className={styles.footerNav}>
           <img src={logoSvg} alt="OrgaNova" className={styles.logo} />
           <div className={styles.navLinks}>
-            {NAV_LINKS.map(link => (
+            {NAV.primary.map(link => (
               <Link key={link.label} to={link.path} className={styles.navLink}>
                 {link.label}
               </Link>
             ))}
             <span className={styles.navDivider} />
-            {SECONDARY_NAV_LINKS.map(link => (
+            {NAV.secondary.map(link => (
               <Link key={link.label} to={link.path} className={styles.navLink}>
                 {link.label}
               </Link>
@@ -109,24 +147,26 @@ export default function AboutUsPage() {
         </div>
         <div className={styles.footerBottom}>
           <div>
-            <h2 className={styles.footerTitle}>Decoding Cancer</h2>
+            <h2 className={styles.footerTitle}>{FOOTER.title}</h2>
           </div>
           <div>
             <address className={styles.footerAddress}>
-              OrgaNova
+              {FOOTER.address.company}
               <br />
-              1610 Cinnamon Lane
+              {FOOTER.address.street}
               <br />
-              Texas, TX 78212
+              {FOOTER.address.city}
               <br />
-              United States
+              {FOOTER.address.country}
             </address>
-            <p className={styles.footerCopyright}>OrgaNova &copy; 2026. All&nbsp;Rights&nbsp;Reserved.</p>
+            <p className={styles.footerCopyright}>{FOOTER.copyright}</p>
           </div>
           <div className={styles.footerSocial}>
-            <a href="#">LinkedIn</a>
-            <a href="#">X</a>
-            <a href="#">YouTube</a>
+            {FOOTER.socialLinks.map(social => (
+              <a key={social.label} href={social.url}>
+                {social.label}
+              </a>
+            ))}
           </div>
         </div>
       </footer>

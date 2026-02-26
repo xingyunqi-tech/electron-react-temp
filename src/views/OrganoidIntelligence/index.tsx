@@ -2,75 +2,104 @@ import { Link } from 'react-router-dom';
 import styles from './index.module.scss';
 import logoSvg from '@/assets/images/home/logo.svg';
 
-// ==================== Constants & Mock Data ====================
+// ==================== Constants ====================
 
-const ANNOUNCEMENT_TEXT = 'Announcement: Double Award Winner! OrgaNova Receives Industry Recognition';
+// Announcement
+const ANNOUNCEMENT_TEXT = '公告：双奖得主！OrgaNova 荣获行业认可';
 
-const HERO_LABEL = 'Organoid Intelligence';
+// Hero Section
+const HERO = {
+  label: '类器官智能',
+  title: '以前所未有的精准度解码癌症。',
+  aside: {
+    title: '如果……临床试验不必是疗效的第一次真正检验呢？',
+    body: '现在我们看到了。\n通过构建大规模的患者来源类器官（PDO）库，我们创建了镜像人类生物学的数字化身。',
+  },
+};
 
-const HERO_TITLE = 'Decoding cancer with precision we never thought possible.';
+// Intro Section
+const INTRO = {
+  leftText: '我们利用技术以基因组学本身无法实现的方式来探究肿瘤。',
+  rightStatement: '事实证明……基因蓝图并不能保证生物学结果。',
+  rightBody: [
+    '通过在我们专有的 1,500+ 患者来源类器官库上训练 OrgaNova 平台——辅以高通量 CRISPR 功能扰动数据——我们可以学习决定特定肿瘤结构如何响应治疗干预的确定性规则。',
+    '通过在我们专有的 1,500+ 患者来源类器官库上训练 OrgaNova 平台——辅以高通量 CRISPR 功能扰动数据——我们可以学习决定特定肿瘤结构如何响应治疗干预的确定性规则。',
+    '我们将这一创新称为类器官智能。',
+  ],
+};
 
-const HERO_ASIDE_TITLE = 'What if...clinical trials didn\u2019t have to be the first real test of efficacy?';
-
-const HERO_ASIDE_BODY =
-  'Now we see.\nBy building huge libraries of Patient-Derived Organoids (PDOs), we create digital avatars that mirror human biology.';
-
-const INTRO_LEFT_TEXT =
-  'We\u2019ve put technology to work to interrogate tumors in ways that genomics alone never could.';
-
-const INTRO_RIGHT_STATEMENT = 'It turns out... The genetic blueprint does not guarantee the biological outcome.';
-
-const INTRO_RIGHT_BODY = [
-  'By training the OrgaNova Platform on our proprietary library of 1,500+ patient-derived organoids\u2014supplemented with high-throughput CRISPR functional perturbation data\u2014we can learn the deterministic rules governing how specific tumor architectures respond to therapeutic intervention.',
-  'By training the OrgaNova Platform on our proprietary library of 1,500+ patient-derived organoids\u2014supplemented with high-throughput CRISPR functional perturbation data\u2014we can learn the deterministic rules governing how specific tumor architectures respond to therapeutic intervention.',
-  'We call this innovation Organoid Intelligence.',
-];
-
+// Detail Cards
 const DETAIL_CARDS = [
   {
-    title: 'High-Fidelity Biological Avatars',
+    title: '高保真生物化身',
     description:
-      'Standard models fail because they lack context. Our Organoid 2.0 systems retain the original tumor microenvironment (TME) and immune interactions. From drug sensitivity testing (IC50/AUC) to complex immune co-culture, we ensure the data fed into our AI is clinically relevant from day one.',
+      '标准模型失败是因为缺乏上下文。我们的类器官 2.0 系统保留了原始肿瘤微环境（TME）和免疫互作。从药物敏感性测试（IC50/AUC）到复杂的免疫共培养，我们确保输入 AI 的数据从第一天起就具有临床相关性。',
   },
   {
-    title: 'The Interrogation',
+    title: '深度探究',
     description:
-      'Utilizing our proprietary TRIC platform, we perform direct target discovery within the native tissue structure. By applying CRISPR/shRNA perturbations in situ, we filter out false positives caused by cell isolation, identifying hidden targets that drive tumor survival in the real world',
+      '利用我们专有的 TRiC 平台，我们在原生组织结构中直接进行靶点发现。通过原位应用 CRISPR/shRNA 扰动，过滤因细胞分离产生的假阳性，识别在真实世界中驱动肿瘤存活的隐藏靶点。',
   },
   {
-    title: 'The Decoding',
+    title: '智能解码',
     description:
-      'Our deep learning algorithms ingest RNA-seq, spatial transcriptomics, and metabolomics data to map the invisible networks of disease. We translate raw experimental signals into clear Mechanism-of-Action (MoA) predictions, accelerating the journey from Hit to Lead.',
+      '我们的深度学习算法整合 RNA-seq、空间转录组学和代谢组学数据，绘制疾病的隐形网络。我们将原始实验信号转化为清晰的作用机制（MoA）预测，加速从苗头化合物到先导化合物的进程。',
   },
 ];
 
-const INSIGHTS_HEADING = 'Generating insights unlike anything that exists today.';
+// Insights Section
+const INSIGHTS_HEADING = '生成前所未有的洞察。';
 
-const DEMOCRATIZING_TITLE = 'Democratizing Discovery';
+// Democratizing Section
+const DEMOCRATIZING = {
+  title: '普惠发现',
+  body: [
+    '我们相信类器官智能应该让每一位先驱者都能触及。与提供固定菜单的传统 CRO 不同，OrgaNova 作为您研发团队的延伸来运营。无论您是需要靶点验证的生物技术初创公司，还是寻求管线扩展的大型制药企业，我们的平台都能适应您的科学需求。',
+    '联合开发：共同开发具有共享知识产权的新型模型或靶点。',
+    '端到端服务：从实验设计到可视化分析报告。',
+    '数据整合：基于 AI 的现有测序数据分析。',
+  ],
+};
 
-const DEMOCRATIZING_BODY = [
-  'We believe Organoid Intelligence should be accessible to every pioneer. Unlike traditional CROs that offer rigid menus, OrgaNova operates as an extension of your R&D team. Whether you are a biotech startup needing target validation or a pharma giant seeking pipeline expansion, our platform adapts to your science.',
-  'Co-Development: Jointly developing novel models or targets with shared IP.',
-  'End-to-End Service: From experimental design to visual analytics reports.',
-  'Data Integration: AI-powered analysis of your existing sequencing data.',
-];
+// Platform Section
+const PLATFORM_CTA = {
+  label: '平台',
+  title: '超越静态基因组',
+};
 
-const PLATFORM_LABEL = 'Platform';
+// Navigation
+const NAV = {
+  primary: [
+    { label: '类器官智能', path: '/organoid-intelligence' },
+    { label: '平台', path: '/platform' },
+    { label: '能力', path: '/capabilities' },
+    { label: '产品', path: '/products' },
+    { label: '关于我们', path: '/about-us' },
+  ],
+  secondary: [
+    { label: '新闻与观点', path: '/news' },
+    { label: '联系我们', path: '/contact' },
+  ],
+};
 
-const PLATFORM_TITLE = 'Moving beyond the static genome';
+// Footer
+const FOOTER = {
+  title: '解码癌症',
+  address: {
+    company: 'OrgaNova',
+    street: '1610 Cinnamon Lane',
+    city: 'Texas, TX 78212',
+    country: 'United States',
+  },
+  copyright: 'OrgaNova \u00a9 2026. 版权所有。',
+  socialLinks: [
+    { label: 'LinkedIn', url: '#' },
+    { label: 'X', url: '#' },
+    { label: 'YouTube', url: '#' },
+  ],
+};
 
-const NAV_LINKS = [
-  { label: 'Organoid Intelligence', path: '/organoid-intelligence' },
-  { label: 'Platform', path: '/platform' },
-  { label: 'Capabilities', path: '/capabilities' },
-  { label: 'Products', path: '/products' },
-  { label: 'About us', path: '/about-us' },
-];
-
-const SECONDARY_NAV_LINKS = [
-  { label: 'News & Perspectives', path: '/news' },
-  { label: 'Contact', path: '/contact' },
-];
+// ==================== Component ====================
 
 export default function OrganoidIntelligencePage() {
   return (
@@ -91,19 +120,19 @@ export default function OrganoidIntelligencePage() {
         {/* Hero Content */}
         <div className={styles.heroContent}>
           <div className={styles.heroLabelRow}>
-            <span className={styles.heroLabel}>{HERO_LABEL}</span>
-            <h1 className={styles.heroTitle}>{HERO_TITLE}</h1>
+            <span className={styles.heroLabel}>{HERO.label}</span>
+            <h1 className={styles.heroTitle}>{HERO.title}</h1>
           </div>
         </div>
 
         {/* Hero Aside (bottom-right of hero) */}
         <div className={styles.heroAside}>
-          <h2 className={styles.heroAsideTitle}>{HERO_ASIDE_TITLE}</h2>
+          <h2 className={styles.heroAsideTitle}>{HERO.aside.title}</h2>
           <p className={styles.heroAsideBody}>
-            {HERO_ASIDE_BODY.split('\n').map((line, i) => (
+            {HERO.aside.body.split('\n').map((line, i) => (
               <span key={i}>
                 {line}
-                {i < HERO_ASIDE_BODY.split('\n').length - 1 && <br />}
+                {i < HERO.aside.body.split('\n').length - 1 && <br />}
               </span>
             ))}
           </p>
@@ -113,12 +142,12 @@ export default function OrganoidIntelligencePage() {
       {/* Intro Section (black bg, two columns) */}
       <section className={styles.intro}>
         <div className={styles.introLeft}>
-          <p className={styles.introLeftText}>{INTRO_LEFT_TEXT}</p>
+          <p className={styles.introLeftText}>{INTRO.leftText}</p>
         </div>
         <div className={styles.introRight}>
-          <h3 className={styles.introRightStatement}>{INTRO_RIGHT_STATEMENT}</h3>
+          <h3 className={styles.introRightStatement}>{INTRO.rightStatement}</h3>
           <div className={styles.introRightBody}>
-            {INTRO_RIGHT_BODY.map((paragraph, i) => (
+            {INTRO.rightBody.map((paragraph, i) => (
               <p key={i}>{paragraph}</p>
             ))}
           </div>
@@ -143,10 +172,10 @@ export default function OrganoidIntelligencePage() {
       {/* Democratizing Section (white bg) */}
       <section className={styles.democratizing}>
         <div className={styles.democratizingLeft}>
-          <h2 className={styles.democratizingTitle}>{DEMOCRATIZING_TITLE}</h2>
+          <h2 className={styles.democratizingTitle}>{DEMOCRATIZING.title}</h2>
         </div>
         <div className={styles.democratizingRight}>
-          {DEMOCRATIZING_BODY.map((paragraph, i) => (
+          {DEMOCRATIZING.body.map((paragraph, i) => (
             <p key={i} className={styles.democratizingParagraph}>
               {paragraph}
             </p>
@@ -162,9 +191,9 @@ export default function OrganoidIntelligencePage() {
       {/* Platform Section (white bg) */}
       <section className={styles.platform}>
         <div className={styles.platformInner}>
-          <span className={styles.platformLabel}>{PLATFORM_LABEL}</span>
+          <span className={styles.platformLabel}>{PLATFORM_CTA.label}</span>
           <Link to="/platform" className={styles.platformRow}>
-            <h2 className={styles.platformTitle}>{PLATFORM_TITLE}</h2>
+            <h2 className={styles.platformTitle}>{PLATFORM_CTA.title}</h2>
             <span className={styles.platformArrow} />
             <div className={styles.platformTriangle} />
           </Link>
@@ -176,13 +205,13 @@ export default function OrganoidIntelligencePage() {
         <div className={styles.footerNav}>
           <img src={logoSvg} alt="OrgaNova" className={styles.logo} />
           <div className={styles.navLinks}>
-            {NAV_LINKS.map(link => (
+            {NAV.primary.map(link => (
               <Link key={link.label} to={link.path} className={styles.navLink}>
                 {link.label}
               </Link>
             ))}
             <span className={styles.navDivider} />
-            {SECONDARY_NAV_LINKS.map(link => (
+            {NAV.secondary.map(link => (
               <Link key={link.label} to={link.path} className={styles.navLink}>
                 {link.label}
               </Link>
@@ -191,24 +220,26 @@ export default function OrganoidIntelligencePage() {
         </div>
         <div className={styles.footerBottom}>
           <div>
-            <h2 className={styles.footerTitle}>Decoding Cancer</h2>
+            <h2 className={styles.footerTitle}>{FOOTER.title}</h2>
           </div>
           <div>
             <address className={styles.footerAddress}>
-              OrgaNova
+              {FOOTER.address.company}
               <br />
-              1610 Cinnamon Lane
+              {FOOTER.address.street}
               <br />
-              Texas, TX 78212
+              {FOOTER.address.city}
               <br />
-              United States
+              {FOOTER.address.country}
             </address>
-            <p className={styles.footerCopyright}>OrgaNova &copy; 2026. All&nbsp;Rights&nbsp;Reserved.</p>
+            <p className={styles.footerCopyright}>{FOOTER.copyright}</p>
           </div>
           <div className={styles.footerSocial}>
-            <a href="#">LinkedIn</a>
-            <a href="#">X</a>
-            <a href="#">YouTube</a>
+            {FOOTER.socialLinks.map(social => (
+              <a key={social.label} href={social.url}>
+                {social.label}
+              </a>
+            ))}
           </div>
         </div>
       </footer>

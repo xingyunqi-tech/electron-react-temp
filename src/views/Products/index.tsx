@@ -2,61 +2,90 @@ import { Link } from 'react-router-dom';
 import styles from './index.module.scss';
 import logoSvg from '@/assets/images/home/logo.svg';
 
-const HERO_TITLE = 'The Toolkit for Biological Truth';
+// --- Announcement ---
+const ANNOUNCEMENT_TEXT = '公告：双料获奖！OrgaNova 荣获行业认可';
 
-const HERO_DESCRIPTION =
-  'We don\u2019t just sell reagents; we share our engine. From proprietary OrgaGro\u2122 media systems to high-throughput TRiC\u2122 interrogation kits, OrgaNova provides the standardized infrastructure needed to build, screen, and decode cancer biology in your own lab.';
+// --- Hero ---
+const HERO = {
+  title: '探索生物真相的工具包',
+  description:
+    '我们不仅销售试剂，更分享我们的核心引擎。从专有的 OrgaGro™ 培养基系统到高通量 TRiC™ 功能筛查试剂盒，OrgaNova 为您的实验室提供构建、筛选和解码癌症生物学所需的标准化基础设施。',
+};
 
-const PRODUCTS = [
-  {
-    title: 'OrgaGro\u2122 Media Series',
-    description:
-      'The nutrient-rich foundation used in our own 1,500+ PDO bank. Optimized for reconstructing high-fidelity Breast, Lung, and Colorectal cancer models in your own lab.',
-    link: 'View OrgaGro\u2122 Media Series \u2192',
+// --- Products Section ---
+const PRODUCTS_SECTION = {
+  title: '产品',
+  ctaText: '浏览全部产品',
+  items: [
+    {
+      title: 'OrgaGro™ 培养基系列',
+      description:
+        '我们自有 1,500+ PDO 库所使用的营养基础培养基。专为在您的实验室中构建高保真度的乳腺癌、肺癌和结直肠癌模型而优化。',
+      link: '查看 OrgaGro™ 培养基系列 →',
+    },
+    {
+      title: 'TRiC™ 原位检测试剂盒',
+      description: '业界首创的功能性捕获技术。在原生组织结构中直接鉴定有效靶点，过滤因细胞分离产生的伪影。',
+      link: '查看 TRiC™ 原位检测试剂盒 →',
+    },
+    {
+      title: 'OrgaExtract™ 组学制备',
+      description: '专为高密度 3D 类器官基质设计的提取方案。确保临床级 RNA/DNA 回收质量，满足下游 AI 解码和测序需求。',
+      link: '查看 OrgaExtract™ 组学制备 →',
+    },
+  ],
+};
+
+// --- Capabilities CTA ---
+const CAPABILITIES_CTA = {
+  label: '能力',
+  headline: '将生物学复杂性转化为拯救生命的确定性',
+};
+
+// --- Navigation ---
+const NAV = {
+  primary: [
+    { label: '类器官智能', path: '/organoid-intelligence' },
+    { label: '平台', path: '/platform' },
+    { label: '能力', path: '/capabilities' },
+    { label: '产品', path: '/products' },
+    { label: '关于我们', path: '/about-us' },
+  ],
+  secondary: [
+    { label: '新闻与观点', path: '/news' },
+    { label: '联系我们', path: '/contact' },
+  ],
+};
+
+// --- Footer ---
+const FOOTER = {
+  title: 'OrgaNova',
+  address: {
+    company: 'OrgaNova',
+    street: '1610 Cinnamon Lane',
+    city: 'Texas, TX 78212',
+    country: 'United States',
   },
-  {
-    title: 'TRiC\u2122 In Situ Kits',
-    description:
-      'Industry-first functional capture technology. Identify valid targets directly within the native tissue architecture, filtering out artifacts caused by cell isolation.',
-    link: 'View TRiC\u2122 In Situ Kits \u2192',
-  },
-  {
-    title: 'OrgaExtract\u2122 Omics Prep',
-    description:
-      'Specialized extraction solutions for dense 3D organoid matrices. Ensure clinical-grade RNA/DNA recovery quality for downstream AI decoding and sequencing.',
-    link: 'View OrgaExtract\u2122 Omics Prep \u2192',
-  },
-];
-
-const CAPABILITIES_LABEL = 'Capabilites';
-
-const CAPABILITIES_HEADLINE = 'Translating biological complexity into life-saving certainty';
-
-const NAV_LINKS = [
-  { label: 'Organoid Intelligence', path: '/organoid-intelligence' },
-  { label: 'Platform', path: '/platform' },
-  { label: 'Capabilities', path: '/capabilities' },
-  { label: 'Products', path: '/products' },
-  { label: 'About us', path: '/about-us' },
-];
-
-const SECONDARY_NAV_LINKS = [
-  { label: 'News & Perspectives', path: '/news' },
-  { label: 'Contact', path: '/contact' },
-];
+  copyright: `OrgaNova \u00a9 2026. 版权所有。`,
+  socialLinks: [
+    { label: 'LinkedIn', url: '#' },
+    { label: 'X', url: '#' },
+    { label: 'YouTube', url: '#' },
+  ],
+};
 
 export default function ProductsPage() {
   return (
     <div className={styles.page}>
       {/* Announcement Bar */}
       <div className={styles.announcement}>
-        <span>Announcement: Double Award Winner! OrgaNova Receives Industry Recognition</span>
+        <span>{ANNOUNCEMENT_TEXT}</span>
       </div>
 
       {/* Hero Section */}
       <section className={styles.hero}>
-        <h1 className={styles.heroTitle}>{HERO_TITLE}</h1>
-        <p className={styles.heroDescription}>{HERO_DESCRIPTION}</p>
+        <h1 className={styles.heroTitle}>{HERO.title}</h1>
+        <p className={styles.heroDescription}>{HERO.description}</p>
       </section>
 
       {/* Product Showcase (White Section) */}
@@ -69,9 +98,9 @@ export default function ProductsPage() {
       {/* Product Cards Section */}
       <section className={styles.products}>
         <div className={styles.productsInner}>
-          <h3 className={styles.productsTitle}>Products</h3>
+          <h3 className={styles.productsTitle}>{PRODUCTS_SECTION.title}</h3>
           <div className={styles.productCards}>
-            {PRODUCTS.map(product => (
+            {PRODUCTS_SECTION.items.map(product => (
               <div key={product.title} className={styles.productCard}>
                 <h4 className={styles.productName}>{product.title}</h4>
                 <p className={styles.productDescription}>{product.description}</p>
@@ -82,7 +111,7 @@ export default function ProductsPage() {
             ))}
           </div>
           <Link to="/products" className={styles.darkOutlineBtn}>
-            Explore all Products
+            {PRODUCTS_SECTION.ctaText}
           </Link>
         </div>
       </section>
@@ -90,8 +119,8 @@ export default function ProductsPage() {
       {/* Capabilities CTA Section */}
       <section className={styles.capabilitiesCta}>
         <div className={styles.capabilitiesCtaInner}>
-          <span className={styles.capabilitiesLabel}>{CAPABILITIES_LABEL}</span>
-          <h2 className={styles.capabilitiesHeadline}>{CAPABILITIES_HEADLINE}</h2>
+          <span className={styles.capabilitiesLabel}>{CAPABILITIES_CTA.label}</span>
+          <h2 className={styles.capabilitiesHeadline}>{CAPABILITIES_CTA.headline}</h2>
           <div className={styles.decorativeArrow}>
             <svg width="56" height="4" viewBox="0 0 56 4" fill="none">
               <line x1="0" y1="2" x2="56" y2="2" stroke="rgba(0, 0, 0, 0.3)" strokeWidth="4" />
@@ -105,13 +134,13 @@ export default function ProductsPage() {
         <div className={styles.footerNav}>
           <img src={logoSvg} alt="OrgaNova" className={styles.logo} />
           <div className={styles.navLinks}>
-            {NAV_LINKS.map(link => (
+            {NAV.primary.map(link => (
               <Link key={link.label} to={link.path} className={styles.navLink}>
                 {link.label}
               </Link>
             ))}
             <span className={styles.navDivider} />
-            {SECONDARY_NAV_LINKS.map(link => (
+            {NAV.secondary.map(link => (
               <Link key={link.label} to={link.path} className={styles.navLink}>
                 {link.label}
               </Link>
@@ -121,24 +150,26 @@ export default function ProductsPage() {
         <div className={styles.footerDivider} />
         <div className={styles.footerBottom}>
           <div>
-            <h2 className={styles.footerTitle}>OrgaNova</h2>
+            <h2 className={styles.footerTitle}>{FOOTER.title}</h2>
           </div>
           <div>
             <address className={styles.footerAddress}>
-              OrgaNova
+              {FOOTER.address.company}
               <br />
-              1610 Cinnamon Lane
+              {FOOTER.address.street}
               <br />
-              Texas, TX 78212
+              {FOOTER.address.city}
               <br />
-              United States
+              {FOOTER.address.country}
             </address>
-            <p className={styles.footerCopyright}>OrgaNova &copy; 2026. All&nbsp;Rights&nbsp;Reserved.</p>
+            <p className={styles.footerCopyright}>{FOOTER.copyright}</p>
           </div>
           <div className={styles.footerSocial}>
-            <a href="#">LinkedIn</a>
-            <a href="#">X</a>
-            <a href="#">YouTube</a>
+            {FOOTER.socialLinks.map(social => (
+              <a key={social.label} href={social.url}>
+                {social.label}
+              </a>
+            ))}
           </div>
         </div>
       </footer>

@@ -5,90 +5,114 @@ import logoSvg from '@/assets/images/home/logo.svg';
 
 // ==================== Constants ====================
 
-const HERO_TITLE = 'Moving beyond the static genome';
+const ANNOUNCEMENT_TEXT = '公告：双奖得主！OrgaNova 荣获行业认可';
 
-const HERO_DESCRIPTIONS = [
-  'The OrgaNova Platform is not just a collection of tools; it is a functional truth engine. While traditional discovery relies on genomic proxies, we rely on biological reality.',
-  'By integrating the world\u2019s largest library of living patient avatars with high-throughput in situ interrogation, we expose tumor vulnerabilities that sequencing alone cannot see. We turn the \u201cblack box\u201d of cancer biology into a computable, predictable system.',
-];
+const HERO = {
+  sectionLabel: 'OrgaNova 平台',
+  title: '超越静态基因组',
+  descriptions: [
+    'OrgaNova 平台不仅仅是一套工具集合，更是一个功能真相引擎。传统药物发现依赖基因组代理指标，而我们依赖的是生物学现实。',
+    '通过整合全球最大的活体患者类器官库与高通量原位功能检测，我们揭示了单纯测序无法发现的肿瘤脆弱性。我们将癌症生物学的"黑箱"转化为可计算、可预测的系统。',
+  ],
+};
 
-const ENGINE_TITLE = 'The OrgaNova Engine: An Iterative Loop';
-
-const ENGINE_STEPS = [
-  {
-    title: 'Reconstruct',
-    description: '1,500+ Patient-Derived Organoids retaining native TME.',
+const ENGINE = {
+  title: 'OrgaNova 引擎：迭代循环',
+  steps: [
+    {
+      title: '重建',
+      description: '1,500+ 例患者来源类器官，保留原生 TME。',
+    },
+    {
+      title: '探询',
+      description: '大规模并行 CRISPR 扰动，迫使靶点暴露。',
+    },
+    {
+      title: '捕获上下文',
+      description: '专有 TRiC™ 技术无需细胞分离即可原位读取信号。',
+    },
+    {
+      title: '解码',
+      description: 'AI 算法预测作用机制（MoA），指导临床策略。',
+    },
+  ],
+  diagram: {
+    centerText: 'OrgaNova 平台',
+    labels: ['Organoid 2.0 建模', 'TRiC™ 原位筛选', 'AI 与多组学分析', '功能基因组学'],
   },
-  {
-    title: 'Interrogate',
-    description: 'Massively parallel CRISPR perturbations to force target exposure.',
-  },
-  {
-    title: 'Capture Context',
-    description: 'Proprietary TRiC\u2122 technology reads signals in situ without cell isolation.',
-  },
-  {
-    title: 'Decode',
-    description: 'AI algorithms predict Mechanism-of-Action (MoA) to guide clinical strategy.',
-  },
-];
-
-const PLATFORM_DIAGRAM_LABELS = [
-  'Organoid 2.0 Modeling',
-  'TRiC\u2122 In Situ Screening',
-  'AI & Multi-omics Analytics',
-  'Functional Genomics',
-];
+};
 
 const TECH_SECTIONS = [
   {
-    subtitle: 'Reconstructing tumor reality, not just cells',
-    body: 'Standard models fail because they are isolated. Our Organoid 2.0 platform\u2014powered by proprietary Air-Liquid Interface (ALI) technology\u2014preserves the native immune microenvironment and stromal architecture. With a library of 1,500+ patient avatars, we test drugs against the full complexity of human biology.',
+    subtitle: '重建肿瘤真实面貌，而不仅仅是细胞',
+    body: '标准模型之所以失败，是因为它们是孤立的。我们的 Organoid 2.0 平台——基于专有的气液界面（ALI）技术——保留了原生免疫微环境和基质结构。凭借 1,500+ 例患者类器官库，我们针对人体生物学的全部复杂性进行药物测试。',
     imagePosition: 'right' as const,
   },
   {
-    subtitle: 'No cell is an island. Context is the cure.',
-    body: 'Traditional screening fails because it strips cells of their environment. Our proprietary TRiC\u2122 platform captures functional signals in situ\u2014directly within the native tissue architecture. By preserving the immune and stromal context, we filter out false positives to reveal targets that actually work in the human body.',
+    subtitle: '没有细胞是孤岛。上下文即是答案。',
+    body: '传统筛选之所以失败，是因为它剥离了细胞的原生环境。我们专有的 TRiC™ 平台直接在原生组织结构中原位捕获功能信号。通过保留免疫和基质上下文，我们过滤掉假阳性结果，揭示在人体内真正有效的靶点。',
     imagePosition: 'right' as const,
   },
   {
-    subtitle: 'Moving from \u201cIs it mutated?\u201d to \u201cDoes it matter?',
-    body: 'Genomics lists the mutations; we find the drivers. By deploying massive-scale CRISPR and shRNA libraries, we systematically perturb the genome across 2D, 3D, and in vivo models. We force the tumor to reveal its survival dependencies, filtering out noise to identify targets that are functionally essential.',
+    subtitle: '从"是否突变？"迈向"是否关键？"',
+    body: '基因组学列出突变；我们找到驱动因子。通过部署大规模 CRISPR 和 shRNA 文库，我们在 2D、3D 及体内模型中系统性地扰动基因组。我们迫使肿瘤暴露其生存依赖，过滤噪音以识别功能上至关重要的靶点。',
     imagePosition: 'left' as const,
   },
   {
-    subtitle: 'Decoding the invisible logic',
-    body: 'Biology is the hardware; AI is the decoder. We integrate multi-omics data\u2014spatial transcriptomics, RNA-seq, and metabolomics\u2014into a unified computational model. Our algorithms predict Mechanism of Action (MoA), turning raw experimental noise into clear, actionable therapeutic strategies.',
+    subtitle: '解码不可见的逻辑',
+    body: '生物学是硬件；AI 是解码器。我们将多组学数据——空间转录组学、RNA-seq 和代谢组学——整合为统一的计算模型。我们的算法预测作用机制（MoA），将原始实验噪音转化为清晰、可执行的治疗策略。',
     imagePosition: 'center' as const,
   },
   {
-    subtitle: 'Translating insight into patient survival.',
-    body: 'From Target Discovery to Personalized Precision Medicine, OrgaNova bridges the chasm to clinical reality. Whether identifying novel resistance mechanisms or predicting immunotherapy responses, our platform ensures that the right drug reaches the right patient\u2014turning biological data into life-saving cures.',
+    subtitle: '将洞见转化为患者生存获益',
+    body: '从靶点发现到个性化精准医疗，OrgaNova 架起了通向临床现实的桥梁。无论是识别新型耐药机制还是预测免疫治疗应答，我们的平台确保正确的药物到达正确的患者——将生物学数据转化为挽救生命的治疗方案。',
     imagePosition: 'left' as const,
   },
 ];
 
-const CAPABILITIES_CTA_TITLE = 'Translating biological complexity into life-saving certainty';
+const CAPABILITIES_CTA = {
+  label: '能力',
+  title: '将生物学复杂性转化为挽救生命的确定性',
+};
 
-const NAV_LINKS = [
-  { label: 'Organoid Intelligence', path: '/organoid-intelligence' },
-  { label: 'Platform', path: '/platform' },
-  { label: 'Capabilities', path: '/capabilities' },
-  { label: 'Products', path: '/products' },
-  { label: 'About us', path: '/about-us' },
-];
+const CONTACT_LINK_TEXT = '联系我们';
 
-const SECONDARY_NAV_LINKS = [
-  { label: 'News & Perspectives', path: '/news' },
-  { label: 'Contact', path: '/contact' },
-];
+const NAV = {
+  primary: [
+    { label: '类器官智能', path: '/organoid-intelligence' },
+    { label: '平台', path: '/platform' },
+    { label: '能力', path: '/capabilities' },
+    { label: '产品', path: '/products' },
+    { label: '关于我们', path: '/about-us' },
+  ],
+  secondary: [
+    { label: '新闻与观点', path: '/news' },
+    { label: '联系我们', path: '/contact' },
+  ],
+};
+
+const FOOTER = {
+  title: '解码癌症',
+  address: {
+    company: 'OrgaNova',
+    street: '1610 Cinnamon Lane',
+    city: 'Texas, TX 78212',
+    country: 'United States',
+  },
+  copyright: 'OrgaNova \u00a9 2026. 保留所有权利。',
+  socialLinks: [
+    { label: 'LinkedIn', url: '#' },
+    { label: 'X', url: '#' },
+    { label: 'YouTube', url: '#' },
+  ],
+};
 
 export default function PlatformPage() {
   return (
     <div className={styles.page}>
       {/* Announcement Bar */}
       <div className={styles.announcement}>
-        <span>Announcement: Double Award Winner! OrgaNova Receives Industry Recognition</span>
+        <span>{ANNOUNCEMENT_TEXT}</span>
       </div>
 
       {/* Hero Section */}
@@ -99,15 +123,15 @@ export default function PlatformPage() {
           <div className={styles.heroGradientBottom} />
         </div>
         <div className={styles.heroContent}>
-          <span className={styles.sectionLabel}>The OrgaNova Platform</span>
-          <h1 className={styles.heroTitle}>{HERO_TITLE}</h1>
+          <span className={styles.sectionLabel}>{HERO.sectionLabel}</span>
+          <h1 className={styles.heroTitle}>{HERO.title}</h1>
         </div>
       </section>
 
       {/* Description Section */}
       <section className={styles.descriptionSection}>
         <div className={styles.descriptionGrid}>
-          {HERO_DESCRIPTIONS.map((text, index) => (
+          {HERO.descriptions.map((text, index) => (
             <p key={index} className={styles.descriptionText}>
               {text}
             </p>
@@ -117,10 +141,10 @@ export default function PlatformPage() {
 
       {/* Engine Loop Section */}
       <section className={styles.engineSection}>
-        <h2 className={styles.engineTitle}>{ENGINE_TITLE}</h2>
+        <h2 className={styles.engineTitle}>{ENGINE.title}</h2>
         <div className={styles.engineContent}>
           <div className={styles.engineSteps}>
-            {ENGINE_STEPS.map(step => (
+            {ENGINE.steps.map(step => (
               <div key={step.title} className={styles.engineStep}>
                 <h3 className={styles.engineStepTitle}>{step.title}</h3>
                 <p className={styles.engineStepDescription}>{step.description}</p>
@@ -129,8 +153,8 @@ export default function PlatformPage() {
           </div>
           <div className={styles.engineDiagram}>
             <div className={styles.diagramCircle}>
-              <span className={styles.diagramCenter}>The OrgaNova Platform</span>
-              {PLATFORM_DIAGRAM_LABELS.map((label, index) => (
+              <span className={styles.diagramCenter}>{ENGINE.diagram.centerText}</span>
+              {ENGINE.diagram.labels.map((label, index) => (
                 <span key={label} className={`${styles.diagramLabel} ${styles[`diagramLabel${index + 1}`]}`}>
                   {label}
                 </span>
@@ -212,8 +236,8 @@ export default function PlatformPage() {
       {/* Capabilities CTA Section */}
       <section className={styles.capabilitiesCta}>
         <div className={styles.capabilitiesCtaInner}>
-          <span className={styles.capabilitiesLabel}>Capabilities</span>
-          <h2 className={styles.capabilitiesTitle}>{CAPABILITIES_CTA_TITLE}</h2>
+          <span className={styles.capabilitiesLabel}>{CAPABILITIES_CTA.label}</span>
+          <h2 className={styles.capabilitiesTitle}>{CAPABILITIES_CTA.title}</h2>
           <div className={styles.capabilitiesArrow}>
             <svg width="56" height="4" viewBox="0 0 56 4" fill="none" xmlns="http://www.w3.org/2000/svg">
               <line y1="2" x2="56" y2="2" stroke="rgba(0,0,0,0.3)" strokeWidth="4" />
@@ -225,7 +249,7 @@ export default function PlatformPage() {
       {/* Contact Banner */}
       <section className={styles.contactBanner}>
         <Link to="/contact" className={styles.contactLink}>
-          Contact
+          {CONTACT_LINK_TEXT}
         </Link>
       </section>
 
@@ -234,13 +258,13 @@ export default function PlatformPage() {
         <div className={styles.footerNav}>
           <img src={logoSvg} alt="OrgaNova" className={styles.logo} />
           <div className={styles.navLinks}>
-            {NAV_LINKS.map(link => (
+            {NAV.primary.map(link => (
               <Link key={link.label} to={link.path} className={styles.navLink}>
                 {link.label}
               </Link>
             ))}
             <span className={styles.navDivider} />
-            {SECONDARY_NAV_LINKS.map(link => (
+            {NAV.secondary.map(link => (
               <Link key={link.label} to={link.path} className={styles.navLink}>
                 {link.label}
               </Link>
@@ -249,24 +273,26 @@ export default function PlatformPage() {
         </div>
         <div className={styles.footerBottom}>
           <div>
-            <h2 className={styles.footerTitle}>Decoding Cancer</h2>
+            <h2 className={styles.footerTitle}>{FOOTER.title}</h2>
           </div>
           <div>
             <address className={styles.footerAddress}>
-              OrgaNova
+              {FOOTER.address.company}
               <br />
-              1610 Cinnamon Lane
+              {FOOTER.address.street}
               <br />
-              Texas, TX 78212
+              {FOOTER.address.city}
               <br />
-              United States
+              {FOOTER.address.country}
             </address>
-            <p className={styles.footerCopyright}>OrgaNova &copy; 2026. All&nbsp;Rights&nbsp;Reserved.</p>
+            <p className={styles.footerCopyright}>{FOOTER.copyright}</p>
           </div>
           <div className={styles.footerSocial}>
-            <a href="#">LinkedIn</a>
-            <a href="#">X</a>
-            <a href="#">YouTube</a>
+            {FOOTER.socialLinks.map(social => (
+              <a key={social.label} href={social.url}>
+                {social.label}
+              </a>
+            ))}
           </div>
         </div>
       </footer>
