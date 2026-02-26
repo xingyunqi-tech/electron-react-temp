@@ -1,8 +1,9 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { ThunkAction, UnknownAction } from '@reduxjs/toolkit';
 import { DEFAULT_LOCALE, DEFAULT_THEME_STYLE } from '@/constants/system';
 import type { LocaleKey, ThemeStyleKey } from '@/interface/system';
 import type { FrontendConfig } from '@/constants/frontendConfig';
+import { getConfig, upsertConfig } from '@/api';
 import { createSelector } from 'reselect';
 
 export const NAMESPACE = 'global' as const;
@@ -32,6 +33,25 @@ const initialState: GlobalState = {
   frontendConfig: {},
 };
 
+// ==================== Async Thunks ====================
+
+const CONFIG_KEY = 'frontend';
+
+/** 从服务端拉取前端配置 */
+export const fetchFrontendConfigThunk = createAsyncThunk('global/fetchFrontendConfig', async () => {
+  const res = await getConfig(CONFIG_KEY);
+  return res.value as Partial<FrontendConfig>;
+});
+
+/** 保存前端配置到服务端 */
+export const saveFrontendConfigThunk = createAsyncThunk(
+  'global/saveFrontendConfig',
+  async (config: Partial<FrontendConfig>) => {
+    const res = await upsertConfig(CONFIG_KEY, { value: config });
+    return res.value as Partial<FrontendConfig>;
+  },
+);
+
 const globalSlice = createSlice({
   name: NAMESPACE,
   initialState,
@@ -60,6 +80,15 @@ const globalSlice = createSlice({
     resetFrontendConfigAction(state) {
       state.frontendConfig = {};
     },
+  },
+  extraReducers: builder => {
+    builder
+      .addCase(fetchFrontendConfigThunk.fulfilled, (state, action) => {
+        state.frontendConfig = action.payload;
+      })
+      .addCase(saveFrontendConfigThunk.fulfilled, (state, action) => {
+        state.frontendConfig = action.payload;
+      });
   },
 });
 

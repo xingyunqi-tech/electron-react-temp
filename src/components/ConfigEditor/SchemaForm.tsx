@@ -18,6 +18,7 @@ import {
   Col,
   Row,
   Upload,
+  type UploadFile,
   Button,
   Image,
   Space,
@@ -79,6 +80,62 @@ interface SchemaFieldsProps {
 /**
  * 内部字段渲染（不包含 <Form>，可安全递归嵌套）
  */
+/** 图片上传 + 弹窗预览 */
+function ImagePreviewUpload({
+  accept,
+  fileList,
+  disabled,
+  hasValue,
+  onRemove,
+  onUpload,
+}: {
+  accept: string;
+  fileList: UploadFile[];
+  disabled?: boolean;
+  hasValue: boolean;
+  onRemove: () => void;
+  onUpload: (file: File) => void;
+}) {
+  const [previewOpen, setPreviewOpen] = useState(false);
+
+  return (
+    <>
+      <Upload
+        accept={accept}
+        listType="picture-card"
+        fileList={fileList}
+        maxCount={1}
+        disabled={disabled}
+        onPreview={() => setPreviewOpen(true)}
+        onRemove={() => {
+          onRemove();
+        }}
+        beforeUpload={file => {
+          onUpload(file);
+          return false;
+        }}
+      >
+        {!hasValue && (
+          <div>
+            <PlusOutlined />
+            <div style={{ marginTop: 8 }}>选择图片</div>
+          </div>
+        )}
+      </Upload>
+      {hasValue && (
+        <Image
+          style={{ display: 'none' }}
+          preview={{
+            visible: previewOpen,
+            onVisibleChange: setPreviewOpen,
+          }}
+          src={fileList[0]?.url}
+        />
+      )}
+    </>
+  );
+}
+
 function SchemaFields({ schema, value, onChange, disabled }: SchemaFieldsProps) {
   const handleFieldChange = (key: string, fieldValue: any) => {
     onChange({ ...value, [key]: fieldValue });
@@ -144,40 +201,26 @@ function SchemaFields({ schema, value, onChange, disabled }: SchemaFieldsProps) 
             );
           }
           if (fieldSchema.inputType === 'image') {
+            const imageFileList: UploadFile[] = fieldValue
+              ? [{ uid: '-1', name: 'image', status: 'done', url: fieldValue }]
+              : [];
             return (
-              <div>
-                {fieldValue && (
-                  <Space style={{ marginBottom: 8 }}>
-                    <Image src={fieldValue} width={80} height={80} style={{ objectFit: 'cover', borderRadius: 4 }} />
-                    <Button
-                      icon={<DeleteOutlined />}
-                      size="small"
-                      danger
-                      disabled={disabled}
-                      onClick={() => onFieldChange('')}
-                    />
-                  </Space>
-                )}
-                <Upload
-                  accept={(fieldSchema as IStringSchema).accept || 'image/*'}
-                  showUploadList={false}
-                  disabled={disabled}
-                  beforeUpload={file => {
-                    if (file.size > MAX_UPLOAD_SIZE) {
-                      message.error(`文件大小不能超过 ${MAX_UPLOAD_SIZE / 1024 / 1024}MB`);
-                      return false;
-                    }
-                    const reader = new FileReader();
-                    reader.onload = e => onFieldChange(e.target?.result as string);
-                    reader.readAsDataURL(file);
-                    return false;
-                  }}
-                >
-                  <Button icon={<UploadOutlined />} disabled={disabled}>
-                    选择图片
-                  </Button>
-                </Upload>
-              </div>
+              <ImagePreviewUpload
+                accept={(fieldSchema as IStringSchema).accept || 'image/*'}
+                fileList={imageFileList}
+                disabled={disabled}
+                hasValue={!!fieldValue}
+                onRemove={() => onFieldChange('')}
+                onUpload={file => {
+                  if (file.size > MAX_UPLOAD_SIZE) {
+                    message.error(`文件大小不能超过 ${MAX_UPLOAD_SIZE / 1024 / 1024}MB`);
+                    return;
+                  }
+                  const reader = new FileReader();
+                  reader.onload = e => onFieldChange(e.target?.result as string);
+                  reader.readAsDataURL(file);
+                }}
+              />
             );
           }
           if (fieldSchema.inputType === 'file') {
