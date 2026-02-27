@@ -30,6 +30,25 @@ export const appStorage = localforage.createInstance({
  * 包装 rootReducer 实现自动持久化，
  * 并提供 PersistGate Provider。
  */
+let _persistor: Persistor | null = null;
+
+/**
+ * 持久化管理器
+ *
+ * 对外暴露 redux-persist Persistor 的常用操作，
+ * 隐藏内部 Persistor 实例细节，按需扩展。
+ */
+export const persistManager = {
+  /** 等待所有挂起的状态写入存储完成 */
+  flush: (): Promise<void> => _persistor?.flush() ?? Promise.resolve(),
+  /** 清空所有持久化数据（恢复出厂） */
+  purge: (): Promise<void> => _persistor?.purge() ?? Promise.resolve(),
+  /** 暂停持久化写入 */
+  pause: () => _persistor?.pause(),
+  /** 恢复持久化写入 */
+  resume: () => _persistor?.persist(),
+};
+
 export function createPersistPlugin(options: PersistPluginOptions): ReduxPlugin {
   let persistor: Persistor | null = null;
 
@@ -62,6 +81,7 @@ export function createPersistPlugin(options: PersistPluginOptions): ReduxPlugin 
         }),
       };
       persistor = persistStore(storeProxy as any);
+      _persistor = persistor;
     },
 
     Provider({ children }: { children: React.ReactNode }) {

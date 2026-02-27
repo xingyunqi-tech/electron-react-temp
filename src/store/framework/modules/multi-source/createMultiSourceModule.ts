@@ -42,7 +42,6 @@ interface IState {
  * @returns 多来源模块实例
  */
 export const createMultiSourceModule = <T>(ctx: IMultiSourceModuleContext<T>) => {
-  const prevIndexesRef = { current: {} as Record<string, number> };
   const rootSelector: (state: any) => IState = ctx.rootSelector || DefaultRootSelectorFactory(ctx.name);
 
   // 创建子模块
@@ -189,10 +188,6 @@ export const createMultiSourceModule = <T>(ctx: IMultiSourceModuleContext<T>) =>
           }
         }
       }
-      const finalIndexes = { ...indexes };
-      head.forEach(item => finalIndexes[item[0]]!--);
-      prevIndexesRef.current = finalIndexes;
-
       return results;
     },
   );
@@ -315,10 +310,6 @@ export const createMultiSourceModule = <T>(ctx: IMultiSourceModuleContext<T>) =>
     return Object.entries(lastBuckets)
       .map(([bucketKey, bucketValue]) => {
         const typedBucketValue = bucketValue as string[];
-        let selfLeft = typedBucketValue.length - (prevIndexesRef.current[bucketKey] || 0);
-        if (selfLeft < 0) {
-          selfLeft = 0;
-        }
         return {
           limit:
             topN - prevSorted.length - (typedBucketValue.length - (prevSortedItemsNumOfEachSource[bucketKey] || 0)),

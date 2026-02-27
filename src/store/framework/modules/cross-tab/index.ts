@@ -1,5 +1,5 @@
 import { BroadcastChannel } from 'broadcast-channel';
-import { debounce, put, takeEvery } from 'redux-saga/effects';
+import { debounce, put } from 'redux-saga/effects';
 import { createAction } from '@reduxjs/toolkit';
 import type { ReduxSagaModule } from '../../types';
 
@@ -245,16 +245,6 @@ export const createCrossTabModule = (context: ICrossTabModuleContext): ICrossTab
         }
       };
 
-      setTimeout(() => {
-        if (channel) {
-          sendToChannel({
-            type: CrossTabEventType.HELLO,
-            from: actualTabId,
-            to: '*',
-          });
-        }
-      }, 10);
-
       if (typeof window !== 'undefined') {
         // 移除之前可能注册的监听器（防止重复注册）
         if (beforeUnloadHandler) {
@@ -303,7 +293,6 @@ export const createCrossTabModule = (context: ICrossTabModuleContext): ICrossTab
       );
 
       yield put(heartbeatAction());
-      yield takeEvery(heartbeatAction.match, sendHeartbeat);
       yield debounce(heartbeatInterval, heartbeatAction.match, sendHeartbeat);
     }
   }

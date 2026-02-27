@@ -53,7 +53,7 @@ export function destroyModule(
   const task = sagaTasks?.get(moduleName);
   if (task) {
     task.cancel();
-    sagaTasks!.delete(moduleName);
+    sagaTasks?.delete(moduleName);
   }
 
   const existingReducers = reducerManager.getReducerMap();

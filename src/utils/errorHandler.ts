@@ -170,11 +170,11 @@ function handleAuthError() {
     return;
   }
 
-  // 回退：直接清除 token 并跳转登录页
+  // 回退：未通过 setAuthErrorHandler 注入处理器时，清除 token 并跳转登录页
+  console.warn('[ErrorHandler] authErrorCallback not set, falling back to hard redirect');
   localStorage.removeItem('token');
-  setTimeout(() => {
-    window.location.href = '/login';
-  }, 1500);
+  localStorage.removeItem('refreshToken');
+  window.location.href = '/login';
 }
 
 /**

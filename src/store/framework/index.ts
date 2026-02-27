@@ -15,6 +15,7 @@ export {
   persistIgnoredActions,
   createLoopPlugin,
   appStorage,
+  persistManager,
   startLoopAction,
   stopLoopAction,
   stopAllLoopsAction,

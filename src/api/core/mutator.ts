@@ -127,11 +127,14 @@ export const customMutator = async <T>(config: CustomAxiosRequestConfig): Promis
     ...restConfig,
   };
 
-  // 请求去重检查（默认启用，POST/PUT/PATCH/DELETE 请求）
-  const shouldDedup = !disableDedup && ['post', 'put', 'patch', 'delete'].includes(method.toLowerCase());
+  // 请求去重检查（默认启用，POST/PUT/PATCH/DELETE 请求，FormData 除外）
+  const shouldDedup =
+    !disableDedup && ['post', 'put', 'patch', 'delete'].includes(method.toLowerCase()) && !(data instanceof FormData);
 
   if (shouldDedup && deduplicator.has(requestConfig)) {
-    console.log(`[RequestDedup] Duplicate request detected: ${method.toUpperCase()} ${url}`);
+    if (import.meta.env.DEV) {
+      console.log(`[RequestDedup] Duplicate request detected: ${method.toUpperCase()} ${url}`);
+    }
     const existingRequest = deduplicator.get(requestConfig);
     if (existingRequest) {
       return existingRequest as Promise<ExtractResult<T>>;

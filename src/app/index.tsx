@@ -4,9 +4,11 @@ import './index.scss';
 import type { ComponentType } from 'react';
 import { createRoot } from 'react-dom/client';
 import { ReduxProvider } from '@/store/framework';
-import { reduxContext, type RootState } from '@/store';
-import { setupGlobalErrorHandler } from '@/utils/errorHandler';
+import { reduxContext, type RootState, type AppDispatch } from '@/store';
+import { persistManager } from '@/store/framework';
+import { setupGlobalErrorHandler, setAuthErrorHandler } from '@/utils/errorHandler';
 import { frontendConfigSelector } from '@/store/modules/global';
+import { logoutAction } from '@/store/modules/user';
 import { mergeConfig } from '@/constants/frontendConfig';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import '@/plugins/locale';
@@ -14,6 +16,22 @@ import App from './App';
 
 // 设置全局错误处理器
 setupGlobalErrorHandler();
+
+// 接入认证错误处理：401 时触发 Redux logout 清理状态
+let isAuthErrorHandling = false;
+setAuthErrorHandler(() => {
+  // 防止多个并发请求同时触发 401 导致重复处理
+  if (isAuthErrorHandling) return;
+  isAuthErrorHandling = true;
+
+  (reduxContext.store.dispatch as AppDispatch)(logoutAction())
+    .then(() => persistManager.flush())
+    .catch(() => {})
+    .finally(() => {
+      isAuthErrorHandling = false;
+      window.location.href = '/login';
+    });
+});
 
 /**
  * 初始化应用
