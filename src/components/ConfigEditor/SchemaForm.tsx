@@ -27,7 +27,8 @@ import { UploadOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons'
 import { LocaleList } from '@/interface/system';
 import type { LocaleKey } from '@/interface/system';
 import { extractDefaults, type JsonSchema, type IObjectSchema, type IStringSchema } from '@/constants/frontendConfig';
-import { message } from '@/components/StaticFunction';
+import { message, loadingThenSuccess } from '@/components/StaticFunction';
+import { uploadFile } from '@/api';
 
 /** 上传文件大小限制：5MB */
 const MAX_UPLOAD_SIZE = 5 * 1024 * 1024;
@@ -141,6 +142,21 @@ function SchemaFields({ schema, value, onChange, disabled }: SchemaFieldsProps) 
     onChange({ ...value, [key]: fieldValue });
   };
 
+  const handleUpload = async (file: File, onFieldChange: (v: any) => void) => {
+    if (file.size > MAX_UPLOAD_SIZE) {
+      message.error(`文件大小不能超过 ${MAX_UPLOAD_SIZE / 1024 / 1024}MB`);
+      return;
+    }
+    const loading = loadingThenSuccess('上传中...', '上传成功');
+    try {
+      const res = await uploadFile({ file });
+      onFieldChange(res.file.path);
+      loading.success();
+    } catch {
+      loading.error('上传失败');
+    }
+  };
+
   const renderField = useCallback(
     (fieldSchema: JsonSchema, fieldValue: any, onFieldChange: (v: any) => void) => {
       switch (fieldSchema.type) {
@@ -211,15 +227,7 @@ function SchemaFields({ schema, value, onChange, disabled }: SchemaFieldsProps) 
                 disabled={disabled}
                 hasValue={!!fieldValue}
                 onRemove={() => onFieldChange('')}
-                onUpload={file => {
-                  if (file.size > MAX_UPLOAD_SIZE) {
-                    message.error(`文件大小不能超过 ${MAX_UPLOAD_SIZE / 1024 / 1024}MB`);
-                    return;
-                  }
-                  const reader = new FileReader();
-                  reader.onload = e => onFieldChange(e.target?.result as string);
-                  reader.readAsDataURL(file);
-                }}
+                onUpload={file => handleUpload(file, onFieldChange)}
               />
             );
           }
@@ -243,13 +251,7 @@ function SchemaFields({ schema, value, onChange, disabled }: SchemaFieldsProps) 
                   showUploadList={false}
                   disabled={disabled}
                   beforeUpload={file => {
-                    if (file.size > MAX_UPLOAD_SIZE) {
-                      message.error(`文件大小不能超过 ${MAX_UPLOAD_SIZE / 1024 / 1024}MB`);
-                      return false;
-                    }
-                    const reader = new FileReader();
-                    reader.onload = e => onFieldChange(e.target?.result as string);
-                    reader.readAsDataURL(file);
+                    handleUpload(file, onFieldChange);
                     return false;
                   }}
                 >
