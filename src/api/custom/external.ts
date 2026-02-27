@@ -40,7 +40,7 @@ export const getWeather = async (city: string): Promise<WeatherResponse> => {
     baseURL: 'https://api.weather.example.com',
     timeout: 5000, // 外部 API 设置较短超时
     headers: {
-      'X-API-Key': process.env.VITE_WEATHER_API_KEY || '', // 从环境变量读取 API Key
+      'X-API-Key': import.meta.env.VITE_WEATHER_API_KEY || '', // 从环境变量读取 API Key
     },
   });
 

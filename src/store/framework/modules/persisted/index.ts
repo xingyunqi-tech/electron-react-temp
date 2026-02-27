@@ -1,4 +1,4 @@
-import { call, delay, put, select, takeEvery } from 'redux-saga/effects';
+import { call, put, select, takeEvery } from 'redux-saga/effects';
 import type { Effect } from 'redux-saga/effects';
 import { createAction } from '@reduxjs/toolkit';
 import type { PayloadActionCreator } from '@reduxjs/toolkit';
@@ -153,8 +153,6 @@ export const createPersistedKeyValueModule = <T>(
 
     if (toUpdate.length > 0) {
       yield put(kvModule.actions.updateAction(toUpdate));
-      // 等待 store 状态更新传播后再继续，确保后续 selector 读取到最新数据
-      yield delay(10);
     }
 
     return result;
@@ -185,8 +183,6 @@ export const createPersistedKeyValueModule = <T>(
     const getByKey = yield select(kvModule.selectors.getByKey);
     const existingKeys = keys.filter(key => getByKey(key) !== undefined);
     if (existingKeys.length === 0) return;
-
-    yield put(kvModule.actions.removeAction(existingKeys));
 
     const deletedItems: Array<[string, StorageItem<T>]> = existingKeys.map(key => [
       key,

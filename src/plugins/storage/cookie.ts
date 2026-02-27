@@ -19,7 +19,7 @@ class CookieAPI {
     if (expire) {
       expireTime = new Date(expire).toUTCString();
     }
-    document.cookie = `${key}=${value}; expires=${expireTime};domain=${domain};path=${path}`;
+    document.cookie = `${key}=${encodeURIComponent(value)}; expires=${expireTime};domain=${domain};path=${path}`;
   }
 
   /**
@@ -33,7 +33,7 @@ class CookieAPI {
         cStart = cStart + key.length + 1;
         let cEnd = document.cookie.indexOf(';', cStart);
         if (cEnd === -1) cEnd = document.cookie.length;
-        return document.cookie.substring(cStart, cEnd);
+        return decodeURIComponent(document.cookie.substring(cStart, cEnd));
       }
     }
     return '';

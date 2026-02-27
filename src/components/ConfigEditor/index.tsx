@@ -7,7 +7,7 @@ import { useAppSelector } from '@/store';
 import { currentThemeSelector } from '@/store/modules/global';
 import { message } from '@/components/StaticFunction';
 import type { JsonSchema } from '@/constants/frontendConfig';
-import SchemaForm from './SchemaForm';
+import SchemaForm from '@/components/SchemaForm';
 
 type EditMode = 'visual' | 'code';
 

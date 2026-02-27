@@ -12,7 +12,7 @@ const NotFound = lazy(() => import('@/views/NotFound/index'));
  * 路由配置
  *
  * 结构：
- * - baseRoutes: 不需要登录的独立页面（login, register, 404, 403）
+ * - baseRoutes: 不需要登录的独立页面（login, 403）
  * - /: 需要登录的主布局，包含 commonRoutes + asyncRoutes
  */
 const createRouter = isElectron() ? createHashRouter : createBrowserRouter;

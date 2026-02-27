@@ -142,7 +142,7 @@ export const frontendConfigSchema = {
       logoImage: {
         type: 'string',
         title: 'Logo',
-        description: '上传系统 Logo 图片，存储为 Base64',
+        description: '上传系统 Logo 图片',
         inputType: 'image',
         accept: 'image/png,image/jpeg,image/svg+xml',
         defaultValue: '',

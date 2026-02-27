@@ -21,11 +21,6 @@ export interface IMultiSourceModule<T> extends ReduxSagaModule {
     clearAction: PayloadActionCreator<void>;
   };
 
-  events: {
-    /** 数据加载完成事件 */
-    onLoadAction: PayloadActionCreator<void>;
-  };
-
   selectors: {
     /** 获取已排序的稳定数据列表 */
     sortedItems: Selector<T[]>;

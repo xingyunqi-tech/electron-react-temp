@@ -12,7 +12,6 @@ description: 快速问题修复索引 - 按错误类型分类的解决方案
 | ESLint 报错 | 代码规范违反 | `pnpm lint:script --fix` |
 | 样式不生效 | CSS Modules 未导入 | 检查 `import styles` |
 | API 调用失败 | 接口变更 | `pnpm api:gen` 重新生成 |
-| 路由 404 | 路由未注册 | 检查 `routes/*.tsx` |
 | 路由 403 | 权限不足 | 检查 `handle.roles` |
 | Store 状态不更新 | Selector 缓存 | 检查 `createSelector` 依赖 |
 | Electron IPC 失败 | 通道不在白名单 | 检查 `preload/index.ts` |

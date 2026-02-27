@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch } from '@/store';
 import { logoutAction } from '@/store/modules/user';
-import { resetPermissionAction } from '@/store/modules/permission';
 import { message, modal } from '@/components/StaticFunction';
 import type { MenuProps } from 'antd';
 import styles from './index.module.scss';
@@ -19,8 +18,11 @@ export default function HeaderAvatar() {
       title: t('layout.tip'),
       content: t('layout.logoutConfirm'),
       onOk: async () => {
-        await dispatch(logoutAction()).unwrap();
-        dispatch(resetPermissionAction());
+        try {
+          await dispatch(logoutAction()).unwrap();
+        } catch {
+          // 即使登出 API 失败也继续清理本地状态并跳转
+        }
         message.success(t('layout.logoutSuccess'));
         navigate('/login');
       },

@@ -66,7 +66,7 @@ src/router/
 ├── index.tsx             # createBrowserRouter
 ├── guards.tsx            # AuthGuard 鉴权
 └── routes/
-    ├── base.tsx           # 登录、404、403
+    ├── base.tsx           # 登录、403
     ├── common.tsx         # 首页 (登录即可)
     └── async.tsx          # 需权限的页面
 ```

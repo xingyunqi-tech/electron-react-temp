@@ -21,7 +21,7 @@ src/router/
 ├── index.tsx              # 路由实例 (createBrowserRouter)
 ├── guards.tsx             # AuthGuard 鉴权守卫组件
 └── routes/
-    ├── base.tsx           # 基础路由 (登录、404、403)
+    ├── base.tsx           # 基础路由 (登录、403)
     ├── common.tsx         # 公共路由 (首页)
     └── async.tsx          # 异步路由 (需要权限的页面)
 ```
@@ -31,7 +31,7 @@ src/router/
 ```
 ┌─────────────────────────────────────────┐
 │ base.tsx - 基础路由 (无需登录)            │
-│  /login, /404, /403                      │
+│  /login, /403                           │
 ├─────────────────────────────────────────┤
 │ common.tsx - 公共路由 (登录即可访问)       │
 │  /home                                   │
@@ -55,7 +55,6 @@ import Forbidden from '@/views/Forbidden';
 
 export const baseRoutes: RouteObject[] = [
   { path: '/login', element: <Login /> },
-  { path: '/404', element: <NotFound /> },
   { path: '/403', element: <Forbidden /> },
 ];
 ```

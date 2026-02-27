@@ -3,7 +3,6 @@ import type { RouteObject } from 'react-router-dom';
 import { LoginSkeleton } from '@/components/Skeleton';
 
 const Login = lazy(() => import('@/views/Login/index'));
-const NotFound = lazy(() => import('@/views/NotFound/index'));
 const Forbidden = lazy(() => import('@/views/Forbidden/index'));
 
 /**
@@ -18,15 +17,6 @@ export const baseRoutes: RouteObject[] = [
       </Suspense>
     ),
     handle: { title: '登录' },
-  },
-  {
-    path: '/404',
-    element: (
-      <Suspense fallback={null}>
-        <NotFound />
-      </Suspense>
-    ),
-    handle: { title: '404' },
   },
   {
     path: '/403',

@@ -40,7 +40,7 @@ src/api/
 
 ```
 src/router/routes/
-├── base.tsx     # 基础路由 (登录、404) - 无需登录
+├── base.tsx     # 基础路由 (登录) - 无需登录
 ├── common.tsx   # 公共路由 (首页) - 登录即可访问
 └── async.tsx    # 异步路由 (管理页面) - 需要角色权限
 ```

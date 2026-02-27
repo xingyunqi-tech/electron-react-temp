@@ -71,6 +71,16 @@ class IndexedDB {
   }
 
   /**
+   * @description 确保数据库已打开
+   */
+  private ensureDB(): IDBDatabase {
+    if (!this.storage) {
+      throw new Error(`IndexedDB "${this.dbName}" 未打开，请先调用 openDB()`);
+    }
+    return this.storage;
+  }
+
+  /**
    * @description 新增或更新数据到指定的表和主键中
    * @param table 表名
    * @param key 主键
@@ -78,7 +88,7 @@ class IndexedDB {
    */
   setItem(table: TableName, key: string, value: any) {
     return new Promise<Event>((resolve, reject) => {
-      const transaction = (this.storage as IDBDatabase).transaction(table, 'readwrite');
+      const transaction = this.ensureDB().transaction(table, 'readwrite');
       const store = transaction.objectStore(table);
       const request = store.put(value, key);
       request.onsuccess = event => {
@@ -98,7 +108,7 @@ class IndexedDB {
   getItem<T = any>(table: TableName, key: string | null) {
     return new Promise<T>((resolve, reject) => {
       // 第二个参数可以省略
-      const transaction = (this.storage as IDBDatabase).transaction(table, 'readwrite');
+      const transaction = this.ensureDB().transaction(table, 'readwrite');
       const store = transaction.objectStore(table);
       let request = null;
       if (key) {
@@ -123,7 +133,7 @@ class IndexedDB {
    */
   deleteItem(table: TableName, key: string) {
     return new Promise<Event>((resolve, reject) => {
-      const request = (this.storage as IDBDatabase).transaction(table, 'readwrite').objectStore(table).delete(key);
+      const request = this.ensureDB().transaction(table, 'readwrite').objectStore(table).delete(key);
       request.onsuccess = event => {
         resolve(event);
       };
@@ -139,7 +149,7 @@ class IndexedDB {
    */
   clear(table: TableName) {
     return new Promise<Event>((resolve, reject) => {
-      const request = (this.storage as IDBDatabase).transaction(table, 'readwrite').objectStore(table).clear();
+      const request = this.ensureDB().transaction(table, 'readwrite').objectStore(table).clear();
       request.onsuccess = event => {
         resolve(event);
       };

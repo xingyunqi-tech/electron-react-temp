@@ -1,5 +1,4 @@
 import { compact, uniqBy } from 'lodash-es';
-import memoizeOne from 'memoize-one';
 import type { Reducer } from '@reduxjs/toolkit';
 import { combineReducers } from '@reduxjs/toolkit';
 import { call, put, race, select, take, takeEvery } from 'redux-saga/effects';
@@ -46,8 +45,6 @@ export const createMultiSourceModule = <T>(ctx: IMultiSourceModuleContext<T>) =>
   const prevIndexesRef = { current: {} as Record<string, number> };
   const rootSelector: (state: any) => IState = ctx.rootSelector || DefaultRootSelectorFactory(ctx.name);
 
-  const memoizedSourceIds = memoizeOne(ctx.sourceIds);
-
   // 创建子模块
   const createModule = <V>(key: keyof IState) =>
     createKeyValueModule<V>({
@@ -65,7 +62,6 @@ export const createMultiSourceModule = <T>(ctx: IMultiSourceModuleContext<T>) =>
 
   // 创建 Actions（RTK 原生 createAction）
   const clearAction = createAction<void>(`${ctx.name}/clear`);
-  const onLoadAction = createAction<void>(`${ctx.name}/onLoad`);
   const triggerUpdateMultiSourceDataAction = createAction<Array<SourceData<T>>>(
     `${ctx.name}/triggerUpdateMultiSourceData`,
   );
@@ -133,18 +129,18 @@ export const createMultiSourceModule = <T>(ctx: IMultiSourceModuleContext<T>) =>
       getKeysInBucket: kvBucketsModule.selectors.getByKey,
       getSourceItemsTotal: kvTotalOfEachSourceItemsModule.selectors.getByKey,
       getByKey: kvItemsModule.selectors.getByKey,
-      getSourceIds: memoizedSourceIds,
+      getSourceIds: ctx.sourceIds,
     }),
     (x): T[] => {
       const indexes: Record<string, number> = {};
       const sourceIdsArray = x.getSourceIds;
-      sourceIdsArray.forEach(id => {
+      sourceIdsArray.forEach((id: string) => {
         indexes[id] = 0;
       });
       const results: T[] = [];
       const finished: string[] = [];
       const head: Array<[string, T]> = compact(
-        sourceIdsArray.map(sourceId => {
+        sourceIdsArray.map((sourceId: string) => {
           const keys = x.getKeysInBucket(sourceId);
           if (!keys) {
             finished.push(sourceId);
@@ -204,12 +200,12 @@ export const createMultiSourceModule = <T>(ctx: IMultiSourceModuleContext<T>) =>
   const unstableItemsSelectors = defineSelector(
     () => ({
       getKeysInBucketSelector: kvBucketsModule.selectors.getByKey,
-      getSourceIds: memoizedSourceIds,
+      getSourceIds: ctx.sourceIds,
       getItem: kvItemsModule.selectors.getByKey,
     }),
     ({ getKeysInBucketSelector, getSourceIds, getItem }) => {
       const allItems: T[] = [];
-      getSourceIds.forEach(sourceId => {
+      getSourceIds.forEach((sourceId: string) => {
         const keys = getKeysInBucketSelector(sourceId);
         if (keys) {
           keys.forEach(key => {
@@ -224,8 +220,8 @@ export const createMultiSourceModule = <T>(ctx: IMultiSourceModuleContext<T>) =>
     },
   );
 
-  const sortedItemsSelector = memoizeOne(getItemsSelectors);
-  const unstableItemsSelector = memoizeOne(unstableItemsSelectors);
+  const sortedItemsSelector = getItemsSelectors;
+  const unstableItemsSelector = unstableItemsSelectors;
 
   const sourceFetchingStatusSelector = defineSelector(
     () => ({
@@ -285,7 +281,7 @@ export const createMultiSourceModule = <T>(ctx: IMultiSourceModuleContext<T>) =>
    */
   function* formatBucketFromKv(): Generator<Effect, Record<string, string[]>, any> {
     const getKvValues = yield select(kvItemsModule.selectors.getValues);
-    const sourceIds = yield select(memoizedSourceIds);
+    const sourceIds = yield select(ctx.sourceIds);
 
     const nextBucket = sourceIds.reduce((acc: Record<string, string[]>, sourceId: string) => {
       acc[sourceId] = [];
@@ -312,7 +308,7 @@ export const createMultiSourceModule = <T>(ctx: IMultiSourceModuleContext<T>) =>
     }
 
     const prevSortedItemsNumOfEachSource: Record<string, number> = {};
-    const sourceIds = yield select(memoizedSourceIds);
+    const sourceIds = yield select(ctx.sourceIds);
     sourceIds.forEach((sourceId: string) => (prevSortedItemsNumOfEachSource[sourceId] = 0));
     prevSorted.forEach((item: T) => prevSortedItemsNumOfEachSource[ctx.getSourceId(item)]!++);
 
@@ -390,9 +386,6 @@ export const createMultiSourceModule = <T>(ctx: IMultiSourceModuleContext<T>) =>
       abortAction,
       touchTopNAction,
       clearAction,
-    },
-    events: {
-      onLoadAction,
     },
     selectors: {
       total: totalSelector,

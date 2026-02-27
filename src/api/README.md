@@ -189,7 +189,7 @@ export const getWeather = async (city: string) => {
   return defaultHttp.get(`/weather/${city}`, {
     baseURL: 'https://api.weather.example.com',
     headers: {
-      'X-API-Key': process.env.VITE_WEATHER_API_KEY || '',
+      'X-API-Key': import.meta.env.VITE_WEATHER_API_KEY || '',
     },
   });
 };
