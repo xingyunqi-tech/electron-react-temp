@@ -7,17 +7,6 @@
   font-family: Roboto, sans-serif;
 }
 
-// ==================== Announcement Bar ====================
-.announcement {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 60px;
-  border-bottom: 2px solid rgb(255 255 255 / 0.4);
-  font-size: 24px;
-  line-height: 1.02;
-}
-
 // ==================== Hero ====================
 .hero {
   display: flex;
@@ -55,48 +44,6 @@
   width: 653px;
   height: 700px;
   background: #000;
-}
-
-// ==================== Hero Nav ====================
-.heroNav {
-  display: flex;
-  position: relative;
-  z-index: 3;
-  align-items: flex-end;
-  justify-content: space-between;
-  margin-top: 920px;
-  padding: 26px 48px;
-  gap: 481px;
-}
-
-.logo {
-  width: auto;
-  height: 48px;
-}
-
-.navLinks {
-  display: flex;
-  align-items: center;
-  gap: 40px;
-}
-
-.navLink {
-  transition: opacity 0.2s;
-  color: #fff;
-  font-size: 16px;
-  line-height: 1.17;
-  text-decoration: none;
-
-  &:hover {
-    opacity: 0.7;
-  }
-}
-
-.navDivider {
-  flex-shrink: 0;
-  width: 1px;
-  height: 35px;
-  background: rgb(255 255 255 / 0.2);
 }
 
 // ==================== Hero Content ====================
@@ -344,62 +291,4 @@
   border-bottom: 55px solid transparent;
   border-left: 96px solid rgb(217 217 217 / 0.6);
   border-radius: 5px;
-}
-
-// ==================== Footer ====================
-.footer {
-  padding-top: 0;
-  background: #000;
-}
-
-.footerNav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 26px 48px;
-}
-
-.footerBottom {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  min-height: 200px;
-  padding: 48px;
-}
-
-.footerTitle {
-  margin: 0;
-  font-size: 36px;
-  font-weight: 800;
-  line-height: 1.18;
-}
-
-.footerAddress {
-  margin-bottom: 16px;
-  font-size: 16px;
-  font-style: normal;
-  line-height: 1.36;
-}
-
-.footerCopyright {
-  margin: 0;
-  font-size: 16px;
-  line-height: 1.36;
-}
-
-.footerSocial {
-  display: flex;
-  flex-direction: column;
-
-  a {
-    transition: color 0.2s;
-    color: rgb(255 255 255 / 0.8);
-    font-size: 14px;
-    line-height: 1.79;
-    text-decoration: none;
-
-    &:hover {
-      color: #fff;
-    }
-  }
 }

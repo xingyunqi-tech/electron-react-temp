@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom';
-import styles from './index.module.scss';
-import logoSvg from '@/assets/images/home/logo.svg';
 
-// --- Announcement ---
-const ANNOUNCEMENT_TEXT = '公告：双料获奖！OrgaNova 荣获行业认可';
+import logoSvg from '@/assets/images/home/logo.svg';
+import AnnouncementBar from '@/components/AnnouncementBar';
+import SiteFooter from '@/components/SiteFooter';
+
+import styles from './index.module.scss';
 
 // --- Hero ---
 const HERO = {
@@ -44,45 +45,10 @@ const NEWS_SECTION = {
   ctaText: '联系我们',
 };
 
-// --- Navigation ---
-const NAV = {
-  primary: [
-    { label: '类器官智能', path: '/organoid-intelligence' },
-    { label: '平台', path: '/platform' },
-    { label: '能力', path: '/capabilities' },
-    { label: '产品', path: '/products' },
-    { label: '关于我们', path: '/about-us' },
-  ],
-  secondary: [
-    { label: '新闻与观点', path: '/news' },
-    { label: '联系我们', path: '/contact' },
-  ],
-};
-
-// --- Footer ---
-const FOOTER = {
-  title: '解码癌症',
-  address: {
-    company: 'OrgaNova',
-    street: '1610 Cinnamon Lane',
-    city: 'Texas, TX 78212',
-    country: 'United States',
-  },
-  copyright: `OrgaNova \u00a9 2026. 版权所有。`,
-  socialLinks: [
-    { label: 'LinkedIn', url: '#' },
-    { label: 'X', url: '#' },
-    { label: 'YouTube', url: '#' },
-  ],
-};
-
 export default function AboutUsPage() {
   return (
     <div className={styles.page}>
-      {/* Announcement Bar */}
-      <div className={styles.announcement}>
-        <span>{ANNOUNCEMENT_TEXT}</span>
-      </div>
+      <AnnouncementBar />
 
       {/* Hero Section */}
       <section className={styles.hero}>
@@ -127,49 +93,7 @@ export default function AboutUsPage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className={styles.footer}>
-        <div className={styles.footerNav}>
-          <img src={logoSvg} alt="OrgaNova" className={styles.logo} />
-          <div className={styles.navLinks}>
-            {NAV.primary.map(link => (
-              <Link key={link.label} to={link.path} className={styles.navLink}>
-                {link.label}
-              </Link>
-            ))}
-            <span className={styles.navDivider} />
-            {NAV.secondary.map(link => (
-              <Link key={link.label} to={link.path} className={styles.navLink}>
-                {link.label}
-              </Link>
-            ))}
-          </div>
-        </div>
-        <div className={styles.footerBottom}>
-          <div>
-            <h2 className={styles.footerTitle}>{FOOTER.title}</h2>
-          </div>
-          <div>
-            <address className={styles.footerAddress}>
-              {FOOTER.address.company}
-              <br />
-              {FOOTER.address.street}
-              <br />
-              {FOOTER.address.city}
-              <br />
-              {FOOTER.address.country}
-            </address>
-            <p className={styles.footerCopyright}>{FOOTER.copyright}</p>
-          </div>
-          <div className={styles.footerSocial}>
-            {FOOTER.socialLinks.map(social => (
-              <a key={social.label} href={social.url}>
-                {social.label}
-              </a>
-            ))}
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }
