@@ -4,12 +4,11 @@
 name: Sentinel - Post Deploy
 
 on:
-  deployment_status:
   workflow_dispatch:
     inputs:
       deploy_url:
         description: '待测试的部署 URL'
-        required: false
+        required: true
         type: string
 
 # 部署后修复不允许并发执行
@@ -19,10 +18,7 @@ concurrency:
 
 jobs:
   smoke-test-and-fix:
-    if: >-
-      vars.SENTINEL_ENABLED != 'false' &&
-      ((github.event_name == 'workflow_dispatch') ||
-      (github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success'))
+    if: vars.SENTINEL_ENABLED != 'false'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     permissions:
@@ -33,7 +29,7 @@ jobs:
 
     env:
       BRANCH_NAME: sentinel/post-deploy-${{ github.run_id }}
-      DEPLOY_URL: ${{ github.event.inputs.deploy_url || github.event.deployment_status.target_url || '' }}
+      DEPLOY_URL: ${{ github.event.inputs.deploy_url }}
 
     steps:
       - name: 检出代码
@@ -162,7 +158,7 @@ jobs:
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          prompt: |
+          direct_prompt: |
             部署后冒烟测试失败，以下是测试输出：
 
             ${{ steps.context.outputs.prompt_context }}

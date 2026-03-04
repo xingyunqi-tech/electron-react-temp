@@ -111,6 +111,15 @@ jobs:
         id: context
         if: steps.precheck.outputs.should_proceed == 'true'
         run: |
+          # 检查堆栈信息是否为空
+          STACKTRACE_TRIMMED=$(echo "${SENTRY_STACKTRACE}" | tr -d '[:space:]')
+          if [ -z "$STACKTRACE_TRIMMED" ] || [ "$STACKTRACE_TRIMMED" == "null" ] || [ "$STACKTRACE_TRIMMED" == "undefined" ]; then
+            echo "::warning::堆栈信息为空，无法定位源代码，跳过自动修复"
+            echo "no_stacktrace=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "no_stacktrace=false" >> "$GITHUB_OUTPUT"
+          fi
+
           echo "## Sentry 错误报告" > /tmp/sentry-context.md
           echo "" >> /tmp/sentry-context.md
           echo "**标题:** ${SENTRY_TITLE}" >> /tmp/sentry-context.md
@@ -132,15 +141,41 @@ jobs:
 
           echo "上下文准备完成。"
 
+      - name: 无堆栈信息，创建分析 Issue
+        if: steps.precheck.outputs.should_proceed == 'true' && steps.context.outputs.no_stacktrace == 'true'
+        run: |
+          {
+            echo "## Sentry 错误 - 无堆栈信息，需人工排查"
+            echo ""
+            printf -- '- **标题:** %s\n' "$SENTRY_TITLE"
+            printf -- '- **级别:** %s\n' "$SENTRY_LEVEL"
+            printf -- '- **触发位置:** %s\n' "$SENTRY_CULPRIT"
+            printf -- '- **Sentry 链接:** %s\n' "$SENTRY_URL"
+            echo ""
+            echo "### 原因"
+            echo "Sentry 事件未包含堆栈信息，无法自动定位源代码并修复。"
+            echo "请人工查看 Sentry 事件详情，获取更多上下文后进行修复。"
+            echo ""
+            echo "---"
+            echo "🤖 由 AI Sentinel 自动创建"
+          } > /tmp/issue-body.md
+
+          gh issue create \
+            --title "⚠️ Sentry 错误（无堆栈信息）- ${SAFE_KEY}" \
+            --body-file /tmp/issue-body.md \
+            --label "bug,sentinel,needs-triage"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: 创建修复分支
-        if: steps.precheck.outputs.should_proceed == 'true'
+        if: steps.precheck.outputs.should_proceed == 'true' && steps.context.outputs.no_stacktrace != 'true'
         run: |
           git push origin --delete "$BRANCH_NAME" 2>/dev/null || true
           git checkout -b "$BRANCH_NAME"
 
       - name: 执行 Claude Code
         id: claude
-        if: steps.precheck.outputs.should_proceed == 'true'
+        if: steps.precheck.outputs.should_proceed == 'true' && steps.context.outputs.no_stacktrace != 'true'
         uses: anthropics/claude-code-action@v1
         env:
           ANTHROPIC_BASE_URL: ${{ secrets.ANTHROPIC_BASE_URL }}
@@ -168,7 +203,7 @@ jobs:
             }
 
       - name: 提交 Claude 修改
-        if: steps.precheck.outputs.should_proceed == 'true'
+        if: steps.precheck.outputs.should_proceed == 'true' && steps.context.outputs.no_stacktrace != 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -177,15 +212,15 @@ jobs:
           git commit -m "fix: sentinel sentry error - ${SAFE_KEY}"
 
       - name: 验证 - 类型检查
-        if: steps.precheck.outputs.should_proceed == 'true'
+        if: steps.precheck.outputs.should_proceed == 'true' && steps.context.outputs.no_stacktrace != 'true'
         run: pnpm type-check
 
       - name: 验证 - Lint 检查
-        if: steps.precheck.outputs.should_proceed == 'true'
+        if: steps.precheck.outputs.should_proceed == 'true' && steps.context.outputs.no_stacktrace != 'true'
         run: pnpm lint
 
       - name: 校验修改文件
-        if: steps.precheck.outputs.should_proceed == 'true'
+        if: steps.precheck.outputs.should_proceed == 'true' && steps.context.outputs.no_stacktrace != 'true'
         id: validate
         run: |
           CHANGED_FILES=$(git diff origin/master HEAD --name-only)
