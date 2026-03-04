@@ -152,6 +152,7 @@ jobs:
       - name: 执行 Claude Code
         if: steps.check_url.outputs.skip != 'true' && steps.smoke_tests.outputs.smoke_failed == 'true'
         id: claude
+        continue-on-error: true
         uses: anthropics/claude-code-action@v1
         env:
           ANTHROPIC_BASE_URL: ${{ secrets.ANTHROPIC_BASE_URL }}
@@ -179,24 +180,29 @@ jobs:
             }
 
       - name: 提交 Claude 修改
+        id: commit
         if: steps.check_url.outputs.skip != 'true' && steps.smoke_tests.outputs.smoke_failed == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add src/
-          git diff --cached --quiet && exit 0
-          git commit -m "fix: sentinel post-deploy smoke test fix"
+          if git diff --cached --quiet; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+          else
+            git commit -m "fix: sentinel post-deploy smoke test fix"
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: 验证 - 类型检查
-        if: steps.check_url.outputs.skip != 'true' && steps.smoke_tests.outputs.smoke_failed == 'true'
+        if: steps.commit.outputs.has_changes == 'true'
         run: pnpm type-check
 
       - name: 验证 - Lint 检查
-        if: steps.check_url.outputs.skip != 'true' && steps.smoke_tests.outputs.smoke_failed == 'true'
+        if: steps.commit.outputs.has_changes == 'true'
         run: pnpm lint
 
       - name: 校验修改文件
-        if: steps.check_url.outputs.skip != 'true' && steps.smoke_tests.outputs.smoke_failed == 'true'
+        if: steps.commit.outputs.has_changes == 'true'
         id: validate
         run: |
           CHANGED_FILES=$(git diff origin/master HEAD --name-only)
@@ -227,8 +233,7 @@ jobs:
 
       - name: 推送分支
         if: >-
-          steps.check_url.outputs.skip != 'true' &&
-          steps.smoke_tests.outputs.smoke_failed == 'true' &&
+          steps.commit.outputs.has_changes == 'true' &&
           steps.validate.outputs.no_changes != 'true'
         env:
           SENTINEL_PAT: ${{ secrets.SENTINEL_PAT }}
@@ -245,8 +250,7 @@ jobs:
       - name: 创建 PR
         id: create_pr
         if: >-
-          steps.check_url.outputs.skip != 'true' &&
-          steps.smoke_tests.outputs.smoke_failed == 'true' &&
+          steps.commit.outputs.has_changes == 'true' &&
           steps.validate.outputs.no_changes != 'true'
         run: |
           {
@@ -287,9 +291,8 @@ jobs:
 
       - name: 无法自动修复时创建紧急 Issue
         if: >-
-          steps.check_url.outputs.skip != 'true' &&
           steps.smoke_tests.outputs.smoke_failed == 'true' &&
-          (steps.validate.outputs.no_changes == 'true' ||
+          (steps.commit.outputs.has_changes != 'true' ||
           (failure() && steps.validate.outputs.invalid_files != 'true'))
         run: |
           gh issue create \

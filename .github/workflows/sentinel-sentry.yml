@@ -112,9 +112,9 @@ jobs:
         if: steps.precheck.outputs.should_proceed == 'true'
         run: |
           # 检查堆栈信息是否为空
-          STACKTRACE_TRIMMED=$(echo "${SENTRY_STACKTRACE}" | tr -d '[:space:]')
-          if [ -z "$STACKTRACE_TRIMMED" ] || [ "$STACKTRACE_TRIMMED" == "null" ] || [ "$STACKTRACE_TRIMMED" == "undefined" ]; then
-            echo "::warning::堆栈信息为空，无法定位源代码，跳过自动修复"
+          STACK_TRIMMED=$(echo "${SENTRY_STACKTRACE}" | tr -d '[:space:]')
+          if [ -z "$STACK_TRIMMED" ] || [ "$STACK_TRIMMED" == "null" ] || [ "$STACK_TRIMMED" == "undefined" ]; then
+            echo "::warning::堆栈信息为空，无法定位代码位置"
             echo "no_stacktrace=true" >> "$GITHUB_OUTPUT"
           else
             echo "no_stacktrace=false" >> "$GITHUB_OUTPUT"
@@ -142,40 +142,45 @@ jobs:
           echo "上下文准备完成。"
 
       - name: 无堆栈信息，创建分析 Issue
-        if: steps.precheck.outputs.should_proceed == 'true' && steps.context.outputs.no_stacktrace == 'true'
+        if: >-
+          steps.precheck.outputs.should_proceed == 'true' &&
+          steps.context.outputs.no_stacktrace == 'true'
         run: |
           {
-            echo "## Sentry 错误 - 无堆栈信息，需人工排查"
+            echo "## Sentry 错误 - 缺少堆栈信息"
             echo ""
-            printf -- '- **标题:** %s\n' "$SENTRY_TITLE"
-            printf -- '- **级别:** %s\n' "$SENTRY_LEVEL"
-            printf -- '- **触发位置:** %s\n' "$SENTRY_CULPRIT"
-            printf -- '- **Sentry 链接:** %s\n' "$SENTRY_URL"
+            printf -- '**错误:** %s\n' "$SENTRY_TITLE"
+            printf -- '**级别:** %s\n' "$SENTRY_LEVEL"
+            printf -- '**触发位置:** %s\n' "$SENTRY_CULPRIT"
+            printf -- '**Sentry 链接:** %s\n' "$SENTRY_URL"
             echo ""
-            echo "### 原因"
-            echo "Sentry 事件未包含堆栈信息，无法自动定位源代码并修复。"
-            echo "请人工查看 Sentry 事件详情，获取更多上下文后进行修复。"
+            echo "### 说明"
+            echo "该 Sentry 错误未携带堆栈信息，无法自动定位代码位置，需人工分析。"
             echo ""
             echo "---"
             echo "🤖 由 AI Sentinel 自动创建"
           } > /tmp/issue-body.md
 
           gh issue create \
-            --title "⚠️ Sentry 错误（无堆栈信息）- ${SAFE_KEY}" \
+            --title "🔍 Sentry 错误需人工分析 - ${SAFE_KEY}" \
             --body-file /tmp/issue-body.md \
-            --label "bug,sentinel,needs-triage"
+            --label "sentinel,sentry,needs-triage"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 创建修复分支
-        if: steps.precheck.outputs.should_proceed == 'true' && steps.context.outputs.no_stacktrace != 'true'
+        if: >-
+          steps.precheck.outputs.should_proceed == 'true' &&
+          steps.context.outputs.no_stacktrace != 'true'
         run: |
           git push origin --delete "$BRANCH_NAME" 2>/dev/null || true
           git checkout -b "$BRANCH_NAME"
 
       - name: 执行 Claude Code
         id: claude
-        if: steps.precheck.outputs.should_proceed == 'true' && steps.context.outputs.no_stacktrace != 'true'
+        if: >-
+          steps.precheck.outputs.should_proceed == 'true' &&
+          steps.context.outputs.no_stacktrace != 'true'
         continue-on-error: true
         uses: anthropics/claude-code-action@v1
         env:
@@ -198,10 +203,9 @@ jobs:
             7. 修复完成后无需运行验证命令，workflow 会自动执行类型检查和 Lint 验证
 
             重要判断规则：
-            - 如果错误是后端 API 返回的 HTTP 状态码问题（如 4xx/5xx），且前端代码逻辑正确，则无需修改前端代码
-            - 如果错误无法通过修改 src/ 目录下的代码修复，请立即停止，不要反复尝试
-            - 在前 3 轮内判断是否属于前端可修复的问题，如果不是，直接结束
-          claude_args: '--model claude-sonnet-4-6 --max-turns 10 --allowedTools "Edit,Write,Read,Glob,Grep"'
+            - 如果错误无法通过修改允许目录下的代码修复，请立即停止，不要反复尝试
+            - 在前 3 轮内判断是否属于可修复的问题，如果不是，直接结束
+          claude_args: '--model claude-sonnet-4-6 --max-turns 20 --allowedTools "Edit,Write,Read,Glob,Grep"'
           settings: |
             {
               "enabledMcpjsonServers": [],
@@ -210,13 +214,14 @@ jobs:
 
       - name: 提交 Claude 修改
         id: commit
-        if: steps.precheck.outputs.should_proceed == 'true' && steps.context.outputs.no_stacktrace != 'true'
+        if: >-
+          steps.precheck.outputs.should_proceed == 'true' &&
+          steps.context.outputs.no_stacktrace != 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add src/
           if git diff --cached --quiet; then
-            echo "::notice::Claude 未产生代码修改，可能是后端问题或无法通过前端代码修复"
             echo "has_changes=false" >> "$GITHUB_OUTPUT"
           else
             git commit -m "fix: sentinel sentry error - ${SAFE_KEY}"

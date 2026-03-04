@@ -27,25 +27,6 @@ interface Env {
   SENTRY_DEDUP: KVNamespace;
 }
 
-interface StacktraceFrame {
-  filename: string;
-  function: string;
-  lineno: number;
-  colno: number;
-  context_line?: string;
-  pre_context?: string[];
-  post_context?: string[];
-  in_app: boolean;
-}
-
-interface ExceptionValue {
-  type: string;
-  value: string;
-  stacktrace?: {
-    frames: StacktraceFrame[];
-  };
-}
-
 interface SentryEvent {
   action: string;
   data: {
@@ -57,17 +38,24 @@ interface SentryEvent {
       url: string;
       issue_url: string;
       project: number;
-      // webhook 载荷格式
       exception?: {
-        values?: ExceptionValue[];
+        values?: Array<{
+          type: string;
+          value: string;
+          stacktrace?: {
+            frames: Array<{
+              filename: string;
+              function: string;
+              lineno: number;
+              colno: number;
+              context_line?: string;
+              pre_context?: string[];
+              post_context?: string[];
+              in_app: boolean;
+            }>;
+          };
+        }>;
       };
-      // Sentry API 返回格式
-      entries?: Array<{
-        type: string;
-        data: {
-          values?: ExceptionValue[];
-        };
-      }>;
     };
     triggered_rule: string;
   };
@@ -225,23 +213,14 @@ async function verifySentrySignature(body: string, signature: string, secret: st
  * Extract stacktrace from Sentry event payload
  */
 function extractStacktrace(event: SentryEvent['data']['event']): string {
-  // 兼容两种格式：
-  // 1. webhook 载荷: event.exception.values
-  // 2. Sentry API 返回: event.entries[type=exception].data.values
-  let exceptionValues = event.exception?.values;
-
-  if (!exceptionValues?.length && event.entries) {
-    const exceptionEntry = event.entries.find(e => e.type === 'exception');
-    exceptionValues = exceptionEntry?.data?.values;
-  }
-
-  if (!exceptionValues?.length) {
+  const exception = event.exception;
+  if (!exception?.values?.length) {
     return 'No stacktrace available';
   }
 
   const parts: string[] = [];
 
-  for (const exc of exceptionValues) {
+  for (const exc of exception.values) {
     parts.push(`${exc.type}: ${exc.value}`);
 
     if (exc.stacktrace?.frames) {
