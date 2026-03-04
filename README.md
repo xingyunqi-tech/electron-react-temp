@@ -189,8 +189,8 @@ pnpm test               # 运行单元测试
 pnpm test:watch         # 监听模式
 pnpm test:coverage      # 测试覆盖率报告
 pnpm test:ui            # Vitest UI 界面
-pnpm test:e2e           # Playwright E2E 测试
-pnpm test:e2e:report    # 查看 E2E 测试报告
+pnpm test:smoke           # Playwright E2E 测试
+pnpm test:smoke:report    # 查看 E2E 测试报告
 ```
 
 ### 代码质量

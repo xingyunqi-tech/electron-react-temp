@@ -1,0 +1,318 @@
+# Phase 4: 定时维护自动修复
+# 按 cron 计划运行，自动发现并修复 lint 错误、类型错误和测试失败
+
+name: Sentinel - Scheduled
+
+on:
+  schedule:
+    # 每周五 18:00 UTC（默认），由安装时 CRON_EXPRESSION 变量控制
+    - cron: '0 18 * * 5'
+  workflow_dispatch:
+    inputs:
+      checks:
+        description: '要运行的检查项（逗号分隔）：lint,typecheck,test'
+        required: false
+        default: 'lint,typecheck,test'
+        type: string
+
+# 定时任务不允许并发执行
+concurrency:
+  group: sentinel-scheduled
+  cancel-in-progress: false
+
+jobs:
+  maintenance-fix:
+    if: vars.SENTINEL_ENABLED != 'false'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
+
+    env:
+      BRANCH_NAME: sentinel/maintenance-${{ github.run_id }}
+      CHECKS: ${{ github.event.inputs.checks || 'lint,typecheck,test' }}
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - name: 配置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: 安装依赖
+        run: pnpm install --frozen-lockfile
+
+      - name: 执行 Lint 检查
+        id: lint
+        if: contains(env.CHECKS, 'lint')
+        continue-on-error: true
+        run: |
+          set +e
+          LINT_OUTPUT=$(pnpm lint 2>&1)
+          LINT_EXIT=$?
+          set -e
+
+          if [ $LINT_EXIT -ne 0 ]; then
+            echo "has_errors=true" >> "$GITHUB_OUTPUT"
+            echo "$LINT_OUTPUT" > /tmp/lint-output.txt
+          else
+            echo "has_errors=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: 执行类型检查
+        id: typecheck
+        if: contains(env.CHECKS, 'typecheck')
+        continue-on-error: true
+        run: |
+          set +e
+          TC_OUTPUT=$(pnpm type-check 2>&1)
+          TC_EXIT=$?
+          set -e
+
+          if [ $TC_EXIT -ne 0 ]; then
+            echo "has_errors=true" >> "$GITHUB_OUTPUT"
+            echo "$TC_OUTPUT" > /tmp/typecheck-output.txt
+          else
+            echo "has_errors=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: 执行单元测试
+        id: test
+        if: contains(env.CHECKS, 'test')
+        continue-on-error: true
+        run: |
+          set +e
+          TEST_OUTPUT=$(pnpm test 2>&1)
+          TEST_EXIT=$?
+          set -e
+
+          if [ $TEST_EXIT -ne 0 ]; then
+            echo "has_errors=true" >> "$GITHUB_OUTPUT"
+            echo "$TEST_OUTPUT" > /tmp/test-output.txt
+          else
+            echo "has_errors=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: 汇总检查结果
+        id: summary
+        env:
+          LINT_HAS_ERRORS: ${{ steps.lint.outputs.has_errors }}
+          TC_HAS_ERRORS: ${{ steps.typecheck.outputs.has_errors }}
+          TEST_HAS_ERRORS: ${{ steps.test.outputs.has_errors }}
+        run: |
+          HAS_ISSUES=false
+          : > /tmp/maintenance-summary.md
+
+          if [ "$LINT_HAS_ERRORS" == "true" ]; then
+            HAS_ISSUES=true
+            {
+              echo "## Lint 错误"
+              echo '```'
+              head -100 /tmp/lint-output.txt
+              echo '```'
+              echo ""
+            } >> /tmp/maintenance-summary.md
+          fi
+
+          if [ "$TC_HAS_ERRORS" == "true" ]; then
+            HAS_ISSUES=true
+            {
+              echo "## 类型检查错误"
+              echo '```'
+              head -100 /tmp/typecheck-output.txt
+              echo '```'
+              echo ""
+            } >> /tmp/maintenance-summary.md
+          fi
+
+          if [ "$TEST_HAS_ERRORS" == "true" ]; then
+            HAS_ISSUES=true
+            {
+              echo "## 测试失败"
+              echo '```'
+              head -100 /tmp/test-output.txt
+              echo '```'
+              echo ""
+            } >> /tmp/maintenance-summary.md
+          fi
+
+          if [ "$HAS_ISSUES" == "true" ]; then
+            echo "has_issues=true" >> "$GITHUB_OUTPUT"
+            # 将报告写入 step output，供后续步骤使用
+            {
+              echo "report_content<<CONTEXT_EOF"
+              cat /tmp/maintenance-summary.md
+              echo "CONTEXT_EOF"
+            } >> "$GITHUB_OUTPUT"
+          else
+            echo "has_issues=false" >> "$GITHUB_OUTPUT"
+            echo "所有检查通过，无需维护修复。"
+          fi
+
+      - name: 创建修复分支
+        if: steps.summary.outputs.has_issues == 'true'
+        run: git checkout -b "$BRANCH_NAME"
+
+      - name: 执行 Claude Code
+        if: steps.summary.outputs.has_issues == 'true'
+        id: claude
+        uses: anthropics/claude-code-action@v1
+        env:
+          ANTHROPIC_BASE_URL: ${{ secrets.ANTHROPIC_BASE_URL }}
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          prompt: |
+            定时维护检查发现以下问题：
+
+            ${{ steps.summary.outputs.report_content }}
+
+            修复要求：
+            1. 分析各类错误
+            2. 优先修复 lint 错误（通常最简单）
+            3. 再修复类型检查错误
+            4. 测试失败时，修复源代码而非测试文件
+            5. 只允许修改以下目录：src/
+            6. 禁止修改测试文件、配置文件或 package.json
+            7. 修复完成后无需运行验证命令，workflow 会自动执行类型检查、Lint 和测试验证
+          claude_args: '--model claude-sonnet-4-6 --max-turns 20 --allowedTools "Edit,Write,Read,Glob,Grep"'
+          settings: |
+            {
+              "enabledMcpjsonServers": [],
+              "hooks": {}
+            }
+
+      - name: 提交 Claude 修改
+        if: steps.summary.outputs.has_issues == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/
+          git diff --cached --quiet && exit 0
+          git commit -m "fix: sentinel scheduled maintenance"
+
+      - name: 验证 - 类型检查
+        if: steps.summary.outputs.has_issues == 'true'
+        run: pnpm type-check
+
+      - name: 验证 - Lint 检查
+        if: steps.summary.outputs.has_issues == 'true'
+        run: pnpm lint
+
+      - name: 验证 - 单元测试
+        if: steps.summary.outputs.has_issues == 'true' && contains(env.CHECKS, 'test')
+        run: pnpm test
+
+      - name: 校验修改文件
+        if: steps.summary.outputs.has_issues == 'true'
+        id: validate
+        run: |
+          CHANGED_FILES=$(git diff origin/master HEAD --name-only)
+
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "no_changes=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "已修改文件："
+          echo "$CHANGED_FILES"
+
+          # 校验修改文件是否在白名单目录内（src/）
+          INVALID_FILES=""
+          while IFS= read -r file; do
+            if [[ ! "$file" =~ ^src/ ]]; then
+              INVALID_FILES="$INVALID_FILES\n$file"
+            fi
+          done <<< "$CHANGED_FILES"
+
+          if [ -n "$INVALID_FILES" ]; then
+            echo "::error::以下文件不在允许修改的目录内：$INVALID_FILES"
+            echo "invalid_files=true" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+
+          echo "no_changes=false" >> "$GITHUB_OUTPUT"
+
+      - name: 推送分支
+        if: >-
+          steps.summary.outputs.has_issues == 'true' &&
+          steps.validate.outputs.no_changes != 'true'
+        env:
+          SENTINEL_PAT: ${{ secrets.SENTINEL_PAT }}
+        run: git push "https://x-access-token:${SENTINEL_PAT}@github.com/${{ github.repository }}" "$BRANCH_NAME"
+
+      - name: 清理无效分支
+        if: always() && steps.validate.outputs.invalid_files == 'true'
+        run: |
+          git push origin --delete "$BRANCH_NAME" 2>/dev/null || true
+          echo "::notice::已清理包含非法修改的远端分支：$BRANCH_NAME"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 创建 PR
+        id: create_pr
+        if: >-
+          steps.summary.outputs.has_issues == 'true' &&
+          steps.validate.outputs.no_changes != 'true'
+        run: |
+          {
+            echo "## 定时维护 Sentinel"
+            echo ""
+            echo "### 发现并修复的问题"
+            cat /tmp/maintenance-summary.md
+            echo ""
+            echo "### 改动说明"
+            echo "本 PR 由定时维护 workflow 自动生成。"
+            echo ""
+            echo "### 审查清单"
+            echo "- [ ] 改动正确且最小化"
+            echo "- [ ] 无意外副作用"
+            echo "- [ ] 所有检查通过"
+            echo ""
+            echo "---"
+            echo "🤖 由 AI Sentinel（定时维护）自动生成"
+          } > /tmp/pr-body.md
+
+          PR_URL=$(gh pr create \
+            --head "$BRANCH_NAME" \
+            --base "master" \
+            --title "fix: scheduled maintenance fixes" \
+            --body-file /tmp/pr-body.md \
+            --label "sentinel,maintenance" \
+            )
+
+          echo "pr_url=$PR_URL" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 执行失败时创建 Issue
+        if: >-
+          steps.summary.outputs.has_issues == 'true' && failure()
+        run: |
+          gh issue create \
+            --title "🚨 定时维护自动修复失败" \
+            --body "## 定时维护失败
+
+          自动维护修复未能完成。
+
+          ### 需要人工处理
+          请检查质量检查结果并手动修复。
+
+          ### Workflow 运行详情
+          ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+          ---
+          🤖 由 AI Sentinel 自动创建" \
+            --label "bug,sentinel,maintenance"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

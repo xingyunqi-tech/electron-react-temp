@@ -306,8 +306,8 @@ pnpm test               # 运行所有测试
 pnpm test:watch         # 监听模式
 pnpm test:coverage      # 覆盖率报告
 pnpm test:ui            # Vitest UI 界面
-pnpm test:e2e           # Playwright E2E
-pnpm test:e2e:report    # 查看 E2E 报告
+pnpm test:smoke           # Playwright E2E
+pnpm test:smoke:report    # 查看 E2E 报告
 ```
 
 ---

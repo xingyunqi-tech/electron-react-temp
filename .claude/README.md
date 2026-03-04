@@ -161,7 +161,7 @@ common-patterns (SSoT)
 | **开发** | `pnpm start:*`, `pnpm build:*` |
 | **代码生成** | `pnpm api:gen:*` |
 | **质量** | `pnpm lint:*`, `pnpm type-check:*` |
-| **测试** | `pnpm test:*`, `pnpm test:e2e:*` |
+| **测试** | `pnpm test:*`, `pnpm test:smoke:*` |
 | **Git** | `git status`, `git diff`, `git log`, `git push` 等 |
 
 | 分类 | 拒绝 (deny) |

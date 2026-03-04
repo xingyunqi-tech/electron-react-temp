@@ -7,7 +7,7 @@
       "Bash(pnpm lint:*)",
       "Bash(pnpm type-check:*)",
       "Bash(pnpm test:*)",
-      "Bash(pnpm test:e2e:*)",
+      "Bash(pnpm test:smoke:*)",
       "Bash(pnpm commit:*)",
       "Bash(pnpm format:*)",
       "Bash(pnpm i18n:*)",

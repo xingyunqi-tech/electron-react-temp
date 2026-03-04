@@ -34,16 +34,16 @@ pnpm start --port 5173
 
 ```bash
 # UI 模式 (推荐 - 可视化调试)
-pnpm test:e2e:ui
+pnpm test:smoke:ui
 
 # 直接运行所有视觉测试 (带界面)
 npx playwright test --headed
 
 # 无头模式运行
-pnpm test:e2e
+pnpm test:smoke
 
 # 查看测试报告
-pnpm test:e2e:report
+pnpm test:smoke:report
 ```
 
 ### 5. 首次运行说明 ⚠️ 重要
@@ -72,7 +72,7 @@ See details at: https://eyes.applitools.com/app/batches/...
 2. 登录后，在 "Unresolved tests" 中找到这个测试
 3. 逐个审查截图质量（UI 是否正确还原）
 4. 点击 **Accept** (✓) 接受这些图像作为基准
-5. 再次运行测试 `pnpm test:e2e` - 现在应该全部通过 ✅
+5. 再次运行测试 `pnpm test:smoke` - 现在应该全部通过 ✅
 
 **后续运行**:
 - 如果 UI 无变化 → 测试通过 ✅
@@ -243,12 +243,12 @@ await hideDynamicContent(page, ['.timestamp', '.random-id']);
 
 ```bash
 # 运行测试
-pnpm test:e2e             # 所有 E2E 测试
-pnpm test:e2e:ui          # UI 模式 (推荐)
-pnpm test:e2e:debug       # Debug 模式
+pnpm test:smoke             # 所有 E2E 测试
+pnpm test:smoke:ui          # UI 模式 (推荐)
+pnpm test:smoke:debug       # Debug 模式
 
 # 查看报告
-pnpm test:e2e:report      # Playwright 报告
+pnpm test:smoke:report      # Playwright 报告
 ```
 
 ---
@@ -257,7 +257,7 @@ pnpm test:e2e:report      # Playwright 报告
 
 1. ✅ 安装依赖
 2. ✅ 配置 API Key
-3. ✅ 运行示例测试 `pnpm test:e2e`
+3. ✅ 运行示例测试 `pnpm test:smoke`
 4. ✅ 查看 Applitools Dashboard
 5. ✅ 编写更多测试用例
 

@@ -1,0 +1,9 @@
+name = "sentry-webhook"
+main = "sentry-webhook.ts"
+compatibility_date = "2024-12-01"
+workers_dev = true
+preview_urls = false
+
+[[kv_namespaces]]
+binding = "SENTRY_DEDUP"
+id = "6364696df27f49a0b0e4e55886e7d3ba"
