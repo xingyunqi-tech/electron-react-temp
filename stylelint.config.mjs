@@ -96,7 +96,15 @@ const config = {
     'block-no-empty': null, // 允许空块
   },
 
-  ignoreFiles: ['node_modules/**/*', 'dist/**/*', 'dist-electron/**/*', 'release/**/*', 'coverage/**/*', '*.css'],
+  ignoreFiles: [
+    'node_modules/**/*',
+    'dist/**/*',
+    'dist-electron/**/*',
+    'release/**/*',
+    'coverage/**/*',
+    'playwright-report/**/*',
+    '*.css',
+  ],
 
   overrides: [
     {
