@@ -133,6 +133,14 @@ export default [
 
   // ==================== 忽略文件配置 ====================
   {
-    ignores: ['dist/**/*', 'dist-electron/**/*', 'release/**/*', 'node_modules/**/*', 'public/**/*', 'coverage/**/*'],
+    ignores: [
+      'dist/**/*',
+      'dist-electron/**/*',
+      'release/**/*',
+      'node_modules/**/*',
+      'public/**/*',
+      'coverage/**/*',
+      'playwright-report/**/*',
+    ],
   },
 ];
