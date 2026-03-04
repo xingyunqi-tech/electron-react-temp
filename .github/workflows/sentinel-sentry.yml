@@ -263,7 +263,7 @@ jobs:
 
       - name: 推送分支
         if: >-
-          steps.precheck.outputs.should_proceed == 'true' &&
+          steps.commit.outputs.has_changes == 'true' &&
           steps.validate.outputs.no_changes != 'true'
         env:
           SENTINEL_PAT: ${{ secrets.SENTINEL_PAT }}
@@ -280,7 +280,7 @@ jobs:
       - name: 准备 PR 正文
         id: pr_body
         if: >-
-          steps.precheck.outputs.should_proceed == 'true' &&
+          steps.commit.outputs.has_changes == 'true' &&
           steps.validate.outputs.no_changes != 'true'
         run: |
           # 将 PR 正文写入文件，避免 Sentry 数据中的特殊字符引发 shell 注入
@@ -314,7 +314,7 @@ jobs:
       - name: 创建 PR
         id: create_pr
         if: >-
-          steps.precheck.outputs.should_proceed == 'true' &&
+          steps.commit.outputs.has_changes == 'true' &&
           steps.validate.outputs.no_changes != 'true'
         run: |
           # 使用 --body-file 传递 PR 正文，避免 shell 注入风险
