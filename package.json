@@ -102,7 +102,6 @@
     "web-vitals": "^5.1.0"
   },
   "devDependencies": {
-    "@applitools/eyes-playwright": "^1.42.1",
     "@commitlint/cli": "^20.1.0",
     "@commitlint/config-conventional": "^20.0.0",
     "@commitlint/format": "^20.0.0",

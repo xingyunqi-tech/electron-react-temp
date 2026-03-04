@@ -32,8 +32,8 @@ export default defineConfig({
   // 测试文件匹配模式
   testMatch: '**/*.spec.ts',
 
-  // 单个测试超时时间 (Applitools 调用需要较长时间)
-  timeout: 90 * 1000,
+  // 单个测试超时时间
+  timeout: 30 * 1000,
 
   // expect 超时时间
   expect: {
