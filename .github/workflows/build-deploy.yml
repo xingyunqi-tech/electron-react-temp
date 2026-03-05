@@ -90,6 +90,7 @@ jobs:
         run: pnpm run build
         env:
           VITE_DEFAULT_LANGUAGE: ${{ env.DEFAULT_LANGUAGE }}
+          VITE_BASEURL: ${{ secrets.VITE_BASEURL }}
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
