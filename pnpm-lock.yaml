@@ -129,8 +129,8 @@ importers:
         specifier: ^9.39.1
         version: 9.39.2
       '@kit/i18n-tools':
-        specifier: ^0.0.24
-        version: 0.0.24(@types/node@24.10.12)(ws@8.19.0)
+        specifier: ^0.0.25
+        version: 0.0.25(@types/node@24.10.12)(ws@8.19.0)
       '@playwright/test':
         specifier: ^1.57.0
         version: 1.58.2
@@ -2546,9 +2546,9 @@ packages:
     resolution:
       { integrity: sha512-dXn3FZhPv0US+7dtJsIi2R+c7qWYiReoEh5zUntWCf4oSpMNib8FDhSoed6m3QyZdx5hK7iLFkYk3rNxwt8vTA== }
 
-  '@kit/i18n-tools@0.0.24':
+  '@kit/i18n-tools@0.0.25':
     resolution:
-      { integrity: sha512-KzLqEKjkhzSfFBtT8kF625CaPq8q7zxAEBsahM4B5XksakP6wM+CVYgOia8ADPQa8LyDf99t21juEQ9r4d188Q== }
+      { integrity: sha512-57k9YV8IdEHexWT/arInCCJwJUEq7RPmrCSfQR6A7jd2h8cFywx64jfBpvRp+Y18nNy3EZQ72uC/geAOsEiAeQ== }
     hasBin: true
 
   '@lezer/common@1.5.1':
@@ -11607,7 +11607,7 @@ snapshots:
 
   '@keyv/serialize@1.1.1': {}
 
-  '@kit/i18n-tools@0.0.24(@types/node@24.10.12)(ws@8.19.0)':
+  '@kit/i18n-tools@0.0.25(@types/node@24.10.12)(ws@8.19.0)':
     dependencies:
       '@vue/compiler-dom': 3.5.39
       '@vue/compiler-sfc': 3.5.39

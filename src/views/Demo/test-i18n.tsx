@@ -623,6 +623,115 @@ const ErrorHandlingComponent: React.FC = () => {
   );
 };
 
+// ============================================================
+// === 边界补充夹具（验证 @kit/i18n-tools 已知 Bug 与覆盖盲区）===
+// 每个夹具标注触发的 Bug 编号 + 「期望 vs 当前实际」，对本文件跑 generate 即可复现
+// ============================================================
+
+// 15. [Bug #3] PureComponent 类组件
+//   工具会注入 `const { t } = this.props` + HOC 包裹，但类型增广只认 Component/React.Component，
+//   漏判 PureComponent → 不追加 `& WithTranslation` → tsc 报「Property 't' does not exist」
+//   期望：类型签名补 WithTranslation，运行 + 类型检查双通过
+class PureClassComponent extends React.PureComponent {
+  render() {
+    return (
+      <Card title="纯组件边界测试">
+        <p>这是一个 PureComponent 纯组件</p>
+        <Button>纯组件按钮</Button>
+      </Card>
+    );
+  }
+}
+
+// 16. [Bug #4] 单参 useEffect（无依赖数组 = 故意每次渲染执行）+ 体内中文将被替换为 t()
+//   工具检测到 effect 体内用了 t，会无条件补成 useEffect(fn, [t]) →
+//   语义从「每次渲染」变成「仅 t 变化时（≈首次）」，且 restore 还原成 [] 而非删数组 → 不可逆
+//   期望：单参 effect 保持单参，不补依赖数组
+const SingleArgEffectComponent: React.FC = () => {
+  const [count, setCount] = useState(0);
+
+  // ⚠️ 故意不写依赖数组：原意是每次渲染都执行
+  useEffect(() => {
+    message.success('每次渲染都会执行的提示');
+  });
+
+  return (
+    <Card title="单参 useEffect 边界测试">
+      <Button onClick={() => setCount(count + 1)}>触发重渲染</Button>
+      <p>当前计数：{count}</p>
+    </Card>
+  );
+};
+
+// 17. [对照组] 双参 useEffect 空依赖 + 体内中文 —— 这是「应当」补 t 的正确路径
+//   期望：[] → [t]（正确行为，作为 Bug #4 的对照，证明工具只该改这种带依赖数组的）
+const EmptyDepsEffectComponent: React.FC = () => {
+  useEffect(() => {
+    message.info('仅挂载时执行一次的提示');
+  }, []);
+
+  return (
+    <Card title="空依赖 useEffect 对照组">
+      <p>挂载提示对照内容</p>
+    </Card>
+  );
+};
+
+// 18. [边界盲区] React.memo 包裹组件（工具已支持拆包，作为回归守卫）
+//   期望：识别内层箭头组件、注入 hook、提取文案
+const MemoWrappedComponent = React.memo(() => {
+  return (
+    <Card title="memo 包裹边界测试">
+      <p>被 memo 包裹的组件文案</p>
+      <Button>记忆化按钮</Button>
+    </Card>
+  );
+});
+
+// 19. [边界盲区] React.forwardRef 包裹组件（工具已支持拆包，作为回归守卫）
+//   期望：识别内层箭头组件、注入 hook、提取文案
+const ForwardRefComponent = React.forwardRef<HTMLDivElement>((_props, ref) => {
+  return (
+    <div ref={ref}>
+      <p>转发 ref 的组件文案</p>
+      <Button>转发 ref 按钮</Button>
+    </div>
+  );
+});
+
+// 20. [边界盲区] 表达式体箭头组件（无 Block，工具需先包成块体再注入 hook）
+//   期望：`() => <jsx/>` 被包成 `() => { const {t}=...; return <jsx/>; }`，文案正确替换
+const ExprBodyArrowComponent: React.FC = () => <span>表达式体箭头组件的文案</span>;
+
+// 21. [边界·已知取舍] 中文字符串拼接 'A' + 变量 + 'B'
+//   每个中文片段是独立字面量 → 被「分别提取」为独立 key（产出 t('第') + page + t('页')）。
+//   这是 i18n 工具的普遍已知限制（无法把片段识别为一句话），非 Bug。
+//   验证点：确认分别提取符合预期，且 `+` 表达式语法不被破坏。
+const StringConcatComponent: React.FC = () => {
+  const [page] = useState(1);
+  const label = '第' + page + '页';
+  const tip = '共' + page + '条记录';
+
+  return (
+    <Card title="字符串拼接边界测试">
+      <p>{label}</p>
+      <span>{tip}</span>
+    </Card>
+  );
+};
+
+// 22. [边界盲区] Fragment <>...</> 作为组件根节点（工具已支持，回归守卫）
+//   验证点：Fragment 内 JSX 文案正常提取替换
+const FragmentRootComponent: React.FC = () => {
+  return (
+    <>
+      <h4>片段根节点标题</h4>
+      <p>片段根节点内容文案</p>
+      <Button>片段根节点按钮</Button>
+    </>
+  );
+};
+
 // === 主组件：聚合所有场景 ===
 const TestI18nMain: React.FC = () => {
   const handleFormSubmit = (data: { name: string; email: string }) => {
@@ -650,6 +759,15 @@ const TestI18nMain: React.FC = () => {
         <FormControlsComponent />
         <EdgeCaseComponent />
         <ErrorHandlingComponent />
+        {/* 边界补充夹具 */}
+        <PureClassComponent />
+        <SingleArgEffectComponent />
+        <EmptyDepsEffectComponent />
+        <MemoWrappedComponent />
+        <ForwardRefComponent />
+        <ExprBodyArrowComponent />
+        <StringConcatComponent />
+        <FragmentRootComponent />
       </div>
 
       <div style={{ marginTop: 24, padding: 16, background: '#f5f5f5' }}>
