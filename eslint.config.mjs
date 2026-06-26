@@ -141,6 +141,7 @@ export default [
       'public/**/*',
       'coverage/**/*',
       'playwright-report/**/*',
+      '.i18n-tools/**/*',
     ],
   },
 ];
