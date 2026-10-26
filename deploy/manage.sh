@@ -13,6 +13,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # 配置变量
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONTAINER_NAME="electron-react-web"
 IMAGE_NAME="electron-react-web:local"
 PORT="${PORT:-31190}"
@@ -49,15 +50,16 @@ image_exists() {
 
 # 加载镜像（从 tar 文件）
 load_image() {
-    local tar_file=$(find . -name "electron-react-web*.tar" -type f | head -1)
+    local tar_file
+    tar_file=$(find "$SCRIPT_DIR" -maxdepth 1 -name "electron-react-web*.tar" -type f | head -1)
 
     if [ -n "$tar_file" ]; then
         log_info "Found Docker image tar: $tar_file"
         log_info "Loading Docker image..."
-        docker load -i "$tar_file"
+        local loaded_image
+        loaded_image=$(docker load -i "$tar_file" | sed -n 's/^Loaded image: //p' | head -1)
 
-        # 获取加载的镜像名称并重新标记
-        local loaded_image=$(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'electron-react-web' | head -1)
+        # 重新标记为 local
         if [ -n "$loaded_image" ] && [ "$loaded_image" != "$IMAGE_NAME" ]; then
             log_info "Tagging image as $IMAGE_NAME"
             docker tag "$loaded_image" "$IMAGE_NAME"
@@ -108,24 +110,16 @@ start_container() {
         log_info "Starting existing container '$CONTAINER_NAME'..."
         docker start "$CONTAINER_NAME"
     else
-        # 检查镜像
-        if ! image_exists; then
-            log_warn "Docker image '$IMAGE_NAME' not found"
-
-            # 尝试加载镜像
-            if load_image; then
-                log_info "Image loaded successfully"
-            else
-                log_info "No tar file found. Building image from source..."
-                build_image
-            fi
+        # 部署包目录里的镜像 tar 优先，保证重新部署时用的是本次打包的镜像
+        if load_image; then
+            log_info "Image loaded successfully"
+        elif ! image_exists; then
+            log_info "No tar file found. Building image from source..."
+            build_image
         fi
 
         log_info "Creating and starting container '$CONTAINER_NAME'..."
         log_blue "Mapping port: ${PORT} -> ${NGINX_PORT}"
-
-        # 获取当前脚本所在目录的绝对路径
-        SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
         docker run -d \
             --name "$CONTAINER_NAME" \

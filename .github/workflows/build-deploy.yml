@@ -1,9 +1,7 @@
 # 构建与部署工作流
 # 构建 Docker 镜像并通过 SSH 部署到阿里云 ECS
 #
-# 触发条件:
-#   1. Check Quality 成功后自动触发 (workflow_run，自动部署)
-#   2. 手动触发 (workflow_dispatch，可选择是否部署)
+# 触发条件: 仅手动触发 (workflow_dispatch)，可选择是否部署
 #
 # 配置步骤:
 #   在 GitHub 仓库 Settings -> Secrets and variables -> Actions 中添加:
@@ -15,10 +13,6 @@
 name: Build and Deploy
 
 on:
-  workflow_run:
-    workflows: [Check Quality]
-    branches: [main, master, 'release/**']
-    types: [completed]
   workflow_dispatch:
     inputs:
       deploy:
@@ -28,8 +22,8 @@ on:
         type: boolean
 
 concurrency:
-  group: build-${{ github.event.workflow_run.head_branch || github.ref }}
-  cancel-in-progress: true
+  group: build-${{ github.ref }}
+  cancel-in-progress: false
 
 env:
   BASE_IMAGE: 'nginx:alpine'
@@ -44,14 +38,10 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    if: |
-      github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -69,7 +59,7 @@ jobs:
         id: info
         run: |
           GIT_HASH=$(git rev-parse --short HEAD)
-          GIT_BRANCH="${{ github.event.workflow_run.head_branch || github.ref_name }}"
+          GIT_BRANCH="${GITHUB_REF_NAME}"
           BUILD_TIME=$(date "+%Y-%m-%d_%H-%M-%S")
           WEBSITE_IMAGE_NAME="${{ env.REGISTRY_LOCAL }}/${{ env.REPO_PREFIX }}:${GIT_HASH}"
 
@@ -107,6 +97,7 @@ jobs:
     name: Package
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -155,9 +146,8 @@ jobs:
     name: Deploy to Aliyun
     needs: package
     runs-on: ubuntu-latest
-    if: |
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.deploy == 'true') ||
-      github.event_name == 'workflow_run'
+    timeout-minutes: 30
+    if: inputs.deploy
     concurrency:
       group: deploy-production
       cancel-in-progress: false
@@ -166,24 +156,19 @@ jobs:
 
     steps:
       - name: Check secrets
+        env:
+          DEPLOY_SERVER_HOST: ${{ secrets.DEPLOY_SERVER_HOST }}
+          DEPLOY_SERVER_USER: ${{ secrets.DEPLOY_SERVER_USER }}
+          DEPLOY_SERVER_PATH: ${{ secrets.DEPLOY_SERVER_PATH }}
+          DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
         run: |
           has_error=0
-          if [[ -z "${{ secrets.DEPLOY_SERVER_HOST }}" ]]; then
-            echo "::error::缺少 DEPLOY_SERVER_HOST secret"
-            has_error=1
-          fi
-          if [[ -z "${{ secrets.DEPLOY_SERVER_USER }}" ]]; then
-            echo "::error::缺少 DEPLOY_SERVER_USER secret"
-            has_error=1
-          fi
-          if [[ -z "${{ secrets.DEPLOY_SERVER_PATH }}" ]]; then
-            echo "::error::缺少 DEPLOY_SERVER_PATH secret"
-            has_error=1
-          fi
-          if [[ -z "${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}" ]]; then
-            echo "::error::缺少 DEPLOY_SSH_PRIVATE_KEY secret"
-            has_error=1
-          fi
+          for name in DEPLOY_SERVER_HOST DEPLOY_SERVER_USER DEPLOY_SERVER_PATH DEPLOY_SSH_PRIVATE_KEY; do
+            if [[ -z "${!name}" ]]; then
+              echo "::error::缺少 ${name} secret"
+              has_error=1
+            fi
+          done
           if [[ $has_error -eq 1 ]]; then
             echo "请在 Settings -> Secrets and variables -> Actions 中配置以上 secrets"
             exit 1
@@ -196,11 +181,14 @@ jobs:
           name: deploy-package
 
       - name: Setup SSH
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_SERVER_HOST }}
+          DEPLOY_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          echo "${DEPLOY_KEY}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -H "${{ secrets.DEPLOY_SERVER_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
+          ssh-keyscan -H "${DEPLOY_HOST}" >> ~/.ssh/known_hosts 2>/dev/null || true
 
       - name: Deploy to server
         env:
@@ -209,11 +197,11 @@ jobs:
           DEPLOY_PATH: ${{ secrets.DEPLOY_SERVER_PATH }}
         run: |
           source node_build_info.sh
-          PACKAGE_FILE=$(ls ${{ env.PACKAGE_PREFIX }}_${hash}_*.tar.gz | head -1)
+          PACKAGE_FILE=$(ls "${PACKAGE_PREFIX}_${hash}"_*.tar.gz | head -1)
 
           echo "=========================================="
           echo "部署信息:"
-          echo "  分支: ${{ github.event.workflow_run.head_branch || github.ref_name }}"
+          echo "  分支: ${GITHUB_REF_NAME}"
           echo "  服务器: ${DEPLOY_USER}@${DEPLOY_HOST}"
           echo "  路径: ${DEPLOY_PATH}"
           echo "  部署包: ${PACKAGE_FILE}"
@@ -222,26 +210,25 @@ jobs:
           echo "=========================================="
 
           # 确保目标目录存在
-          ssh -i ~/.ssh/deploy_key "${DEPLOY_USER}@${DEPLOY_HOST}" "mkdir -p ${DEPLOY_PATH}"
+          ssh -i ~/.ssh/deploy_key "${DEPLOY_USER}@${DEPLOY_HOST}" "mkdir -p '${DEPLOY_PATH}'"
 
           # 上传部署包到服务器
           scp -i ~/.ssh/deploy_key "${PACKAGE_FILE}" "${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_PATH}/"
 
           # 在服务器上执行部署
-          ssh -i ~/.ssh/deploy_key "${DEPLOY_USER}@${DEPLOY_HOST}" << EOF
-            set -e
-            cd ${DEPLOY_PATH}
+          ssh -i ~/.ssh/deploy_key "${DEPLOY_USER}@${DEPLOY_HOST}" bash -s -- \
+            "${DEPLOY_PATH}" "$(basename "${PACKAGE_FILE}")" "${PACKAGE_PREFIX}" "${IMAGE_PREFIX}" "${DEPLOY_HOST}" << 'EOF'
+            set -euo pipefail
+            deploy_path="$1"; package_file="$2"; package_prefix="$3"; image_prefix="$4"; deploy_host="$5"
+            cd "${deploy_path}"
 
             # 解压部署包
             echo "解压部署包..."
-            tar -xzf $(basename ${PACKAGE_FILE})
+            rm -rf electron_react_web
+            tar -xzf "${package_file}"
 
-            # 进入部署目录
+            # 进入部署目录（manage.sh start 会加载目录内的镜像 tar）
             cd electron_react_web
-
-            # 加载 Docker 镜像
-            echo "加载 Docker 镜像..."
-            docker load -i "${{ env.IMAGE_PREFIX }}_${hash}.tar"
 
             # 停止旧容器
             echo "停止旧容器..."
@@ -257,16 +244,16 @@ jobs:
             ./manage.sh status
 
             # 清理旧部署包（保留最近3个）
-            cd ${DEPLOY_PATH}
-            ls -t ${{ env.PACKAGE_PREFIX }}_*.tar.gz | tail -n +4 | xargs -r rm -f
+            cd "${deploy_path}"
+            ls -t "${package_prefix}"_*.tar.gz | tail -n +4 | xargs -r rm -f
 
             # 清理旧 Docker 镜像（保留最近3个）
-            docker images "${{ env.IMAGE_PREFIX }}" -q | tail -n +4 | xargs -r docker rmi 2>/dev/null || true
+            docker images "${image_prefix}" --format '{{.Repository}}:{{.Tag}}' | grep -v ':local$' | tail -n +4 | xargs -r docker rmi 2>/dev/null || true
 
             echo "=========================================="
             echo "部署成功！"
-            echo "访问地址: http://${DEPLOY_HOST}:31190"
-            echo "版本信息: http://${DEPLOY_HOST}:31190/web/version"
+            echo "访问地址: http://${deploy_host}:31190"
+            echo "版本信息: http://${deploy_host}:31190/web/version"
             echo "=========================================="
           EOF
 
