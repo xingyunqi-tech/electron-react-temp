@@ -23,8 +23,6 @@ release
 auto-imports.d.ts
 components.d.ts
 
-# i18n-tools 工具产物（快照 / 日志 / 计划）
-.i18n-tools
 
 # Playwright
 playwright-report/

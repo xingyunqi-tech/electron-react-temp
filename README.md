@@ -209,8 +209,6 @@ pnpm commit             # 规范化提交 (Commitizen)
 
 ```bash
 pnpm api:gen            # Orval 生成 API 代码 (从 openapi.json)
-pnpm i18n               # 交互式国际化管理
-pnpm i18n:exportLocale  # 导出语言包
 ```
 
 ### 构建和部署

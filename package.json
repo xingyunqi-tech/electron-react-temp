@@ -40,7 +40,6 @@
     "lint:style": "stylelint '**/*.{css,scss,less}' --fix",
     "lint:md": "markdownlint-cli2",
     "api:gen": "orval",
-    "i18n": "i18n-tools --config ./i18n.config.ts",
     "prepare": "npx husky"
   },
   "pnpm": {
@@ -107,7 +106,6 @@
     "@commitlint/types": "^20.0.0",
     "@electron/fuses": "^2.0.0",
     "@eslint/js": "^9.39.1",
-    "@kit/i18n-tools": "^0.0.27",
     "@playwright/test": "^1.57.0",
     "@sentry/vite-plugin": "^4.6.1",
     "@testing-library/jest-dom": "^6.6.3",

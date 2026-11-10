@@ -128,9 +128,6 @@ importers:
       '@eslint/js':
         specifier: ^9.39.1
         version: 9.39.5
-      '@kit/i18n-tools':
-        specifier: ^0.0.27
-        version: 0.0.27(@types/node@24.19.2)(ws@8.21.0)
       '@playwright/test':
         specifier: ^1.57.0
         version: 1.61.1
@@ -2414,11 +2411,6 @@ packages:
     resolution:
       { integrity: sha512-dXn3FZhPv0US+7dtJsIi2R+c7qWYiReoEh5zUntWCf4oSpMNib8FDhSoed6m3QyZdx5hK7iLFkYk3rNxwt8vTA== }
 
-  '@kit/i18n-tools@0.0.27':
-    resolution:
-      { integrity: sha512-ThwzgGZA9A3hWxv0yC/nlMJQp6chZjfPKrV6Ih/uL/2JIDBzwTH4BsfV54612/+SWmCR2v7lvAuEOtHc0PztkA== }
-    hasBin: true
-
   '@lezer/common@1.5.2':
     resolution:
       { integrity: sha512-sxQE460fPZyU3sdc8lafxiPwJHBzZRy/udNFynGQky1SePYBdhkBl1kOagA9uT3pxR8K09bOrmTUqA9wb/PjSQ== }
@@ -4688,11 +4680,6 @@ packages:
       { integrity: sha512-BSeNnyus75C4//NQ9gQt1/csTXyo/8Sb+afLAkzAptFuMsod9HFokGNudZpi/oQV73hnVK+sR+5PVRMd+Dr7YQ== }
     engines: { node: '>=12' }
 
-  cliui@9.0.1:
-    resolution:
-      { integrity: sha512-k7ndgKhwoQveBL+/1tqGJYNz097I7WOvwbmmU2AR5+magtbjPWQTS1C5vzGkBC8Ym8UWRzfKUzUUqFLypY4Q+w== }
-    engines: { node: '>=20' }
-
   clone-response@1.0.3:
     resolution:
       { integrity: sha512-ROoL94jJH2dUVML2Y/5PEDNaSHgeOdSDicUyS7izcF63G6sTc/FTjLub4b8Il9S8S0beOfYt0TaA5qvFK+w0wA== }
@@ -5200,11 +5187,6 @@ packages:
   dotenv@16.6.1:
     resolution:
       { integrity: sha512-uBq4egWHTcTt33a72vpSG0z3HnPuIl6NqYcTrKEg2azoEyl2hpW0zqlxysq2pK9HlDIHyHyakeYaYnSAwd8bow== }
-    engines: { node: '>=12' }
-
-  dotenv@17.4.2:
-    resolution:
-      { integrity: sha512-nI4U3TottKAcAD9LLud4Cb7b2QztQMUEfHbvhTH09bqXTxnSie8WnjPALV/WMCrJZ6UV/qHJ6L03OqO3LcdYZw== }
     engines: { node: '>=12' }
 
   dunder-proto@1.0.1:
@@ -6181,16 +6163,6 @@ packages:
     resolution:
       { integrity: sha512-EPd3IqieHSavSOXh+LZhrIkdQcOELWeRblLT6kslQr+cF9XTh/HxZdSt1YkHH1iq4dvqBnV42uwg2YlorgOy6g== }
     engines: { node: '>=23.5.0 || ^22.13.0 || ^21.7.0 || ^20.12.0' }
-    peerDependencies:
-      '@types/node': '>=18'
-    peerDependenciesMeta:
-      '@types/node':
-        optional: true
-
-  inquirer@14.0.2:
-    resolution:
-      { integrity: sha512-VsSx1JneSNp3ld1veMTLe+UDcUD8Tw2/jjOthhkX3/IX2q+xHhVELifeb/hsb1fBw31pabEPNUf/xUOyb+KZjA== }
-    engines: { node: '>=23.5.0 || ^22.13.0 || ^20.17.0' }
     peerDependencies:
       '@types/node': '>=18'
     peerDependenciesMeta:
@@ -7300,27 +7272,6 @@ packages:
     resolution:
       { integrity: sha512-7x81NCL719oNbsq/3mh+hVrAWmFuEYUqrq/Iw3kUzH8ReypT9QQ0BLoJS7/G9k6N81XjW4qHWtjWwe/9eLy1EQ== }
     engines: { node: '>=12' }
-
-  openai@6.46.0:
-    resolution:
-      { integrity: sha512-DFg6jEPT2RO+oAyXtddeUJU8zkGy1OQ1AjGzNIJUMQG03TTqvCpy9tBpQ+2VVVnvrl3E56F8GEin2JYtWpITtA== }
-    peerDependencies:
-      '@aws-sdk/credential-provider-node': '>=3.972.0 <4'
-      '@smithy/hash-node': '>=4.3.0 <5'
-      '@smithy/signature-v4': '>=5.4.0 <6'
-      ws: ^8.18.0
-      zod: ^3.25 || ^4.0
-    peerDependenciesMeta:
-      '@aws-sdk/credential-provider-node':
-        optional: true
-      '@smithy/hash-node':
-        optional: true
-      '@smithy/signature-v4':
-        optional: true
-      ws:
-        optional: true
-      zod:
-        optional: true
 
   openapi-types@12.1.3:
     resolution:
@@ -9287,20 +9238,10 @@ packages:
       { integrity: sha512-tVpsJW7DdjecAiFpbIB1e3qxIQsE6NoPc5/eTdrbbIC4h0LVsWhnoa3g+m2HclBIujHzsxZ4VJVA+GUuc2/LBw== }
     engines: { node: '>=12' }
 
-  yargs-parser@22.0.0:
-    resolution:
-      { integrity: sha512-rwu/ClNdSMpkSrUb+d6BRsSkLUq1fmfsY6TOpYzTwvwkg1/NRG85KBy3kq++A8LKQwX6lsu+aWad+2khvuXrqw== }
-    engines: { node: ^20.19.0 || ^22.12.0 || >=23 }
-
   yargs@17.7.3:
     resolution:
       { integrity: sha512-GZtjxm/J/4TSxuL3FNYjCmLktBTnIw/rVmKSIyKeYAZpmJB2ig9VauCC5xsa82GNKVKDAqpOn3KVzNt0zmrU0g== }
     engines: { node: '>=12' }
-
-  yargs@18.0.0:
-    resolution:
-      { integrity: sha512-4UEqdc2RYGHZc7Doyqkrqiln3p9X2DZVxaGbwhn2pi7MrRagKaOcIKe8L3OxYcbhXLgLFUS3zAYuQjKBQgmuNg== }
-    engines: { node: ^20.19.0 || ^22.12.0 || >=23 }
 
   yocto-queue@0.1.0:
     resolution:
@@ -11192,26 +11133,6 @@ snapshots:
 
   '@keyv/serialize@1.1.1': {}
 
-  '@kit/i18n-tools@0.0.27(@types/node@24.19.2)(ws@8.21.0)':
-    dependencies:
-      '@vue/compiler-dom': 3.5.39
-      '@vue/compiler-sfc': 3.5.39
-      chalk: 5.6.2
-      dotenv: 17.4.2
-      inquirer: 14.0.2(@types/node@24.19.2)
-      jiti: 2.7.0
-      openai: 6.46.0(ws@8.21.0)
-      picomatch: 4.0.5
-      typescript: 5.9.3
-      yargs: 18.0.0
-    transitivePeerDependencies:
-      - '@aws-sdk/credential-provider-node'
-      - '@smithy/hash-node'
-      - '@smithy/signature-v4'
-      - '@types/node'
-      - ws
-      - zod
-
   '@lezer/common@1.5.2': {}
 
   '@lezer/css@1.3.4':
@@ -12897,11 +12818,13 @@ snapshots:
       magic-string: 0.30.21
       postcss: 8.5.16
       source-map-js: 1.2.1
+    optional: true
 
   '@vue/compiler-ssr@3.5.39':
     dependencies:
       '@vue/compiler-dom': 3.5.39
       '@vue/shared': 3.5.39
+    optional: true
 
   '@vue/shared@3.5.39': {}
 
@@ -13448,12 +13371,6 @@ snapshots:
       strip-ansi: 6.0.1
       wrap-ansi: 7.0.0
 
-  cliui@9.0.1:
-    dependencies:
-      string-width: 7.2.0
-      strip-ansi: 7.2.0
-      wrap-ansi: 9.0.2
-
   clone-response@1.0.3:
     dependencies:
       mimic-response: 1.0.1
@@ -13916,8 +13833,6 @@ snapshots:
       dotenv: 16.6.1
 
   dotenv@16.6.1: {}
-
-  dotenv@17.4.2: {}
 
   dunder-proto@1.0.1:
     dependencies:
@@ -14897,17 +14812,6 @@ snapshots:
     optionalDependencies:
       '@types/node': 24.19.2
 
-  inquirer@14.0.2(@types/node@24.19.2):
-    dependencies:
-      '@inquirer/ansi': 2.0.7
-      '@inquirer/core': 11.2.1(@types/node@24.19.2)
-      '@inquirer/prompts': 8.5.2(@types/node@24.19.2)
-      '@inquirer/type': 4.0.7(@types/node@24.19.2)
-      mute-stream: 3.0.0
-      run-async: 4.0.6
-    optionalDependencies:
-      '@types/node': 24.19.2
-
   inquirer@8.2.7(@types/node@24.19.2):
     dependencies:
       '@inquirer/external-editor': 1.0.3(@types/node@24.19.2)
@@ -15867,10 +15771,6 @@ snapshots:
       define-lazy-prop: 2.0.0
       is-docker: 2.2.1
       is-wsl: 2.2.0
-
-  openai@6.46.0(ws@8.21.0):
-    optionalDependencies:
-      ws: 8.21.0
 
   openapi-types@12.1.3: {}
 
@@ -17587,8 +17487,6 @@ snapshots:
 
   yargs-parser@21.1.1: {}
 
-  yargs-parser@22.0.0: {}
-
   yargs@17.7.3:
     dependencies:
       cliui: 8.0.1
@@ -17598,15 +17496,6 @@ snapshots:
       string-width: 4.2.3
       y18n: 5.0.8
       yargs-parser: 21.1.1
-
-  yargs@18.0.0:
-    dependencies:
-      cliui: 9.0.1
-      escalade: 3.2.0
-      get-caller-file: 2.0.5
-      string-width: 7.2.0
-      y18n: 5.0.8
-      yargs-parser: 22.0.0
 
   yocto-queue@0.1.0: {}
 

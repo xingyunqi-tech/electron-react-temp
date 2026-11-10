@@ -20,5 +20,5 @@
     "noUncheckedSideEffectImports": true,
     "types": ["vitest", "vitest/globals", "node"]
   },
-  "include": ["config", "scripts", "vite.config.ts", "i18n.config.ts", "package.json"]
+  "include": ["config", "scripts", "vite.config.ts", "package.json"]
 }
