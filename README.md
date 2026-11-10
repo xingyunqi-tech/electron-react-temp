@@ -358,7 +358,7 @@ pnpm package
 
 | Workflow | 触发条件 | 功能 |
 |----------|---------|------|
-| Check Quality | Push / PR | 代码检查、类型检查、单元测试 |
+| Check | Push / PR | 代码检查、类型检查、单元测试 |
 | Build & Deploy | Quality 通过后 | 构建、Docker 打包、部署 |
 
 ## Claude Code AI 辅助

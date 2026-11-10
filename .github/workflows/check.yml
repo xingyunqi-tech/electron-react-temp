@@ -6,18 +6,21 @@
 #   2. push 到 main / master / release/** 分支
 #   3. 手动触发 (workflow_dispatch)
 
-name: Check Quality
+name: Check
 
 on:
-  pull_request:
-    branches: [main, master, 'release/**']
   push:
+    branches: [main, master, 'release/**']
+  pull_request:
     branches: [main, master, 'release/**']
   workflow_dispatch:
 
 concurrency:
-  group: ci-${{ github.ref }}
+  group: check-${{ github.ref }}
   cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
   # ============================

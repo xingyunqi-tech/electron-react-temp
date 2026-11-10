@@ -17,10 +17,11 @@ model: sonnet
 ### Web 部署
 
 ```
-GitHub Push → Check Quality (lint/type-check/test)
-  → Build Docker Image (nginx:alpine)
-  → Upload Artifacts
-  → SCP to Server → Docker Deploy
+GitHub Push → Check (lint/type-check/test)
+
+手动触发 Deploy → Build Docker Image (nginx:alpine)
+  → Push GHCR / TCR
+  → SSH: docker pull from TCR → manage.sh deploy
 ```
 
 ### Electron 打包
@@ -76,7 +77,7 @@ EXPOSE 80
 
 ## CI/CD (GitHub Actions)
 
-### Check Quality (`.github/workflows/check-quality.yml`)
+### Check (`.github/workflows/check.yml`)
 
 触发: PR / Push / 手动
 
@@ -87,7 +88,7 @@ Jobs:
   test:    Vitest 单元测试
 ```
 
-### Build & Deploy (`.github/workflows/build-deploy.yml`)
+### Deploy (`.github/workflows/deploy.yml`)
 
 触发: 手动（可选部署目标 aliyun / tencent / all）
 
