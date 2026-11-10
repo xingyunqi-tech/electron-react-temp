@@ -89,25 +89,34 @@ Jobs:
 
 ### Build & Deploy (`.github/workflows/build-deploy.yml`)
 
-触发: Check Quality 成功 / 手动
+触发: 手动（可选部署目标 aliyun / tencent / all）
 
 ```yaml
 Steps:
   1. pnpm build (构建 Web 资产)
-  2. Docker build (构建镜像)
-  3. 打包 artifacts (dist + deploy + Dockerfile)
-  4. SCP 到服务器
-  5. SSH 执行部署脚本
+  2. 构建 Nginx 镜像，推送 GHCR；部署时同时推送腾讯云 TCR
+  3. 同步 manage.sh、nginx.conf 到服务器
+  4. SSH 登录 TCR 执行 manage.sh deploy <镜像>
+  5. cleanup-registry.yml 清理 GHCR / TCR 旧镜像（各保留 2 个）
 ```
 
-### 所需 Secrets
+### 所需 Secrets（`<PREFIX>` 为 `ALIYUN` 或 `TENCENT`）
 
 | Secret | 用途 |
 |--------|------|
-| `DEPLOY_SERVER_HOST` | 服务器地址 |
-| `DEPLOY_SERVER_USER` | SSH 用户名 |
-| `DEPLOY_SERVER_PATH` | 部署目录 |
-| `DEPLOY_SSH_PRIVATE_KEY` | SSH 私钥 |
+| `<PREFIX>_HOST` | 服务器地址 |
+| `<PREFIX>_USER` | SSH 用户名 |
+| `<PREFIX>_PATH` | 部署目录 |
+| `<PREFIX>_SSH_KEY` | SSH 私钥 |
+| `TENCENT_TCR_PASSWORD` | TCR 个人版登录密码 |
+
+### 所需 Variables
+
+| Variable | 用途 |
+|----------|------|
+| `TENCENT_TCR_REGISTRY` | TCR 地址 |
+| `TENCENT_TCR_NAMESPACE` | TCR 命名空间 |
+| `TENCENT_TCR_USERNAME` | 腾讯云账号 UIN |
 
 ---
 
